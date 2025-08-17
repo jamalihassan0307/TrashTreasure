@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - Trash to Treasure{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Edit Profile
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Basic Information -->
+                        <h5 class="text-primary mb-3">
+                            <i class="fas fa-user me-2"></i>Basic Information
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="first_name" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" 
+                                       value="{{ user.first_name|default:'' }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" 
+                                       value="{{ user.last_name|default:'' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       value="{{ user.email|default:'' }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" 
+                                       value="{{ user.phone|default:'' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="3">{{ user.address|default:'' }}</textarea>
+                        </div>
+                        
+                        <!-- Profile Image -->
+                        <h5 class="text-primary mb-3 mt-4">
+                            <i class="fas fa-image me-2"></i>Profile Image
+                        </h5>
+                        <div class="mb-3">
+                            <label for="profile_image" class="form-label">Profile Image</label>
+                            <input type="file" class="form-control" id="profile_image" name="profile_image" accept="image/*">
+                            {% if user.profile_image %}
+                                <div class="mt-2">
+                                    <small class="text-muted">Current image:</small>
+                                    <img src="{{ user.profile_image.url }}" alt="Current Profile" class="img-thumbnail ms-2" style="max-height: 100px;">
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Rider Information (if applicable) -->
+                        {% if user.user_type == 'rider' %}
+                        <h5 class="text-primary mb-3 mt-4">
+                            <i class="fas fa-motorcycle me-2"></i>Rider Information
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="vehicle_type" class="form-label">Vehicle Type</label>
+                                <input type="text" class="form-control" id="vehicle_type" name="vehicle_type" 
+                                       value="{{ user.vehicle_type|default:'' }}" placeholder="e.g., Motorcycle, Car, Van">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="vehicle_model" class="form-label">Vehicle Model</label>
+                                <input type="text" class="form-control" id="vehicle_model" name="vehicle_model" 
+                                       value="{{ user.vehicle_model|default:'' }}" placeholder="e.g., Honda Activa, Maruti Swift">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="license_plate" class="form-label">License Plate</label>
+                                <input type="text" class="form-control" id="license_plate" name="license_plate" 
+                                       value="{{ user.license_plate|default:'' }}" placeholder="e.g., MH12AB1234">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="vehicle_color" class="form-label">Vehicle Color</label>
+                                <input type="text" class="form-control" id="vehicle_color" name="vehicle_color" 
+                                       value="{{ user.vehicle_color|default:'' }}" placeholder="e.g., Red, Blue, White">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_proof" class="form-label">ID Proof</label>
+                            <input type="file" class="form-control" id="id_proof" name="id_proof" accept="image/*">
+                            {% if user.id_proof %}
+                                <div class="mt-2">
+                                    <small class="text-muted">Current ID proof:</small>
+                                    <img src="{{ user.id_proof.url }}" alt="Current ID Proof" class="img-thumbnail ms-2" style="max-height: 100px;">
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Profile
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Image preview functionality
+document.getElementById('profile_image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Create preview if it doesn't exist
+            let preview = document.getElementById('profile_preview');
+            if (!preview) {
+                preview = document.createElement('img');
+                preview.id = 'profile_preview';
+                preview.className = 'img-thumbnail ms-2';
+                preview.style.maxHeight = '100px';
+                document.getElementById('profile_image').parentNode.appendChild(preview);
+            }
+            preview.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+});
+
+{% if user.user_type == 'rider' %}
+document.getElementById('id_proof').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Create preview if it doesn't exist
+            let preview = document.getElementById('id_proof_preview');
+            if (!preview) {
+                preview = document.createElement('img');
+                preview.id = 'id_proof_preview';
+                preview.className = 'img-thumbnail ms-2';
+                preview.style.maxHeight = '100px';
+                document.getElementById('id_proof').parentNode.appendChild(preview);
+            }
+            preview.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+});
+{% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,537 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Earnings & Performance - Trash to Treasure{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/rider_dashboard.css' %}">
+<style>
+    .earnings-hero {
+        background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+        color: white;
+        padding: 3rem 0;
+        border-radius: 20px;
+        margin-bottom: 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .earnings-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80') center/cover;
+        opacity: 0.1;
+        z-index: 1;
+    }
+    
+    .earnings-hero > * {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .earnings-display {
+        font-size: 4rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .earnings-label {
+        font-size: 1.25rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+    }
+    
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+    
+    .metric-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(46, 125, 50, 0.15);
+        border-color: var(--primary-green);
+    }
+    
+    .metric-icon {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 1.5rem;
+        color: white;
+    }
+    
+    .metric-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--primary-green);
+    }
+    
+    .metric-label {
+        color: #6c757d;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+    
+    .performance-section {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .performance-chart {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        min-height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .chart-placeholder {
+        color: #6c757d;
+        font-size: 1.125rem;
+    }
+    
+    .collection-history {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .history-item {
+        display: flex;
+        align-items: center;
+        padding: 1.5rem 0;
+        border-bottom: 1px solid #e9ecef;
+        transition: background-color 0.2s ease;
+    }
+    
+    .history-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .history-item:last-child {
+        border-bottom: none;
+    }
+    
+    .history-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1.5rem;
+        font-size: 1.5rem;
+        color: white;
+        background: linear-gradient(135deg, var(--success) 0%, var(--accent-green) 100%);
+    }
+    
+    .history-content {
+        flex: 1;
+    }
+    
+    .history-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+        font-size: 1.125rem;
+    }
+    
+    .history-details {
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+    }
+    
+    .history-location {
+        color: var(--primary-green);
+        font-weight: 500;
+    }
+    
+    .history-date {
+        color: #6c757d;
+        font-size: 0.875rem;
+        text-align: right;
+        min-width: 120px;
+    }
+    
+    .history-earnings {
+        font-weight: 700;
+        font-size: 1.25rem;
+        margin-left: 1rem;
+        min-width: 100px;
+        text-align: right;
+        color: var(--success);
+    }
+    
+    .filters-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .filter-group {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .filter-select {
+        padding: 0.75rem 1rem;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        background: white;
+        transition: border-color 0.3s ease;
+    }
+    
+    .filter-select:focus {
+        border-color: var(--primary-green);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    }
+    
+    .search-input {
+        padding: 0.75rem 1rem;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        background: white;
+        transition: border-color 0.3s ease;
+        min-width: 250px;
+    }
+    
+    .search-input:focus {
+        border-color: var(--primary-green);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    }
+    
+    .empty-history {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6c757d;
+    }
+    
+    .empty-history i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-item {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid var(--primary-green);
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-green);
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Earnings Hero Section -->
+    <div class="earnings-hero">
+        <div class="earnings-display">${{ total_earnings|floatformat:2 }}</div>
+        <div class="earnings-label">Total Earnings</div>
+        <p class="mb-0 opacity-75">Your hard work is making a difference for the environment!</p>
+    </div>
+
+    <!-- Statistics Row -->
+    <div class="stats-row">
+        <div class="stat-item">
+            <div class="stat-number">{{ total_collections }}</div>
+            <div class="stat-label">Total Collections</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ collections_this_month }}</div>
+            <div class="stat-label">This Month</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ collections_today }}</div>
+            <div class="stat-label">Today</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ avg_rating|floatformat:1 }}</div>
+            <div class="stat-label">Avg Rating</div>
+        </div>
+    </div>
+
+    <!-- Performance Metrics -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="metric-number">{{ avg_completion_time|floatformat:1 }}</div>
+            <div class="metric-label">Avg Completion Time (hrs)</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="metric-number">{{ total_distance|floatformat:1 }}</div>
+            <div class="metric-label">Total Distance (km)</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon">
+                <i class="fas fa-weight-hanging"></i>
+            </div>
+            <div class="metric-number">{{ total_weight|floatformat:1 }}</div>
+            <div class="metric-label">Total Weight (kg)</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="metric-number">{{ total_points_awarded }}</div>
+            <div class="metric-label">Points Awarded</div>
+        </div>
+    </div>
+
+    <!-- Performance Chart Section -->
+    <div class="performance-section">
+        <h3 class="h4 mb-4">
+            <i class="fas fa-chart-line text-success me-2"></i>
+            Performance Overview
+        </h3>
+        
+        <div class="performance-chart">
+            <div class="chart-placeholder">
+                <i class="fas fa-chart-area fa-3x mb-3 d-block text-muted"></i>
+                <p>Performance charts will be displayed here</p>
+                <small class="text-muted">Coming soon: Weekly earnings, completion rates, and more analytics</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Collection History Section -->
+    <div class="collection-history">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="h4 mb-0">
+                <i class="fas fa-history text-success me-2"></i>
+                Collection History
+            </h3>
+            
+            <!-- Filters -->
+            <div class="filters-section">
+                <form method="GET" class="filter-group">
+                    <div class="form-group">
+                        <label for="date_filter" class="form-label fw-semibold me-2">Date:</label>
+                        <select name="date" id="date_filter" class="filter-select">
+                            <option value="">All Time</option>
+                            <option value="today" {% if date_filter == 'today' %}selected{% endif %}>Today</option>
+                            <option value="week" {% if date_filter == 'week' %}selected{% endif %}>This Week</option>
+                            <option value="month" {% if date_filter == 'month' %}selected{% endif %}>This Month</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="search" class="form-label fw-semibold me-2">Search:</label>
+                        <input type="text" name="search" id="search" class="search-input" 
+                               placeholder="Search by location or trash type..." 
+                               value="{{ search_query }}">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter me-2"></i>
+                        Apply Filters
+                    </button>
+                    
+                    <a href="{% url 'dashboard:rider_earnings' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-2"></i>
+                        Clear
+                    </a>
+                </form>
+            </div>
+        </div>
+
+        {% if collection_history %}
+            {% for collection in collection_history %}
+            <div class="history-item">
+                <div class="history-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                
+                <div class="history-content">
+                    <div class="history-title">
+                        {{ collection.trash_type }} Collection
+                    </div>
+                    <div class="history-details">
+                        <span class="history-location">
+                            <i class="fas fa-map-marker-alt me-1"></i>
+                            {{ collection.submission.location }}
+                        </span>
+                        <span class="ms-3">
+                            <i class="fas fa-weight-hanging me-1"></i>
+                            {{ collection.actual_quantity }} kg
+                        </span>
+                        <span class="ms-3">
+                            <i class="fas fa-coins me-1"></i>
+                            {{ collection.points_awarded }} points
+                        </span>
+                    </div>
+                    {% if collection.submission.trash_description %}
+                    <div class="text-muted">
+                        <i class="fas fa-trash me-1"></i>
+                        {{ collection.submission.trash_description }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="history-date">
+                    {{ collection.collected_at|date:"M d, Y" }}
+                </div>
+                
+                <div class="history-earnings">
+                    ${{ collection.earnings|floatformat:2 }}
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="Collection history pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">&laquo; First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    <li class="page-item active">
+                        <span class="page-link">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            
+        {% else %}
+            <div class="empty-history">
+                <i class="fas fa-recycle"></i>
+                <h4 class="mb-3">No collections yet</h4>
+                <p class="mb-4">Start collecting trash to see your earnings and performance metrics!</p>
+                <a href="{% url 'dashboard:rider_dashboard' %}" class="btn btn-success btn-lg">
+                    <i class="fas fa-motorcycle me-2"></i>
+                    View Assigned Collections
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-submit form when filters change
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateFilter = document.getElementById('date_filter');
+        
+        dateFilter.addEventListener('change', function() {
+            this.closest('form').submit();
+        });
+    });
+    
+    // Add animation to metric cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.metric-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(card);
+    });
+    
+    // Animate history items on scroll
+    document.querySelectorAll('.history-item').forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(-20px)';
+        item.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+        observer.observe(item);
+    });
+</script>
+{% endblock %}

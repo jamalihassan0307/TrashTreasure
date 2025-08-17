@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - Trash to Treasure{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/about.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero" style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover;">
+    <div class="hero-content">
+        <div class="container text-center">
+            <h1 class="fade-in">About Trash to Treasure</h1>
+            <p class="fade-in">Transforming waste management through innovation, community engagement, and environmental stewardship</p>
+        </div>
+    </div>
+</section>
+
+<!-- Mission Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2 class="display-5 fw-bold text-primary mb-4">Our Mission</h2>
+                <p class="lead mb-4">To create a sustainable ecosystem where waste becomes a valuable resource, communities thrive, and our planet benefits from every collection.</p>
+                <p class="mb-4">We believe that every piece of trash has the potential to become treasure when handled responsibly. Our platform connects environmentally conscious individuals with dedicated collection services, creating a win-win solution for everyone involved.</p>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="text-center">
+                            <i class="fas fa-leaf fa-2x text-success mb-2"></i>
+                            <h5>Eco-Friendly</h5>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center">
+                            <i class="fas fa-handshake fa-2x text-primary mb-2"></i>
+                            <h5>Community</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                     alt="Environmental Conservation" class="img-fluid rounded shadow-lg">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Started -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 order-md-2">
+                <h2 class="display-5 fw-bold text-primary mb-4">How It Started</h2>
+                <p class="lead mb-4">Born from a simple observation: waste management could be more engaging, more rewarding, and more community-driven.</p>
+                <p class="mb-4">Our founders noticed that traditional waste collection systems lacked incentives for participation and didn't engage communities effectively. They envisioned a platform that would not only collect waste but also reward participants, creating a positive feedback loop that benefits everyone.</p>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h5>2023</h5>
+                            <p>Concept development and market research</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h5>2024</h5>
+                            <p>Platform launch and community building</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 order-md-1">
+                <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2126&q=80" 
+                     alt="Innovation" class="img-fluid rounded shadow-lg">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Values -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="display-5 fw-bold text-primary mb-3">Our Core Values</h2>
+                <p class="lead text-muted">The principles that guide everything we do</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-seedling fa-3x text-success"></i>
+                        </div>
+                        <h4 class="card-title">Sustainability</h4>
+                        <p class="card-text">We're committed to environmental conservation and promoting sustainable waste management practices.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-users fa-3x text-primary"></i>
+                        </div>
+                        <h4 class="card-title">Community</h4>
+                        <p class="card-text">Building strong, engaged communities that work together for a cleaner, greener future.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-star fa-3x text-warning"></i>
+                        </div>
+                        <h4 class="card-title">Innovation</h4>
+                        <p class="card-text">Continuously improving our platform and processes to deliver better user experiences.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<!-- <section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="display-5 fw-bold text-primary mb-3">Meet Our Team</h2>
+                <p class="lead text-muted">Passionate individuals dedicated to environmental change</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm">
+                    <img src="{% static 'images/saim-PFP.png' %}" 
+                         class="card-img-top" alt="Team Member">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">M SAIM ARSHAD</h5>
+                        <p class="text-muted">Founder/CEO Flutter Developer</p>
+                        <p class="card-text">CEO of dexvoa.com</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm">
+                    <img src="{% static 'images/ali-hassan.jpg' %}" 
+                         class="card-img-top" alt="Team Member">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">ALI HASSAN</h5>
+                        <p class="text-muted">Full stack developer</p>
+                        <p class="card-text">Full stack developer of dexvoa.com</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm">
+                    <img src="{% static 'images/HASEEB-SAJID.png' %}"
+                         class="card-img-top" alt="Team Member">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">HASEEB SAJID</h5>
+                        <p class="text-muted">Graphic Designer</p>
+                        <p class="card-text">Graphic designer of dexvoa.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section> -->
+
+<!-- Impact Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2 class="display-5 fw-bold text-primary mb-4">Our Impact</h2>
+                <p class="lead mb-4">Since our launch, we've made significant strides in community engagement and environmental impact.</p>
+                
+                <div class="row text-center">
+                    <div class="col-6 mb-4">
+                        <div class="impact-stat">
+                            <h3 class="text-primary">{{ total_submissions|default:"0" }}+</h3>
+                            <p>Collections Completed</p>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-4">
+                        <div class="impact-stat">
+                            <h3 class="text-success">{{ total_users|default:"0" }}+</h3>
+                            <p>Active Users</p>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-4">
+                        <div class="impact-stat">
+                            <h3 class="text-info">{{ active_riders|default:"0" }}+</h3>
+                            <p>Collection Partners</p>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-4">
+                        <div class="impact-stat">
+                            <h3 class="text-warning">{{ total_points|default:"0" }}+</h3>
+                            <p>Points Awarded</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                     alt="Environmental Impact" class="img-fluid rounded shadow-lg">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-4">Join Our Mission</h2>
+        <p class="lead mb-4">Be part of the solution. Every collection counts towards a cleaner, greener world.</p>
+        <div>
+            <a href="{% url 'dashboard:register' %}" class="btn btn-light btn-lg me-3">
+                <i class="fas fa-user-plus me-2"></i>Get Started
+            </a>
+            <a href="{% url 'dashboard:home' %}" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-home me-2"></i>Learn More
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

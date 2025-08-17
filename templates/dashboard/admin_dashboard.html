@@ -1,0 +1,881 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - Trash to Treasure{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Enhanced Dashboard Header -->
+<div class="dashboard-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold text-white mb-3">
+                    <i class="fas fa-cog me-3"></i>Admin Dashboard
+                </h1>
+                <p class="lead text-white-50 mb-0">
+                    Welcome back, {{ user.first_name|default:user.username }}! Manage the system, verify collections, and oversee operations.
+                </p>
+            </div>
+            <div class="col-lg-4 text-end">
+                <div class="admin-status-container">
+                    <div class="d-flex align-items-center justify-content-end">
+                        <div class="status-indicator me-3">
+                            <span class="badge bg-success fs-6">
+                                <i class="fas fa-shield-alt me-1"></i>Admin
+                            </span>
+                        </div>
+                        {% if user.profile_image %}
+                            <img src="{{ user.profile_image.url }}" alt="Profile" class="rounded-circle shadow-lg" style="width: 80px; height: 80px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-lg" style="width: 80px; height: 80px;">
+                                <i class="fas fa-user-shield fa-3x text-primary"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-4">
+    <!-- Enhanced Stats Overview -->
+    <div class="dashboard-stats mb-5">
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="dashboard-card text-center" style="animation: slideInUp 0.8s ease-out 0.1s both;">
+                    <div class="stats-icon mb-3">
+                        <i class="fas fa-users fa-3x text-primary"></i>
+                    </div>
+                    <h3 class="fw-bold text-primary mb-2">{{ total_users|default:"0" }}</h3>
+                    <p class="text-muted mb-0">Total Users</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="dashboard-card text-center" style="animation: slideInUp 0.8s ease-out 0.2s both;">
+                    <div class="stats-icon mb-3">
+                        <i class="fas fa-recycle fa-3x text-success"></i>
+                    </div>
+                    <h3 class="fw-bold text-primary mb-2">{{ total_submissions|default:"0" }}</h3>
+                    <p class="text-muted mb-0">Total Submissions</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="dashboard-card text-center" style="animation: slideInUp 0.8s ease-out 0.3s both;">
+                    <div class="stats-icon mb-3">
+                        <i class="fas fa-motorcycle fa-3x text-warning"></i>
+                    </div>
+                    <h3 class="fw-bold text-primary mb-2">{{ active_riders|default:"0" }}</h3>
+                    <p class="text-muted mb-0">Active Riders</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="dashboard-card text-center" style="animation: slideInUp 0.8s ease-out 0.4s both;">
+                    <div class="stats-icon mb-3">
+                        <i class="fas fa-star fa-3x text-info"></i>
+                    </div>
+                    <h3 class="fw-bold text-primary mb-2">{{ total_points|default:"0" }}</h3>
+                    <p class="text-muted mb-0">Points Awarded</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Metrics Row -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Performance Metrics
+                    </h4>
+                    <div class="header-actions">
+                        <button class="btn btn-outline-primary btn-sm me-2" onclick="refreshDashboard()">
+                            <i class="fas fa-sync-alt me-1"></i>Refresh
+                        </button>
+                        <span class="badge bg-success fs-6">
+                            <i class="fas fa-circle me-1"></i>{{ system_status|default:"Operational" }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <div class="metric-mini-card text-center p-3 border rounded">
+                                <div class="metric-mini-icon mb-2">
+                                    <i class="fas fa-check-circle fa-2x text-success"></i>
+                                </div>
+                                <h5 class="text-success mb-1">{{ completion_rate|default:"0" }}%</h5>
+                                <small class="text-muted">Completion Rate</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <div class="metric-mini-card text-center p-3 border rounded">
+                                <div class="metric-mini-icon mb-2">
+                                    <i class="fas fa-clock fa-2x text-primary"></i>
+                                </div>
+                                <h5 class="text-primary mb-1">{{ avg_response_time|default:"0" }}h</h5>
+                                <small class="text-muted">Avg Response</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <div class="metric-mini-card text-center p-3 border rounded">
+                                <div class="metric-mini-icon mb-2">
+                                    <i class="fas fa-weight fa-2x text-warning"></i>
+                                </div>
+                                <h5 class="text-warning mb-1">{{ total_weight_collected|floatformat:1|default:"0" }} kg</h5>
+                                <small class="text-muted">Total Weight</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <div class="metric-mini-card text-center p-3 border rounded">
+                                <div class="metric-mini-icon mb-2">
+                                    <i class="fas fa-calendar-day fa-2x text-info"></i>
+                                </div>
+                                <h5 class="text-info mb-1">{{ avg_collections_per_day|default:"0" }}</h5>
+                                <small class="text-muted">Collections/Day</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <div class="metric-mini-card text-center p-3 border rounded">
+                                <div class="metric-mini-icon mb-2">
+                                    <i class="fas fa-plus-circle fa-2x text-success"></i>
+                                </div>
+                                <h5 class="text-success mb-1">{{ new_submissions_24h|default:"0" }}</h5>
+                                <small class="text-muted">New (24h)</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <div class="metric-mini-card text-center p-3 border rounded">
+                                <div class="metric-mini-icon mb-2">
+                                    <i class="fas fa-user-plus fa-2x text-primary"></i>
+                                </div>
+                                <h5 class="text-primary mb-1">{{ new_users_24h|default:"0" }}</h5>
+                                <small class="text-muted">New Users (24h)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Quick Actions -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-lg-3 col-md-6">
+                            <a href="{% url 'dashboard:manage_users' %}" class="btn btn-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4" 
+                               style="min-height: 120px; text-decoration: none;">
+                                <i class="fas fa-users fa-3x mb-3"></i>
+                                <span class="fw-bold">Manage Users</span>
+                                <small class="text-white-50">View & manage all users</small>
+                            </a>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6">
+                            <a href="{% url 'dashboard:create_rider' %}" class="btn btn-success w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4" 
+                               style="min-height: 120px; text-decoration: none;">
+                                <i class="fas fa-motorcycle fa-3x mb-3"></i>
+                                <span class="fw-bold">Create Rider</span>
+                                <small class="text-white-50">Add new rider account</small>
+                            </a>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6">
+                            <a href="{% url 'dashboard:admin_analytics' %}" class="btn btn-info w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4" 
+                               style="min-height: 120px; text-decoration: none;">
+                                <i class="fas fa-chart-line fa-3x mb-3"></i>
+                                <span class="fw-bold">Analytics</span>
+                                <small class="text-white-50">System insights & reports</small>
+                            </a>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6">
+                            <a href="{% url 'dashboard:admin_settings' %}" class="btn btn-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4" 
+                               style="min-height: 120px; text-decoration: none;">
+                                <i class="fas fa-cogs fa-3x mb-3"></i>
+                                <span class="fw-bold">Settings</span>
+                                <small class="text-white-50">System configuration</small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Recent Submissions -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-list me-2"></i>Recent Submissions
+                    </h4>
+                    <div class="header-actions">
+                        <button class="btn btn-outline-primary btn-sm me-2" onclick="refreshSubmissions()">
+                            <i class="fas fa-sync-alt me-1"></i>Refresh
+                        </button>
+                        <a href="#" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-eye me-1"></i>View All
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if recent_submissions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover user-table">
+                                <thead>
+                                    <tr>
+                                        <th>Track ID</th>
+                                        <th>User</th>
+                                        <th>Description</th>
+                                        <th>Status</th>
+                                        <th>Rider</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for submission in recent_submissions %}
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-dark">{{ submission.track_id }}</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if submission.user.profile_image %}
+                                                    <img src="{{ submission.user.profile_image.url }}" alt="User" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+                                                {% else %}
+                                                    <div class="bg-light rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                                        <i class="fas fa-user text-muted"></i>
+                                                    </div>
+                                                {% endif %}
+                                                <div>
+                                                    <strong>{{ submission.user.username }}</strong>
+                                                    <br><small class="text-muted">{{ submission.user.email }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ submission.trash_description|truncatechars:30 }}</strong>
+                                                {% if submission.quantity_kg %}
+                                                    <br><small class="text-muted">{{ submission.quantity_kg }} kg</small>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if submission.status == 'pending' %}
+                                                <span class="badge badge-pending">Pending</span>
+                                            {% elif submission.status == 'assigned' %}
+                                                <span class="badge badge-assigned">Assigned</span>
+                                            {% elif submission.status == 'on_the_way' %}
+                                                <span class="badge bg-info">On The Way</span>
+                                            {% elif submission.status == 'arrived' %}
+                                                <span class="badge bg-primary">Arrived</span>
+                                            {% elif submission.status == 'picked' %}
+                                                <span class="badge bg-warning">Picked</span>
+                                            {% elif submission.status == 'collected' %}
+                                                <span class="badge badge-collected">Collected</span>
+                                            {% elif submission.status == 'cancelled' %}
+                                                <span class="badge badge-cancelled">Cancelled</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if submission.rider %}
+                                                <div class="d-flex align-items-center">
+                                                    {% if submission.rider.profile_image %}
+                                                        <img src="{{ submission.rider.profile_image.url }}" alt="Rider" class="rounded-circle me-2" style="width: 25px; height: 25px; object-fit: cover;">
+                                                    {% else %}
+                                                        <div class="bg-light rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 25px; height: 25px;">
+                                                            <i class="fas fa-motorcycle text-muted"></i>
+                                                        </div>
+                                                    {% endif %}
+                                                    <span>{{ submission.rider.username }}</span>
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted">Unassigned</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">{{ submission.created_at|date:"M d, H:i" }}</small>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'trash:submission_detail' submission.id %}" class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                {% if submission.status == 'pending' %}
+                                                    <button class="btn btn-outline-success btn-sm" onclick="assignRider('{{ submission.id }}')">
+                                                        <i class="fas fa-user-plus"></i>
+                                                    </button>
+                                                {% elif submission.status == 'collected' %}
+                                                    <button class="btn btn-outline-warning btn-sm" onclick="verifyCollection('{{ submission.id }}')">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="empty-state mb-4">
+                                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                                <h5 class="text-muted">No submissions yet</h5>
+                                <p class="text-muted">Users will start submitting trash collection requests soon.</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Weekly Collections Chart -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Weekly Collections Overview
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-8">
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="weeklyChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="chart-stats">
+                                <div class="stat-item mb-4">
+                                    <h6 class="text-muted mb-2">This Week</h6>
+                                    <h3 class="text-primary mb-1">{{ this_week_collections|default:"0" }}</h3>
+                                    {% if weekly_growth > 0 %}
+                                        <small class="text-success">
+                                            <i class="fas fa-arrow-up me-1"></i>{{ weekly_growth }}% increase
+                                        </small>
+                                    {% elif weekly_growth < 0 %}
+                                        <small class="text-danger">
+                                            <i class="fas fa-arrow-down me-1"></i>{{ weekly_growth|add:0|add:0 }}% decrease
+                                        </small>
+                                    {% else %}
+                                        <small class="text-muted">
+                                            <i class="fas fa-minus me-1"></i>No change
+                                        </small>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="stat-item mb-4">
+                                    <h6 class="text-muted mb-2">Last Week</h6>
+                                    <h3 class="text-info mb-1">{{ last_week_collections|default:"0" }}</h3>
+                                    <small class="text-muted">Collections</small>
+                                </div>
+                                
+                                <div class="stat-item">
+                                    <h6 class="text-muted mb-2">Monthly Goal</h6>
+                                    <div class="progress mb-2" style="height: 10px;">
+                                        <div class="progress-bar bg-success" role="progressbar" 
+                                             style="width: {{ monthly_progress|default:"0" }}%;" 
+                                             aria-valuenow="{{ monthly_progress|default:"0" }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">
+                                        {{ monthly_collections|default:"0" }}/{{ monthly_goal|default:"10" }} collections 
+                                        ({{ monthly_progress|default:"0" }}%)
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Riders Performance -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-trophy me-2"></i>Top Performing Riders
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if top_riders %}
+                        <div class="row g-4">
+                            {% for rider in top_riders %}
+                            <div class="col-lg-2 col-md-4 col-sm-6">
+                                <div class="rider-performance-card text-center p-3 border rounded">
+                                    <div class="rider-avatar mb-3">
+                                        {% if rider.profile_image %}
+                                            <img src="{{ rider.profile_image.url }}" alt="{{ rider.username }}" 
+                                                 class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto" 
+                                                 style="width: 60px; height: 60px;">
+                                                <i class="fas fa-motorcycle fa-2x text-muted"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <h6 class="fw-bold mb-1">{{ rider.username }}</h6>
+                                    <div class="rider-stats">
+                                        <span class="badge bg-success mb-2">{{ rider.collection_count }} Collections</span>
+                                        <br>
+                                        <small class="text-muted">{{ rider.first_name|default:"" }} {{ rider.last_name|default:"" }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <div class="empty-state mb-3">
+                                <i class="fas fa-motorcycle fa-3x text-muted mb-3"></i>
+                                <h6 class="text-muted">No rider data available</h6>
+                                <p class="text-muted">Rider performance data will appear here once collections are completed.</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Real-Time Activity Feed -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-broadcast-tower me-2"></i>Real-Time Activity Feed
+                    </h4>
+                    <div class="header-actions">
+                        <span class="badge bg-success fs-6">
+                            <i class="fas fa-circle me-1"></i>Live
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="activity-feed">
+                        <div class="activity-item d-flex align-items-center p-3 border-bottom">
+                            <div class="activity-icon me-3">
+                                <i class="fas fa-recycle fa-2x text-success"></i>
+                            </div>
+                            <div class="activity-content flex-grow-1">
+                                <h6 class="mb-1">New Collection Completed</h6>
+                                <p class="text-muted mb-1">Rider collected trash from {{ recent_submissions.0.location|default:"Unknown Location" }}</p>
+                                <small class="text-muted">{{ recent_submissions.0.created_at|timesince|default:"Just now" }} ago</small>
+                            </div>
+                            <div class="activity-status">
+                                <span class="badge bg-success">Completed</span>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item d-flex align-items-center p-3 border-bottom">
+                            <div class="activity-icon me-3">
+                                <i class="fas fa-user-plus fa-2x text-primary"></i>
+                            </div>
+                            <div class="activity-content flex-grow-1">
+                                <h6 class="mb-1">New User Registration</h6>
+                                <p class="text-muted mb-1">User registered in the system</p>
+                                <small class="text-muted">2 hours ago</small>
+                            </div>
+                            <div class="activity-status">
+                                <span class="badge bg-primary">New</span>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item d-flex align-items-center p-3 border-bottom">
+                            <div class="activity-icon me-3">
+                                <i class="fas fa-motorcycle fa-2x text-warning"></i>
+                            </div>
+                            <div class="activity-content flex-grow-1">
+                                <h6 class="mb-1">Rider Assignment</h6>
+                                <p class="text-muted mb-1">New submission assigned to rider</p>
+                                <small class="text-muted">3 hours ago</small>
+                            </div>
+                            <div class="activity-status">
+                                <span class="badge bg-warning">Assigned</span>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item d-flex align-items-center p-3">
+                            <div class="activity-icon me-3">
+                                <i class="fas fa-chart-line fa-2x text-info"></i>
+                            </div>
+                            <div class="activity-content flex-grow-1">
+                                <h6 class="mb-1">Daily Report Generated</h6>
+                                <p class="text-muted mb-1">System performance report for today</p>
+                                <small class="text-muted">5 hours ago</small>
+                            </div>
+                            <div class="activity-status">
+                                <span class="badge bg-info">Report</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced System Health -->
+    <div class="row">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-heartbeat me-2"></i>System Health
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="health-card text-center p-4 border rounded-3">
+                                <div class="health-icon mb-3">
+                                    <i class="fas fa-server fa-3x text-success"></i>
+                                </div>
+                                <h5 class="text-success mb-2">System Status</h5>
+                                <span class="badge bg-success fs-6">Operational</span>
+                                <small class="text-muted d-block mt-2">All systems running smoothly</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6">
+                            <div class="health-card text-center p-4 border rounded-3">
+                                <div class="health-icon mb-3">
+                                    <i class="fas fa-database fa-3x text-info"></i>
+                                </div>
+                                <h5 class="text-info mb-2">Database</h5>
+                                <span class="badge bg-info fs-6">Healthy</span>
+                                <small class="text-muted d-block mt-2">99.9% uptime</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6">
+                            <div class="health-card text-center p-4 border rounded-3">
+                                <div class="health-icon mb-3">
+                                    <i class="fas fa-shield-alt fa-3x text-warning"></i>
+                                </div>
+                                <h5 class="text-warning mb-2">Security</h5>
+                                <span class="badge bg-warning fs-6">Protected</span>
+                                <small class="text-muted d-block mt-2">Latest security updates</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6">
+                            <div class="health-card text-center p-4 border rounded-3">
+                                <div class="health-icon mb-3">
+                                    <i class="fas fa-clock fa-3x text-primary"></i>
+                                </div>
+                                <h5 class="text-primary mb-2">Response Time</h5>
+                                <span class="badge bg-primary fs-6">Fast</span>
+                                <small class="text-muted d-block mt-2">Avg: 150ms</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Rider Modal -->
+<div class="modal fade" id="assignRiderModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-user-plus me-2"></i>Assign Rider
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="assignRiderForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="riderSelect" class="form-label">Select Rider</label>
+                        <select class="form-select" id="riderSelect" name="rider" required>
+                            <option value="">Choose a rider...</option>
+                            {% for rider in active_riders_list %}
+                            <option value="{{ rider.id }}">{{ rider.username }} - {{ rider.first_name }} {{ rider.last_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignmentNotes" class="form-label">Assignment Notes (Optional)</label>
+                        <textarea class="form-control" id="assignmentNotes" name="assignment_notes" rows="3" 
+                                  placeholder="Any special instructions for the rider..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitRiderAssignment()">Assign Rider</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Verify Collection Modal -->
+<div class="modal fade" id="verifyCollectionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-check-circle me-2"></i>Verify Collection
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="verifyCollectionForm">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="verifiedPoints" class="form-label">Final Points Awarded</label>
+                            <input type="number" class="form-control" id="verifiedPoints" name="verified_points" 
+                                   min="0" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="verificationNotes" class="form-label">Verification Notes</label>
+                            <input type="text" class="form-control" id="verificationNotes" name="verification_notes" 
+                                   placeholder="Any verification comments...">
+                        </div>
+                        <div class="col-12">
+                            <label for="adminNotes" class="form-label">Admin Notes</label>
+                            <textarea class="form-control" id="adminNotes" name="admin_notes" rows="3" 
+                                      placeholder="Additional notes or observations..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="submitCollectionVerification()">Verify Collection</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let currentSubmissionId = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Enhanced animations and interactions
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe all animated elements
+    document.querySelectorAll('.dashboard-card, .stats-card').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'all 0.8s ease-out';
+        observer.observe(el);
+    });
+    
+    // Initialize weekly chart
+    initializeWeeklyChart();
+    
+    // Enhanced health card interactions
+    document.querySelectorAll('.health-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '0 10px 25px rgba(0,0,0,0.15)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = 'none';
+        });
+    });
+});
+
+function initializeWeeklyChart() {
+    const ctx = document.getElementById('weeklyChart').getContext('2d');
+    const weeklyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ daily_labels|safe }},
+            datasets: [{
+                label: 'Collections',
+                data: {{ daily_collections|safe }},
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function assignRider(submissionId) {
+    currentSubmissionId = submissionId;
+    
+    // Show the assign rider modal
+    const modal = new bootstrap.Modal(document.getElementById('assignRiderModal'));
+    modal.show();
+}
+
+function verifyCollection(submissionId) {
+    currentSubmissionId = submissionId;
+    
+    // Show the verification modal
+    const modal = new bootstrap.Modal(document.getElementById('verifyCollectionModal'));
+    modal.show();
+}
+
+function submitRiderAssignment() {
+    const rider = document.getElementById('riderSelect').value;
+    const notes = document.getElementById('assignmentNotes').value;
+    
+    if (!rider) {
+        alert('Please select a rider');
+        return;
+    }
+    
+    // Submit the rider assignment
+    fetch(`/trash/assign-rider/${currentSubmissionId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            rider: rider,
+            notes: notes
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error assigning rider: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error assigning rider');
+    });
+}
+
+function submitCollectionVerification() {
+    const points = document.getElementById('verifiedPoints').value;
+    const notes = document.getElementById('verificationNotes').value;
+    const adminNotes = document.getElementById('adminNotes').value;
+    
+    if (!points) {
+        alert('Please enter points to award');
+        return;
+    }
+    
+    // Submit the collection verification
+    fetch(`/trash/verify-collection/${currentSubmissionId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            points: points,
+            notes: notes,
+            admin_notes: adminNotes
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error verifying collection: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error verifying collection');
+    });
+}
+
+function refreshSubmissions() {
+    location.reload();
+}
+
+function refreshDashboard() {
+    // Show loading state
+    const refreshBtn = document.querySelector('button[onclick="refreshDashboard()"]');
+    const originalContent = refreshBtn.innerHTML;
+    refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Refreshing...';
+    refreshBtn.disabled = true;
+    
+    // Reload the page after a short delay to show the loading state
+    setTimeout(() => {
+        location.reload();
+    }, 500);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Users - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="text-primary">
+                    <i class="fas fa-users me-2"></i>User Management
+                </h2>
+                <a href="{% url 'dashboard:create_rider' %}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Create New Rider
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="search" class="form-label">Search Users</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   value="{{ search_query }}" placeholder="Search by username, email, or name">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="user_type" class="form-label">User Type</label>
+                            <select class="form-select" id="user_type" name="user_type">
+                                <option value="">All Types</option>
+                                <option value="user" {% if user_type_filter == 'user' %}selected{% endif %}>Regular Users</option>
+                                <option value="rider" {% if user_type_filter == 'rider' %}selected{% endif %}>Riders</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">All Status</option>
+                                <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                                <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+                                <option value="suspended" {% if status_filter == 'suspended' %}selected{% endif %}>Suspended</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search me-2"></i>Filter
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>Users ({{ users.count }})
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>User</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Points</th>
+                                    <th>Submissions</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if user.profile_image %}
+                                                <img src="{{ user.profile_image.url }}" alt="Profile" 
+                                                     class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3" 
+                                                     style="width: 40px; height: 40px;">
+                                                    <i class="fas fa-user text-white"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-0">{{ user.get_full_name|default:user.username }}</h6>
+                                                <small class="text-muted">{{ user.email }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if user.user_type == 'rider' %}bg-info{% else %}bg-primary{% endif %}">
+                                            {{ user.get_user_type_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if user.status == 'active' %}bg-success{% elif user.status == 'suspended' %}bg-danger{% else %}bg-warning{% endif %}">
+                                            {{ user.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning text-dark">{{ user.reward_points }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ user.submissions.count }}</span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ user.created_at|date:"M d, Y" }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            {% if user.status == 'active' %}
+                                                <a href="{% url 'dashboard:toggle_user_status' user.id %}" 
+                                                   class="btn btn-sm btn-warning" 
+                                                   onclick="return confirm('Are you sure you want to suspend this user?')">
+                                                    <i class="fas fa-ban"></i>
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'dashboard:toggle_user_status' user.id %}" 
+                                                   class="btn btn-sm btn-success">
+                                                    <i class="fas fa-check"></i>
+                                                </a>
+                                            {% endif %}
+                                           
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted">No users found matching your criteria.</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

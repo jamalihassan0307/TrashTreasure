@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Trash to Treasure{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+      
+{% if not settings.maintenance_mode and not settings.debug_mode %}
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'dashboard:home' %}">
+                <i class="fas fa-recycle me-2"></i>Trash to Treasure
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        {% if user.user_type == 'user' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'dashboard:user_dashboard' %}">
+                                    <i class="fas fa-home me-1"></i>Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'dashboard:user_submissions' %}">
+                                    <i class="fas fa-recycle me-1"></i>My Submissions
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'dashboard:user_points' %}">
+                                    <i class="fas fa-coins me-1"></i>My Points
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'trash:submit_trash' %}">
+                                    <i class="fas fa-plus me-1"></i>Submit Trash
+                                </a>
+                            </li>
+                        {% elif user.user_type == 'rider' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'dashboard:rider_dashboard' %}">
+                                    <i class="fas fa-motorcycle me-1"></i>Rider Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'dashboard:rider_earnings' %}">
+                                    <i class="fas fa-dollar-sign me-1"></i>My Earnings
+                                </a>
+                            </li>
+                        {% elif user.user_type == 'admin' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'dashboard:admin_dashboard' %}">
+                                    <i class="fas fa-cog me-1"></i>Admin Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'dashboard:manage_users' %}">
+                                    <i class="fas fa-users me-1"></i>Manage Users
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'dashboard:admin_analytics' %}">
+                                    <i class="fas fa-chart-line me-1"></i>Analytics
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'dashboard:admin_settings' %}">
+                                    <i class="fas fa-cogs me-1"></i>Settings
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-1"></i>{{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                                    <i class="fas fa-user-circle me-2"></i>Profile
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:edit_profile' %}">
+                                    <i class="fas fa-edit me-2"></i>Edit Profile
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'dashboard:logout' %}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'dashboard:about' %}">
+                                <i class="fas fa-info-circle me-1"></i>About Us
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'dashboard:contact' %}">
+                                <i class="fas fa-envelope me-1"></i>Contact Us
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'dashboard:login' %}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'dashboard:register' %}">
+                                <i class="fas fa-user-plus me-1"></i>Register
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endif %}
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+{% if not settings.maintenance_mode and not settings.debug_mode %}
+  
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-recycle me-2"></i>Trash to Treasure</h5>
+                    <p>Transforming waste into rewards, one collection at a time. Join our mission to create a cleaner, greener world.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'dashboard:home' %}" class="text-light">Home</a></li>
+                        <li><a href="{% url 'dashboard:register' %}" class="text-light">Register</a></li>
+                        <li><a href="{% url 'dashboard:login' %}" class="text-light">Login</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact Info</h5>
+                    <p><i class="fas fa-envelope me-2"></i>jamalihassan0307@gmail.com</p>
+                    <p><i class="fas fa-phone me-2"></i>+92 307 3921189</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Trash to Treasure. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    {% endif %}
+  <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
