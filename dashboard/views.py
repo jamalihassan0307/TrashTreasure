@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.contrib.auth.models import User
 from accounts.models import CustomUser
-from trash.models import TrashSubmission, CollectionRecord, RewardPointHistory
 from django.db.models import Count, Q, Sum
 from datetime import datetime, timedelta
 from django.core.paginator import Paginator
@@ -27,7 +26,7 @@ def home(request):
     
     # Get statistics for non-authenticated users
     total_users = CustomUser.objects.filter(user_type='user', status='active').count()
-    total_submissions = TrashSubmission.objects.count()
+    total_submissions = 0
     active_riders = CustomUser.objects.filter(user_type='rider', status='active').count()
     total_points = sum([user.reward_points for user in CustomUser.objects.all()])
     
@@ -42,7 +41,7 @@ def home(request):
 def about(request):
     # Get statistics for the about page
     total_users = CustomUser.objects.filter(user_type='user', status='active').count()
-    total_submissions = TrashSubmission.objects.count()
+    total_submissions = 0
     active_riders = CustomUser.objects.filter(user_type='rider', status='active').count()
     total_points = sum([user.reward_points for user in CustomUser.objects.all()])
     
@@ -107,7 +106,7 @@ def register_view(request):
 @login_required
 @user_passes_test(lambda u: u.user_type == 'user')
 def user_dashboard(request):
-    user_submissions = TrashSubmission.objects.filter(user=request.user).order_by('-created_at')
+    user_submissions = None
     total_points = request.user.reward_points
     pending_submissions = user_submissions.filter(status='pending').count()
     completed_submissions = user_submissions.filter(status='collected').count()
@@ -123,7 +122,7 @@ def user_dashboard(request):
 @login_required
 @user_passes_test(lambda u: u.user_type == 'user')
 def user_submissions(request):
-    user_submissions = TrashSubmission.objects.filter(user=request.user).order_by('-created_at')
+    user_submissions = None
     
     # Apply filters
     status_filter = request.GET.get('status', '')
@@ -178,8 +177,8 @@ def user_submissions(request):
 @user_passes_test(lambda u: u.user_type == 'user')
 def user_points(request):
     # Get user's point history
-    point_history = RewardPointHistory.objects.filter(user=request.user).order_by('-created_at')
-    
+    point_history = None
+
     # Apply filters
     type_filter = request.GET.get('type', '')
     date_filter = request.GET.get('date', '')
@@ -210,9 +209,9 @@ def user_points(request):
     total_points = request.user.reward_points
     total_earned = point_history.filter(points__gt=0).aggregate(Sum('points'))['points__sum'] or 0
     total_spent = abs(point_history.filter(points__lt=0).aggregate(Sum('points'))['points__sum'] or 0)
-    submissions_count = TrashSubmission.objects.filter(user=request.user).count()
-    completed_count = TrashSubmission.objects.filter(user=request.user, status='collected').count()
-    
+    submissions_count = 0
+    completed_count = 0
+
     context = {
         'point_history': page_obj,
         'total_points': total_points,
@@ -230,17 +229,12 @@ def user_points(request):
 @login_required
 @user_passes_test(is_rider)
 def rider_dashboard(request):
-    assigned_submissions = TrashSubmission.objects.filter(
-        rider=request.user,
-        status__in=['assigned', 'on_the_way', 'arrived', 'picked']
-    ).order_by('-assigned_at')
+    assigned_submissions = None
+
+    completed_today = None
+       
     
-    completed_today = CollectionRecord.objects.filter(
-        rider=request.user,
-        collected_at__date=datetime.now().date()
-    ).count()
-    
-    total_completed = CollectionRecord.objects.filter(rider=request.user).count()
+    total_completed = 0
     
     context = {
         'assigned_submissions': assigned_submissions,
@@ -253,7 +247,7 @@ def rider_dashboard(request):
 @user_passes_test(is_rider)
 def rider_earnings(request):
     # Get rider's collection history
-    collection_history = CollectionRecord.objects.filter(rider=request.user).order_by('-collected_at')
+    collection_history = 0
     
     # Apply filters
     date_filter = request.GET.get('date', '')
@@ -324,15 +318,15 @@ def rider_earnings(request):
 @user_passes_test(is_admin)
 def admin_dashboard(request):
     total_users = CustomUser.objects.count()
-    total_submissions = TrashSubmission.objects.count()
-    pending_submissions = TrashSubmission.objects.filter(status='pending').count()
-    active_riders = CustomUser.objects.filter(user_type='rider', status='active').count()
-    active_riders_list = CustomUser.objects.filter(user_type='rider', status='active')
-    total_points = sum([user.reward_points for user in CustomUser.objects.all()])
-    
+    total_submissions = 0
+    pending_submissions = 0
+    active_riders = 0
+    active_riders_list = None
+    total_points = 0
+
     # Recent submissions
-    recent_submissions = TrashSubmission.objects.all().order_by('-created_at')[:10]
-    
+    recent_submissions = None
+
     # Weekly collections data with proper date calculations
     now = timezone.now()
     
@@ -346,14 +340,9 @@ def admin_dashboard(request):
     end_of_prev_week = start_of_week - timedelta(seconds=1)
     
     # Count collections for current and previous week
-    this_week_collections = CollectionRecord.objects.filter(
-        collected_at__gte=start_of_week
-    ).count()
+    this_week_collections = 0
     
-    last_week_collections = CollectionRecord.objects.filter(
-        collected_at__gte=start_of_prev_week,
-        collected_at__lte=end_of_prev_week
-    ).count()
+    last_week_collections = 0
     
     # Calculate weekly growth
     weekly_growth = 0
@@ -364,7 +353,7 @@ def admin_dashboard(request):
     
     # Monthly progress with dynamic goal based on total submissions
     month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    monthly_collections = CollectionRecord.objects.filter(collected_at__gte=month_start).count()
+    monthly_collections = 0
     
     # Set monthly goal based on total submissions (more realistic goal)
     monthly_goal = max(10, total_submissions // 12)  # At least 10, or 1/12th of total submissions
@@ -376,29 +365,24 @@ def admin_dashboard(request):
     
     for i in range(7):
         date = start_of_week + timedelta(days=i)
-        count = CollectionRecord.objects.filter(
-            collected_at__date=date.date()
-        ).count()
+        count = 0
         daily_collections.append(count)
         daily_labels.append(date.strftime('%a'))
     
     # Additional metrics for enhanced dashboard
     # Calculate system health metrics
-    total_collections = CollectionRecord.objects.count()
+    total_collections = 0
     completion_rate = round((total_collections / total_submissions * 100), 1) if total_submissions > 0 else 0
     
     # Get recent activity (last 24 hours)
     yesterday = now - timedelta(days=1)
-    new_submissions_24h = TrashSubmission.objects.filter(created_at__gte=yesterday).count()
-    new_collections_24h = CollectionRecord.objects.filter(collected_at__gte=yesterday).count()
-    new_users_24h = CustomUser.objects.filter(created_at__gte=yesterday).count()
-    
+    new_submissions_24h = 0
+    new_collections_24h = 0
+    new_users_24h = 0
+
     # Calculate average response time (time from submission to assignment)
     response_times = []
-    submissions_with_riders = TrashSubmission.objects.filter(
-        rider__isnull=False,
-        assigned_at__isnull=False
-    )
+    submissions_with_riders = None
     
     for submission in submissions_with_riders:
         if submission.assigned_at and submission.created_at:
@@ -413,7 +397,7 @@ def admin_dashboard(request):
     ).order_by('-collection_count')[:5]
     
     # Calculate efficiency metrics
-    total_weight_collected = CollectionRecord.objects.aggregate(Sum('actual_quantity'))['actual_quantity__sum'] or 0
+    total_weight_collected = 0
     avg_collections_per_day = round(total_collections / 30, 1) if total_collections > 0 else 0
     
     # Get system status indicators
@@ -469,14 +453,14 @@ def admin_analytics(request):
     
     # Get current period data
     current_users = CustomUser.objects.filter(created_at__gte=start).count()
-    current_submissions = TrashSubmission.objects.filter(created_at__gte=start).count()
+    current_submissions = 0
     current_riders = CustomUser.objects.filter(user_type='rider', created_at__gte=start).count()
     current_points = sum([user.reward_points for user in CustomUser.objects.filter(created_at__gte=start)])
     
     # Get previous period data for comparison
     prev_start = start - timedelta(days=period)
     prev_users = CustomUser.objects.filter(created_at__gte=prev_start, created_at__lt=start).count()
-    prev_submissions = TrashSubmission.objects.filter(created_at__gte=prev_start, created_at__lt=start).count()
+    prev_submissions = 0
     prev_riders = CustomUser.objects.filter(user_type='rider', created_at__gte=prev_start, created_at__lt=start).count()
     prev_points = sum([user.reward_points for user in CustomUser.objects.filter(created_at__gte=prev_start, created_at__lt=start)])
     
@@ -491,11 +475,7 @@ def admin_analytics(request):
     
     # Calculate average response time (time from submission to assignment)
     response_times = []
-    submissions_with_riders = TrashSubmission.objects.filter(
-        rider__isnull=False,
-        assigned_at__isnull=False,
-        created_at__gte=start
-    )
+    submissions_with_riders = None
     
     for submission in submissions_with_riders:
         if submission.assigned_at and submission.created_at:
@@ -505,22 +485,15 @@ def admin_analytics(request):
     avg_response_time = round(sum(response_times) / len(response_times), 1) if response_times else 0
     
     # Get total weight collected in period
-    total_weight = CollectionRecord.objects.filter(
-        collected_at__gte=start
-    ).aggregate(Sum('actual_quantity'))['actual_quantity__sum'] or 0
+    total_weight =  0
     
     # Get total collections in period
-    total_collections = CollectionRecord.objects.filter(
-        collected_at__gte=start
-    ).count()
+    total_collections = 0
     
     # Calculate completion ratio
-    total_submissions_in_period = TrashSubmission.objects.filter(created_at__gte=start).count()
-    completed_submissions_in_period = TrashSubmission.objects.filter(
-        created_at__gte=start,
-        status='collected'
-    ).count()
-    
+    total_submissions_in_period = 0
+    completed_submissions_in_period = 0
+
     completion_ratio = round((completed_submissions_in_period / total_submissions_in_period) * 100, 1) if total_submissions_in_period > 0 else 0
     
     # Get monthly submission trends for the last 6 months
@@ -532,10 +505,7 @@ def admin_analytics(request):
         month_end = month_start.replace(day=28) + timedelta(days=4)
         month_end = month_end.replace(day=1) - timedelta(seconds=1)
         
-        count = TrashSubmission.objects.filter(
-            created_at__gte=month_start,
-            created_at__lte=month_end
-        ).count()
+        count = 0
         
         monthly_submissions.insert(0, count)
         monthly_labels.insert(0, month_start.strftime('%b %Y'))
@@ -564,10 +534,7 @@ def admin_analytics(request):
     # Additional performance metrics
     # Calculate average collection time (time from assignment to collection)
     collection_times = []
-    completed_collections = CollectionRecord.objects.filter(
-        collected_at__gte=start,
-        submission__assigned_at__isnull=False
-    )
+    completed_collections = None
     
     for collection in completed_collections:
         if collection.submission.assigned_at and collection.collected_at:
@@ -581,11 +548,7 @@ def admin_analytics(request):
     avg_collections_per_day = round(total_collections / period, 1) if period > 0 else 0
     
     # Get top performing locations
-    top_locations = TrashSubmission.objects.filter(
-        created_at__gte=start
-    ).values('location').annotate(
-        submission_count=Count('id')
-    ).order_by('-submission_count')[:5]
+    top_locations = None
     
     location_labels = []
     location_counts = []
@@ -595,8 +558,8 @@ def admin_analytics(request):
         location_counts.append(location['submission_count'])
     
     # Calculate system health metrics
-    total_submissions_all = TrashSubmission.objects.count()  # Total submissions across all time
-    pending_ratio = round((TrashSubmission.objects.filter(status='pending').count() / total_submissions_all * 100), 1) if total_submissions_all > 0 else 0
+    total_submissions_all = 0
+    pending_ratio = 0
     active_user_ratio = round((CustomUser.objects.filter(status='active').count() / CustomUser.objects.count() * 100), 1) if CustomUser.objects.count() > 0 else 0
     
     # Get daily activity for the last 30 days
@@ -605,8 +568,8 @@ def admin_analytics(request):
     
     for i in range(30):
         date = end - timedelta(days=i)
-        submissions_count = TrashSubmission.objects.filter(created_at__date=date.date()).count()
-        collections_count = CollectionRecord.objects.filter(collected_at__date=date.date()).count()
+        submissions_count = 0
+        collections_count = 0
         daily_activity.append({
             'submissions': submissions_count,
             'collections': collections_count
@@ -662,7 +625,6 @@ def admin_analytics(request):
 def admin_settings(request):
     from .models import SystemSettings
     from accounts.models import CustomUser
-    from trash.models import TrashSubmission, CollectionRecord, RewardPointHistory
     from django.db import connection
     
     if request.method == 'POST':
@@ -671,10 +633,7 @@ def admin_settings(request):
         
         if action == 'clear_data':
             try:
-                # Clear all data from all tables
-                RewardPointHistory.objects.all().delete()
-                CollectionRecord.objects.all().delete()
-                TrashSubmission.objects.all().delete()
+              
                 
                 # Clear all non-admin users
                 CustomUser.objects.exclude(user_type='admin').delete()
