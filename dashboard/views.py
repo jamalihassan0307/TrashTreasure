@@ -17,24 +17,16 @@ def is_admin(user):
 
 def home(request):
     if request.user.is_authenticated:
-        if request.user.user_type == 'user':
-            return redirect('dashboard:user_dashboard')
-        elif request.user.user_type == 'rider':
-            return redirect('dashboard:rider_dashboard')
-        elif request.user.user_type == 'admin':
+        
+        if request.user.user_type == 'admin':
             return redirect('dashboard:admin_dashboard')
-    
-    # Get statistics for non-authenticated users
-    total_users = CustomUser.objects.filter(user_type='user', status='active').count()
-    total_submissions = 0
-    active_riders = CustomUser.objects.filter(user_type='rider', status='active').count()
-    total_points = sum([user.reward_points for user in CustomUser.objects.all()])
+
     
     context = {
-        'total_users': total_users,
-        'total_submissions': total_submissions,
-        'active_riders': active_riders,
-        'total_points': total_points,
+        'total_users': 0,
+        'total_submissions': 0,
+        'active_riders': 0,
+        'total_points': 0,
     }
     return render(request, 'dashboard/home.html', context)
 
@@ -61,11 +53,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, f'Welcome back, {user.username}!')
-            if user.user_type == 'user':
-                return redirect('dashboard:user_dashboard')
-            elif user.user_type == 'rider':
-                return redirect('dashboard:rider_dashboard')
-            elif user.user_type == 'admin':
+            if user.user_type == 'admin':
                 return redirect('dashboard:admin_dashboard')
         else:
             messages.error(request, 'Invalid username or password.')
@@ -318,120 +306,32 @@ def rider_earnings(request):
 @user_passes_test(is_admin)
 def admin_dashboard(request):
     total_users = CustomUser.objects.count()
-    total_submissions = 0
-    pending_submissions = 0
-    active_riders = 0
-    active_riders_list = None
-    total_points = 0
-
-    # Recent submissions
-    recent_submissions = None
-
-    # Weekly collections data with proper date calculations
-    now = timezone.now()
-    
-    # Get start of current week (Monday)
-    days_since_monday = now.weekday()
-    start_of_week = now - timedelta(days=days_since_monday)
-    start_of_week = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
-    
-    # Get start of previous week
-    start_of_prev_week = start_of_week - timedelta(days=7)
-    end_of_prev_week = start_of_week - timedelta(seconds=1)
-    
-    # Count collections for current and previous week
-    this_week_collections = 0
-    
-    last_week_collections = 0
-    
-    # Calculate weekly growth
-    weekly_growth = 0
-    if last_week_collections > 0:
-        weekly_growth = round(((this_week_collections - last_week_collections) / last_week_collections) * 100)
-    elif this_week_collections > 0:
-        weekly_growth = 100  # If last week was 0 but this week has collections
-    
-    # Monthly progress with dynamic goal based on total submissions
-    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    monthly_collections = 0
-    
-    # Set monthly goal based on total submissions (more realistic goal)
-    monthly_goal = max(10, total_submissions // 12)  # At least 10, or 1/12th of total submissions
-    monthly_progress = min(round((monthly_collections / monthly_goal) * 100), 100) if monthly_goal > 0 else 0
-    
-    # Get daily collection data for the chart
-    daily_collections = []
-    daily_labels = []
-    
-    for i in range(7):
-        date = start_of_week + timedelta(days=i)
-        count = 0
-        daily_collections.append(count)
-        daily_labels.append(date.strftime('%a'))
-    
-    # Additional metrics for enhanced dashboard
-    # Calculate system health metrics
-    total_collections = 0
-    completion_rate = round((total_collections / total_submissions * 100), 1) if total_submissions > 0 else 0
-    
-    # Get recent activity (last 24 hours)
-    yesterday = now - timedelta(days=1)
-    new_submissions_24h = 0
-    new_collections_24h = 0
-    new_users_24h = 0
-
-    # Calculate average response time (time from submission to assignment)
-    response_times = []
-    submissions_with_riders = None
-    
-    for submission in submissions_with_riders:
-        if submission.assigned_at and submission.created_at:
-            time_diff = submission.assigned_at - submission.created_at
-            response_times.append(time_diff.total_seconds() / 3600)  # Convert to hours
-    
-    avg_response_time = round(sum(response_times) / len(response_times), 1) if response_times else 0
-    
-    # Get top performing riders
-    top_riders = CustomUser.objects.filter(user_type='rider').annotate(
-        collection_count=Count('collections')
-    ).order_by('-collection_count')[:5]
-    
-    # Calculate efficiency metrics
-    total_weight_collected = 0
-    avg_collections_per_day = round(total_collections / 30, 1) if total_collections > 0 else 0
-    
-    # Get system status indicators
-    system_status = 'Operational'
-    if pending_submissions > total_submissions * 0.3:  # If more than 30% are pending
-        system_status = 'High Load'
-    elif avg_response_time > 24:  # If average response time > 24 hours
-        system_status = 'Slow Response'
     
     context = {
         'total_users': total_users,
-        'total_submissions': total_submissions,
-        'pending_submissions': pending_submissions,
-        'active_riders': active_riders,
-        'active_riders_list': active_riders_list,
-        'total_points': total_points,
-        'recent_submissions': recent_submissions,
-        'this_week_collections': this_week_collections,
-        'last_week_collections': last_week_collections,
-        'weekly_growth': weekly_growth,
-        'monthly_progress': monthly_progress,
-        'monthly_goal': monthly_goal,
-        'monthly_collections': monthly_collections,
-        'daily_collections': daily_collections,
-        'daily_labels': daily_labels,
-        'completion_rate': completion_rate,
-        'new_submissions_24h': new_submissions_24h,
-        'new_collections_24h': new_collections_24h,
-        'new_users_24h': new_users_24h,
-        'avg_response_time': avg_response_time,
-        'top_riders': top_riders,
-        'total_weight_collected': total_weight_collected,
-        'avg_collections_per_day': avg_collections_per_day,
-        'system_status': system_status,
+        'total_submissions': 0,
+        'pending_submissions': 0,
+        'active_riders': 0,
+        'active_riders_list': [],
+        'total_points': 0,
+        'recent_submissions': 0,
+        'this_week_collections': 0 ,
+        'last_week_collections': [],
+        'weekly_growth': 0,
+        'monthly_progress': 0,
+        'monthly_goal': 0,
+        'monthly_collections': 0,
+        'daily_collections': 0,
+        'daily_labels': 0,
+        'completion_rate': 0,
+        'new_submissions_24h': 0,
+        'new_collections_24h': 0,
+        'new_users_24h': 0,
+        'avg_response_time': 0,
+        'top_riders': 0,
+        'total_weight_collected': 0,
+        'avg_collections_per_day': 0,
+        'system_status': 0,
     }
     return render(request, 'dashboard/admin_dashboard.html', context)
 
@@ -475,12 +375,9 @@ def admin_analytics(request):
     
     # Calculate average response time (time from submission to assignment)
     response_times = []
-    submissions_with_riders = None
+    submissions_with_riders = 0
     
-    for submission in submissions_with_riders:
-        if submission.assigned_at and submission.created_at:
-            time_diff = submission.assigned_at - submission.created_at
-            response_times.append(time_diff.total_seconds() / 3600)  # Convert to hours
+   
     
     avg_response_time = round(sum(response_times) / len(response_times), 1) if response_times else 0
     
@@ -572,7 +469,7 @@ def admin_analytics(request):
         collections_count = 0
         daily_activity.append({
             'submissions': submissions_count,
-            'collections': collections_count
+            'collections': 0
         })
         daily_activity_labels.insert(0, date.strftime('%b %d'))
     
