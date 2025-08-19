@@ -1,0 +1,360 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us - Trash to Treasure{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/contact.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Enhanced Contact Hero Section -->
+<section class="about-hero">
+    <div class="container">
+        <div class="about-content text-center">
+            <h1 class="display-3 fw-bold text-white mb-4">
+                <i class="fas fa-envelope me-3"></i>Get in Touch
+            </h1>
+            <p class="lead text-white mb-0">
+                Have questions, suggestions, or need support? We'd love to hear from you!
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Information Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Contact Form -->
+            <div class="col-lg-8">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3 class="mb-0">
+                            <i class="fas fa-paper-plane me-2"></i>Send us a Message
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="contactForm" method="post">
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="name" class="form-label">Full Name *</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email Address *</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="subject" class="form-label">Subject *</label>
+                                    <select class="form-select" id="subject" name="subject" required>
+                                        <option value="">Choose a subject...</option>
+                                        <option value="general">General Inquiry</option>
+                                        <option value="support">Technical Support</option>
+                                        <option value="feedback">Feedback & Suggestions</option>
+                                        <option value="partnership">Partnership Opportunities</option>
+                                        <option value="complaint">Complaint</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="message" class="form-label">Message *</label>
+                                    <textarea class="form-control" id="message" name="message" rows="6" 
+                                              placeholder="Tell us how we can help you..." required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="newsletter" name="newsletter">
+                                        <label class="form-check-label" for="newsletter">
+                                            Subscribe to our newsletter for updates and eco-tips
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                                        <i class="fas fa-paper-plane me-2"></i>Send Message
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="col-lg-4">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i>Contact Information
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="contact-info">
+                            <div class="contact-item mb-4">
+                                <div class="contact-icon mb-3">
+                                    <i class="fas fa-envelope fa-2x text-primary"></i>
+                                </div>
+                                <h6 class="fw-bold">Email</h6>
+                                <p class="mb-1">jamalihassan0307@gmail.com</p>
+                                <small class="text-muted">We'll respond within 24 hours</small>
+                            </div>
+                            
+                            <div class="contact-item mb-4">
+                                <div class="contact-icon mb-3">
+                                    <i class="fas fa-phone fa-2x text-success"></i>
+                                </div>
+                                <h6 class="fw-bold">Phone</h6>
+                                <p class="mb-1">+92 307 3921189</p>
+                                <small class="text-muted">Mon-Fri: 9:00 AM - 6:00 PM</small>
+                            </div>
+                            
+                            <div class="contact-item mb-4">
+                                <div class="contact-icon mb-3">
+                                    <i class="fas fa-map-marker-alt fa-2x text-warning"></i>
+                                </div>
+                                <h6 class="fw-bold">Address</h6>
+                                <p class="mb-1">Lahore, Pakistan</p>
+                                <small class="text-muted">Serving the entire region</small>
+                            </div>
+                            
+                            <div class="contact-item">
+                                <div class="contact-icon mb-3">
+                                    <i class="fas fa-clock fa-2x text-info"></i>
+                                </div>
+                                <h6 class="fw-bold">Business Hours</h6>
+                                <p class="mb-1">Monday - Friday: 9:00 AM - 6:00 PM</p>
+                                <p class="mb-1">Saturday: 10:00 AM - 4:00 PM</p>
+                                <small class="text-muted">Sunday: Closed</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div class="dashboard-card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-link me-2"></i>Quick Links
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="quick-links">
+                            <a href="{% url 'dashboard:about' %}" class="btn btn-outline-primary w-100 mb-2">
+                                <i class="fas fa-info-circle me-2"></i>About Us
+                            </a>
+                            <a href="#" class="btn btn-outline-success w-100 mb-2">
+                                <i class="fas fa-question-circle me-2"></i>FAQ
+                            </a>
+                            <a href="#" class="btn btn-outline-info w-100 mb-2">
+                                <i class="fas fa-book me-2"></i>User Guide
+                            </a>
+                            <a href="#" class="btn btn-outline-warning w-100">
+                                <i class="fas fa-headset me-2"></i>Support Center
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-4 fw-bold text-primary mb-3">Frequently Asked Questions</h2>
+            <p class="lead text-muted">Find quick answers to common questions</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="faq-item">
+                    <div class="dashboard-card">
+                        <div class="card-body">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-question-circle text-primary me-2"></i>
+                                How do I submit trash for collection?
+                            </h5>
+                            <p class="text-muted mb-0">
+                                Simply log in to your account, click "Submit Trash", take a photo, describe the waste, 
+                                and provide your location. We'll assign a rider within minutes!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="faq-item">
+                    <div class="dashboard-card">
+                        <div class="card-body">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-question-circle text-primary me-2"></i>
+                                How are reward points calculated?
+                            </h5>
+                            <p class="text-muted mb-0">
+                                Points are awarded based on the type and quantity of waste collected. 
+                                Recyclable materials earn more points than general waste.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="faq-item">
+                    <div class="dashboard-card">
+                        <div class="card-body">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-question-circle text-primary me-2"></i>
+                                What types of waste do you accept?
+                            </h5>
+                            <p class="text-muted mb-0">
+                                We accept most types of household and office waste including paper, plastic, 
+                                metal, electronics, and organic waste. Hazardous materials are not accepted.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="faq-item">
+                    <div class="dashboard-card">
+                        <div class="card-body">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-question-circle text-primary me-2"></i>
+                                How long does collection take?
+                            </h5>
+                            <p class="text-muted mb-0">
+                                Collection typically happens within 2-4 hours of submission. 
+                                You can track your rider in real-time through the app.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Social Media Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-4 fw-bold text-primary mb-3">Connect With Us</h2>
+            <p class="lead text-muted">Follow us on social media for updates and eco-tips</p>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="social-links text-center">
+                    <a href="#" class="btn btn-primary btn-lg mx-2 mb-3">
+                        <i class="fab fa-facebook-f me-2"></i>Facebook
+                    </a>
+                    <a href="#" class="btn btn-info btn-lg mx-2 mb-3">
+                        <i class="fab fa-twitter me-2"></i>Twitter
+                    </a>
+                    <a href="#" class="btn btn-danger btn-lg mx-2 mb-3">
+                        <i class="fab fa-instagram me-2"></i>Instagram
+                    </a>
+                    <a href="#" class="btn btn-success btn-lg mx-2 mb-3">
+                        <i class="fab fa-whatsapp me-2"></i>WhatsApp
+                    </a>
+                    <a href="#" class="btn btn-dark btn-lg mx-2 mb-3">
+                        <i class="fab fa-linkedin-in me-2"></i>LinkedIn
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Enhanced animations and interactions
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe all animated elements
+    document.querySelectorAll('.dashboard-card, .faq-item').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'all 0.8s ease-out';
+        observer.observe(el);
+    });
+    
+    // Contact form handling
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            // Show loading state
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+            submitBtn.disabled = true;
+            
+            // Simulate form submission (replace with actual endpoint)
+            setTimeout(() => {
+                // Show success message
+                alert('Thank you for your message! We\'ll get back to you within 24 hours.');
+                
+                // Reset form
+                this.reset();
+                
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 2000);
+        });
+    }
+    
+    // Enhanced social media button interactions
+    document.querySelectorAll('.social-links .btn').forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px) scale(1.05)';
+        });
+        
+        btn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+    
+    // Enhanced contact info interactions
+    document.querySelectorAll('.contact-item').forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateX(5px)';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+});
+</script>
+{% endblock %}
