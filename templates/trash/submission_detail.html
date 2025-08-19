@@ -1,0 +1,369 @@
+{% extends 'base.html' %}
+
+{% block title %}Submission #{{ submission.track_id }} - Trash to Treasure{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Submission Details -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Submission Details
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Track ID:</strong>
+                            <span class="badge bg-primary fs-6">{{ submission.track_id }}</span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Status:</strong>
+                            <span class="badge badge-{{ submission.status }} fs-6">
+                                {{ submission.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Description:</strong>
+                            <p class="mb-0">{{ submission.trash_description }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Location:</strong>
+                            <p class="mb-0">{{ submission.location }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Estimated Weight:</strong>
+                            <p class="mb-0">
+                                {% if submission.quantity_kg %}
+                                    {{ submission.quantity_kg }} kg
+                                {% else %}
+                                    Not specified
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Created:</strong>
+                            <p class="mb-0">{{ submission.created_at|date:"M d, Y H:i" }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if submission.rider %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Assigned Rider:</strong>
+                            <p class="mb-0">{{ submission.rider.username }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Assigned:</strong>
+                            <p class="mb-0">{{ submission.assigned_at|date:"M d, Y H:i" }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if submission.rider_notes %}
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <strong>Rider Notes:</strong>
+                            <p class="mb-0">{{ submission.rider_notes }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Trash Image -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-image me-2"></i>Trash Image
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <img src="{{ submission.image.url }}" alt="Trash Image" class="img-fluid rounded" style="max-height: 400px;">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Status Timeline -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>Status Timeline
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6>Submitted</h6>
+                                <small class="text-muted">{{ submission.created_at|date:"M d, Y H:i" }}</small>
+                            </div>
+                        </div>
+                        
+                        {% if submission.rider %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-info">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6>Assigned to Rider</h6>
+                                <small class="text-muted">{{ submission.assigned_at|date:"M d, Y H:i" }}</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if submission.status == 'on_the_way' or submission.status == 'arrived' or submission.status == 'picked' or submission.status == 'collected' %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-warning">
+                                <i class="fas fa-motorcycle"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6>Rider On The Way</h6>
+                                <small class="text-muted">Status updated</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if submission.status == 'arrived' or submission.status == 'picked' or submission.status == 'collected' %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-info">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6>Rider Arrived</h6>
+                                <small class="text-muted">Status updated</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if submission.status == 'picked' or submission.status == 'collected' %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success">
+                                <i class="fas fa-hand-holding"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6>Trash Picked Up</h6>
+                                <small class="text-muted">Status updated</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if submission.status == 'collected' %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-primary">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6>Collection Completed</h6>
+                                <small class="text-muted">Status updated</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tools me-2"></i>Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if user == submission.user %}
+                        <!-- User Actions -->
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'dashboard:user_dashboard' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                            {% if submission.status == 'pending' %}
+                                <button class="btn btn-danger" disabled>
+                                    <i class="fas fa-times me-2"></i>Cancel (Contact Admin)
+                                </button>
+                            {% endif %}
+                        </div>
+                    {% elif user.user_type == 'rider' and submission.rider == user %}
+                        <!-- Rider Actions -->
+                        <div class="d-grid gap-2">
+                            {% if submission.status == 'assigned' %}
+                                <button class="btn btn-warning" onclick="updateStatus('on_the_way')">
+                                    <i class="fas fa-motorcycle me-2"></i>On The Way
+                                </button>
+                            {% elif submission.status == 'on_the_way' %}
+                                <button class="btn btn-info" onclick="updateStatus('arrived')">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Arrived
+                                </button>
+                            {% elif submission.status == 'arrived' %}
+                                <button class="btn btn-success" onclick="updateStatus('picked')">
+                                    <i class="fas fa-hand-holding me-2"></i>Picked Up
+                                </button>
+                            {% elif submission.status == 'picked' %}
+                                <a href="#" class="btn btn-primary" onclick="showCompleteForm()">
+                                    <i class="fas fa-check me-2"></i>Complete Collection
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% elif user.user_type == 'admin' %}
+                        <!-- Admin Actions -->
+                        <div class="d-grid gap-2">
+                            {% if submission.status == 'pending' %}
+                                <button class="btn btn-warning" onclick="showAssignRiderModal()">
+                                    <i class="fas fa-user-plus me-2"></i>Assign Rider
+                                </button>
+                            {% elif submission.status == 'collected' %}
+                                <button class="btn btn-success" onclick="verifyCollection()">
+                                    <i class="fas fa-check me-2"></i>Verify Collection
+                                </button>
+                            {% endif %}
+                            <a href="{% url 'dashboard:admin_dashboard' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Complete Collection Modal -->
+{% if user.user_type == 'rider' and submission.rider == user and submission.status == 'picked' %}
+<div class="modal fade" id="completeCollectionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-check me-2"></i>Complete Collection
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'trash:complete_collection' submission.id %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="trash_type" class="form-label">Actual Trash Type</label>
+                            <input type="text" class="form-control" id="trash_type" name="trash_type" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="actual_quantity" class="form-label">Actual Weight (kg)</label>
+                            <input type="number" class="form-control" id="actual_quantity" name="actual_quantity" 
+                                   step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="points_awarded" class="form-label">Points to Award</label>
+                            <input type="number" class="form-control" id="points_awarded" name="points_awarded" 
+                                   min="0" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="collected_image" class="form-label">Collection Photo</label>
+                            <input type="file" class="form-control" id="collected_image" name="collected_image" 
+                                   accept="image/*">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="rider_notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="rider_notes" name="rider_notes" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check me-2"></i>Complete Collection
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Status Update Form -->
+<form id="statusForm" method="post" action="{% url 'trash:update_status' submission.id %}" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="status" id="statusInput">
+</form>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -35px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.timeline-content h6 {
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e9ecef;
+}
+</style>
+
+<script>
+function updateStatus(status) {
+    if (confirm('Are you sure you want to update the status to "' + status.replace('_', ' ') + '"?')) {
+        document.getElementById('statusInput').value = status;
+        document.getElementById('statusForm').submit();
+    }
+}
+
+function showCompleteForm() {
+    const modal = new bootstrap.Modal(document.getElementById('completeCollectionModal'));
+    modal.show();
+}
+
+function showAssignRiderModal() {
+    // This would open the assign rider modal from admin dashboard
+    alert('Use the Assign Rider button from the Admin Dashboard');
+}
+
+function verifyCollection() {
+    if (confirm('Are you sure you want to verify this collection?')) {
+        // This would submit the verification form
+        alert('Collection verification submitted');
+    }
+}
+</script>
+{% endblock %}
