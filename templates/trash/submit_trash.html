@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Trash - Trash to Treasure{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg">
+                <div class="card-header text-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-plus me-2"></i>Submit Trash Collection
+                    </h3>
+                    <p class="text-white-50 mb-0">Help us turn your waste into treasure</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="trash_description" class="form-label">
+                                <i class="fas fa-info-circle me-2"></i>Trash Description
+                            </label>
+                            <textarea class="form-control" id="trash_description" name="trash_description" 
+                                      rows="3" placeholder="Describe the type of waste (e.g., plastic bottles, paper, electronics, etc.)" required></textarea>
+                            <div class="form-text">Be as specific as possible to help with proper categorization.</div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="quantity_kg" class="form-label">
+                                    <i class="fas fa-weight-hanging me-2"></i>Estimated Weight (kg)
+                                </label>
+                                <input type="number" class="form-control" id="quantity_kg" name="quantity_kg" 
+                                       step="0.01" min="0" placeholder="0.00">
+                                <div class="form-text">Optional: Provide an estimate if known.</div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="location" class="form-label">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Collection Location
+                                </label>
+                                <input type="text" class="form-control" id="location" name="location" 
+                                       placeholder="Your address or location" required>
+                                <div class="form-text">Where should the rider collect the waste?</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="image" class="form-label">
+                                <i class="fas fa-camera me-2"></i>Photo of Trash
+                            </label>
+                            <input type="file" class="form-control" id="image" name="image" 
+                                   accept="image/*" required>
+                            <div class="form-text">Take a clear photo of the waste for verification.</div>
+                        </div>
+                        
+                        <!-- Preview Image -->
+                        <div class="mb-4" id="imagePreview" style="display: none;">
+                            <label class="form-label">Image Preview</label>
+                            <div class="text-center">
+                                <img id="preview" src="" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Collection Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <i class="fas fa-camera fa-2x text-primary mb-2"></i>
+                            <h6>Take Photo</h6>
+                            <small class="text-muted">Capture clear image</small>
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fas fa-motorcycle fa-2x text-warning mb-2"></i>
+                            <h6>Rider Assignment</h6>
+                            <small class="text-muted">We'll assign a rider</small>
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fas fa-gift fa-2x text-success mb-2"></i>
+                            <h6>Earn Points</h6>
+                            <small class="text-muted">Get rewarded</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Image preview functionality
+document.getElementById('image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('preview').src = e.target.result;
+            document.getElementById('imagePreview').style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+    } else {
+        document.getElementById('imagePreview').style.display = 'none';
+    }
+});
+</script>
+{% endblock %}
