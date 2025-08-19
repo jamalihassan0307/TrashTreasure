@@ -124,13 +124,13 @@
                                     <td>
                                         <div class="btn-group" role="group">
                                             {% if user.status == 'active' %}
-                                                <a href="{% url 'dashboard:toggle_user_status' user.id %}" 
+                                                <a href="#" 
                                                    class="btn btn-sm btn-warning" 
                                                    onclick="return confirm('Are you sure you want to suspend this user?')">
                                                     <i class="fas fa-ban"></i>
                                                 </a>
                                             {% else %}
-                                                <a href="{% url 'dashboard:toggle_user_status' user.id %}" 
+                                                <a href="#" 
                                                    class="btn btn-sm btn-success">
                                                     <i class="fas fa-check"></i>
                                                 </a>

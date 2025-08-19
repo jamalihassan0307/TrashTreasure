@@ -13,7 +13,7 @@
                     </h3>
                 </div>
                 <div class="card-body p-4">
-                    <form method="post" enctype="multipart/form-data">
+                    <form >
                         {% csrf_token %}
                         
                         <!-- Basic Information -->
@@ -113,7 +113,7 @@
                             <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left me-2"></i>Back to Profile
                             </a>
-                            <button type="submit" class="btn btn-primary">
+                            <button  class="btn btn-primary">
                                 <i class="fas fa-save me-2"></i>Save Changes
                             </button>
                         </div>

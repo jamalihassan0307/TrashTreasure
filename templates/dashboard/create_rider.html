@@ -14,7 +14,7 @@
                     <p class="text-white-50 mb-0">Add a new rider to the collection team</p>
                 </div>
                 <div class="card-body p-4">
-                    <form method="post">
+                    <form >
                         {% csrf_token %}
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -85,7 +85,7 @@
                         </div>
                         
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success btn-lg">
+                            <button class="btn btn-success btn-lg">
                                 <i class="fas fa-motorcycle me-2"></i>Create Rider Account
                             </button>
                             <a href="{% url 'dashboard:manage_users' %}" class="btn btn-outline-secondary">

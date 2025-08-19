@@ -287,7 +287,7 @@
 <div class="container-fluid py-4">
     <!-- Earnings Hero Section -->
     <div class="earnings-hero">
-        <div class="earnings-display">${{ total_earnings|floatformat:2 }}</div>
+        <div class="earnings-display">RS {{ total_earnings|floatformat:2 }}</div>
         <div class="earnings-label">Total Earnings</div>
         <p class="mb-0 opacity-75">Your hard work is making a difference for the environment!</p>
     </div>
@@ -442,7 +442,7 @@
                 </div>
                 
                 <div class="history-earnings">
-                    ${{ collection.earnings|floatformat:2 }}
+                    RS {{ collection.earnings|floatformat:2 }}
                 </div>
             </div>
             {% endfor %}

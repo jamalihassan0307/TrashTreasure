@@ -183,58 +183,7 @@
                         <i class="fas fa-tools me-2"></i>Actions
                     </h5>
                 </div>
-                <div class="card-body">
-                    {% if user == submission.user %}
-                        <!-- User Actions -->
-                        <div class="d-grid gap-2">
-                            <a href="{% url 'dashboard:user_dashboard' %}" class="btn btn-outline-primary">
-                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-                            </a>
-                            {% if submission.status == 'pending' %}
-                                <button class="btn btn-danger" disabled>
-                                    <i class="fas fa-times me-2"></i>Cancel (Contact Admin)
-                                </button>
-                            {% endif %}
-                        </div>
-                    {% elif user.user_type == 'rider' and submission.rider == user %}
-                        <!-- Rider Actions -->
-                        <div class="d-grid gap-2">
-                            {% if submission.status == 'assigned' %}
-                                <button class="btn btn-warning" onclick="updateStatus('on_the_way')">
-                                    <i class="fas fa-motorcycle me-2"></i>On The Way
-                                </button>
-                            {% elif submission.status == 'on_the_way' %}
-                                <button class="btn btn-info" onclick="updateStatus('arrived')">
-                                    <i class="fas fa-map-marker-alt me-2"></i>Arrived
-                                </button>
-                            {% elif submission.status == 'arrived' %}
-                                <button class="btn btn-success" onclick="updateStatus('picked')">
-                                    <i class="fas fa-hand-holding me-2"></i>Picked Up
-                                </button>
-                            {% elif submission.status == 'picked' %}
-                                <a href="#" class="btn btn-primary" onclick="showCompleteForm()">
-                                    <i class="fas fa-check me-2"></i>Complete Collection
-                                </a>
-                            {% endif %}
-                        </div>
-                    {% elif user.user_type == 'admin' %}
-                        <!-- Admin Actions -->
-                        <div class="d-grid gap-2">
-                            {% if submission.status == 'pending' %}
-                                <button class="btn btn-warning" onclick="showAssignRiderModal()">
-                                    <i class="fas fa-user-plus me-2"></i>Assign Rider
-                                </button>
-                            {% elif submission.status == 'collected' %}
-                                <button class="btn btn-success" onclick="verifyCollection()">
-                                    <i class="fas fa-check me-2"></i>Verify Collection
-                                </button>
-                            {% endif %}
-                            <a href="{% url 'dashboard:admin_dashboard' %}" class="btn btn-outline-primary">
-                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-                            </a>
-                        </div>
-                    {% endif %}
-                </div>
+             
             </div>
         </div>
     </div>

@@ -342,68 +342,7 @@
 
     <!-- Settings Grid -->
     <div class="settings-grid">
-        <!-- General Settings -->
-        <div class="settings-card">
-            <div class="settings-header">
-                <div class="settings-icon">
-                    <i class="fas fa-cog"></i>
-                </div>
-                <h3 class="settings-title-small">General Settings</h3>
-            </div>
-            
-            <div class="settings-description">
-                Configure basic system parameters and application behavior.
-            </div>
-            
-            <form method="POST" action="{% url 'dashboard:admin_settings' %}">
-                {% csrf_token %}
-                <input type="hidden" name="section" value="general">
-                
-                <div class="form-group">
-                    <label for="site_name" class="form-label">Site Name</label>
-                    <input type="text" class="form-control" id="site_name" name="site_name" 
-                           value="{{ settings.site_name|default:'Trash to Treasure' }}" required>
-                    <div class="form-text">The name displayed throughout the application</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="site_description" class="form-label">Site Description</label>
-                    <textarea class="form-control" id="site_description" name="site_description" rows="3">{{ settings.site_description|default:'Transform waste into rewards with our eco-friendly recycling platform' }}</textarea>
-                    <div class="form-text">Brief description of your service</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="contact_email" class="form-label">Contact Email</label>
-                    <input type="email" class="form-control" id="contact_email" name="contact_email" 
-                           value="{{ settings.contact_email|default:'admin@trashtotreasure.com' }}" required>
-                    <div class="form-text">Primary contact email for users</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="timezone" class="form-label">Default Timezone</label>
-                    <select class="form-select" id="timezone" name="default_timezone">
-                        <option value="UTC" {% if settings.default_timezone == 'UTC' %}selected{% endif %}>UTC</option>
-                        <option value="America/New_York" {% if settings.default_timezone == 'America/New_York' %}selected{% endif %}>Eastern Time</option>
-                        <option value="America/Chicago" {% if settings.default_timezone == 'America/Chicago' %}selected{% endif %}>Central Time</option>
-                        <option value="America/Denver" {% if settings.default_timezone == 'America/Denver' %}selected{% endif %}>Mountain Time</option>
-                        <option value="America/Los_Angeles" {% if settings.default_timezone == 'America/Los_Angeles' %}selected{% endif %}>Pacific Time</option>
-                    </select>
-                    <div class="form-text">Default timezone for the application</div>
-                </div>
-                
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-save">
-                        <i class="fas fa-save me-2"></i>
-                        Save Changes
-                    </button>
-                    <button type="reset" class="btn btn-reset">
-                        <i class="fas fa-undo me-2"></i>
-                        Reset
-                    </button>
-                </div>
-            </form>
-        </div>
-
+        
         <!-- System Maintenance -->
         <div class="settings-card">
             <div class="settings-header">
@@ -417,7 +356,7 @@
                 System maintenance and performance optimization settings.
             </div>
             
-            <form method="POST" action="{% url 'dashboard:admin_settings' %}">
+            <form  action="#">
                 {% csrf_token %}
                 <input type="hidden" name="section" value="maintenance">
                 
@@ -460,7 +399,7 @@
                 </div>
                 
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-save">
+                    <button  class="btn btn-save">
                         <i class="fas fa-save me-2"></i>
                         Save Changes
                     </button>
@@ -484,10 +423,10 @@
                     <div class="card-body">
                         <h5 class="card-title text-danger">Clear All Data</h5>
                         <p class="card-text">Remove all user data, submissions, and collection records. This action cannot be undone.</p>
-                        <form method="POST" action="{% url 'dashboard:admin_settings' %}" style="display: inline;">
+                        <form  action="#" style="display: inline;">
                             {% csrf_token %}
                             <input type="hidden" name="action" value="clear_data">
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you absolutely sure you want to clear all data? This action cannot be undone!')">
+                            <button  class="btn btn-danger" onclick="return confirm('Are you absolutely sure you want to clear all data? This action cannot be undone!')">
                                 <i class="fas fa-trash me-2"></i>
                                 Clear All Data
                             </button>
@@ -501,10 +440,10 @@
                     <div class="card-body">
                         <h5 class="card-title text-danger">Reset System</h5>
                         <p class="card-text">Reset all system settings to default values. This will affect all configurations.</p>
-                        <form method="POST" action="{% url 'dashboard:admin_settings' %}" style="display: inline;">
+                        <form action="#" style="display: inline;">
                             {% csrf_token %}
                             <input type="hidden" name="action" value="reset_system">
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to reset all system settings? This will affect all configurations!')">
+                            <button  class="btn btn-danger" onclick="return confirm('Are you sure you want to reset all system settings? This will affect all configurations!')">
                                 <i class="fas fa-redo me-2"></i>
                                 Reset System
                             </button>
