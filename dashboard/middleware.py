@@ -11,7 +11,8 @@ class SystemStatusMiddleware:
     
     def __call__(self, request):
         # Skip middleware for admin users and certain paths
-       
+        if self._should_skip_middleware(request):
+            return self.get_response(request)
         
         # Check system settings
         try:
