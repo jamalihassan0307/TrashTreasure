@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}System Maintenance - Trash to Treasure{% endblock %}
+
+{% block extra_css %}
+<style>
+    body.maintenance-page {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.7;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #F1F8E9 0%, #DCEDC8 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+    
+  .maintenance-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 4rem;
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+    margin: 0 auto; /* Center the container */
+  }
+    
+    
+    .maintenance-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        padding: 4rem;
+        text-align: center;
+        max-width: 600px;
+        width: 100%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .maintenance-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80') center/cover;
+        opacity: 0.05;
+        z-index: 1;
+    }
+    
+    .maintenance-container > * {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .maintenance-icon {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem;
+        font-size: 3rem;
+        color: white;
+        box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    .maintenance-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .maintenance-subtitle {
+        font-size: 1.25rem;
+        color: #7f8c8d;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+    
+    .maintenance-message {
+        background: #f8f9fa;
+        border-left: 4px solid #ff6b6b;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        text-align: left;
+        font-style: italic;
+        color: #495057;
+    }
+    
+    .maintenance-info {
+        background: #e3f2fd;
+        border: 1px solid #bbdefb;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .maintenance-info h4 {
+        color: #1976d2;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+    
+    .maintenance-info ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        text-align: left;
+    }
+    
+    .maintenance-info li {
+        padding: 0.5rem 0;
+        color: #424242;
+        position: relative;
+        padding-left: 1.5rem;
+    }
+    
+    .maintenance-info li::before {
+        content: '✓';
+        position: absolute;
+        left: 0;
+        color: #4caf50;
+        font-weight: bold;
+    }
+    
+    .admin-login-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .admin-login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        background: #fff3cd;
+        color: #856404;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        border: 1px solid #ffeaa7;
+    }
+    
+    .status-indicator::before {
+        content: '⚠️';
+        margin-right: 0.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .back-to-home-btn {
+        background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(67, 206, 162, 0.3);
+        margin-top: 2rem;
+    }
+    
+    .back-to-home-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(67, 206, 162, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+    
+    @media (max-width: 768px) {
+        .maintenance-container {
+            padding: 2rem;
+            margin: 1rem;
+        }
+        
+        .maintenance-title {
+            font-size: 2rem;
+        }
+        
+        .maintenance-icon {
+            width: 100px;
+            height: 100px;
+            font-size: 2.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="maintenance-container">
+    <div class="maintenance-icon">
+        <i class="fas fa-tools"></i>
+    </div>
+    
+    <h1 class="maintenance-title">System Maintenance</h1>
+    <p class="maintenance-subtitle">
+        We're currently performing scheduled maintenance to improve your experience.
+        Please check back soon!
+    </p>
+    
+    <div class="status-indicator">
+        Maintenance Mode Active
+    </div>
+    
+    {% if settings.maintenance_message %}
+    <div class="maintenance-message">
+        <strong>Message from our team:</strong><br>
+        {{ settings.maintenance_message }}
+    </div>
+    {% endif %}
+    
+    <div class="maintenance-info">
+        <h4>What we're working on:</h4>
+        <ul>
+            <li>System performance optimization</li>
+            <li>Security updates and improvements</li>
+            <li>New features and enhancements</li>
+            <li>Database maintenance and cleanup</li>
+        </ul>
+    </div>
+    
+    <div class="maintenance-info">
+        <h4>Expected completion:</h4>
+        <p style="margin: 0; color: #424242;">
+            We're working as quickly as possible to restore full service. 
+            Thank you for your patience!
+        </p>
+    </div>
+    
+    {% if user.is_authenticated and user.user_type == 'admin' %}
+    <a href="{% url 'dashboard:admin_dashboard' %}" class="admin-login-btn">
+        <i class="fas fa-cog me-2"></i>
+        Admin Dashboard
+    </a>
+    {% endif %}
+    
+    <a href="{% url 'dashboard:home' %}" class="back-to-home-btn">
+        <i class="fas fa-home me-2"></i>
+        Back to Home
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add some interactive elements
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add typing effect to maintenance message
+        const messageElement = document.querySelector('.maintenance-message strong');
+        if (messageElement) {
+            const text = messageElement.textContent;
+            messageElement.textContent = '';
+            let i = 0;
+            
+            function typeWriter() {
+                if (i < text.length) {
+                    messageElement.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 100);
+                }
+            }
+            
+            setTimeout(typeWriter, 1000);
+        }
+        
+        // Add floating animation to maintenance icon
+        const icon = document.querySelector('.maintenance-icon');
+        if (icon) {
+            icon.style.animation = 'pulse 2s infinite, float 3s ease-in-out infinite';
+        }
+    });
+    
+    // Add floating animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+{% endblock %}
