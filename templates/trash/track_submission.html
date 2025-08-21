@@ -1,200 +1,178 @@
 {% extends 'base.html' %}
 
-{% block title %}Track Submission #{{ submission.track_id }} - Trash to Treasure{% endblock %}
+{% block title %}Track Submission - {{ submission.track_id }}{% endblock %}
 
 {% block content %}
 <div class="container py-4">
     <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <!-- Track Header -->
-            <div class="card mb-4">
-                <div class="card-body text-center">
-                    <h2 class="text-primary mb-3">
+        <div class="col-lg-8">
+            <!-- Tracking Card -->
+            <div class="card shadow-lg">
+                <div class="card-header text-center">
+                    <h3 class="mb-0">
                         <i class="fas fa-search me-2"></i>Track Your Submission
-                    </h2>
-                    <div class="row align-items-center">
-                        <div class="col-md-6">
-                            <h3 class="mb-2">Track ID: <span class="badge bg-primary fs-3">{{ submission.track_id }}</span></h3>
-                            <p class="lead text-muted">{{ submission.trash_description }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="status-display">
-                                <span class="badge badge-{{ submission.status }} fs-5">
-                                    {{ submission.get_status_display }}
-                                </span>
-                                <p class="text-muted mt-2">Current Status</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Status Progress -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-route me-2"></i>Collection Progress
-                    </h5>
+                    </h3>
+                    <p class="text-white-50 mb-0">Track ID: <strong>{{ submission.track_id }}</strong></p>
                 </div>
                 <div class="card-body">
-                    <div class="progress-tracker">
-                        <div class="progress-step {% if submission.status != 'cancelled' %}completed{% endif %}">
-                            <div class="step-icon">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="step-label">Submitted</div>
-                            <div class="step-date">{{ submission.created_at|date:"M d, Y" }}</div>
-                        </div>
-                        
-                        <div class="progress-step {% if submission.status in 'assigned,on_the_way,arrived,picked,collected' %}completed{% endif %}">
-                            <div class="step-icon">
-                                {% if submission.status in 'assigned,on_the_way,arrived,picked,collected' %}
-                                    <i class="fas fa-check"></i>
-                                {% else %}
-                                    <i class="fas fa-user-plus"></i>
-                                {% endif %}
-                            </div>
-                            <div class="step-label">Assigned to Rider</div>
-                            <div class="step-date">
-                                {% if submission.assigned_at %}
-                                    {{ submission.assigned_at|date:"M d, Y" }}
-                                {% else %}
-                                    Pending
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="progress-step {% if submission.status in 'on_the_way,arrived,picked,collected' %}completed{% endif %}">
-                            <div class="step-icon">
-                                {% if submission.status in 'on_the_way,arrived,picked,collected' %}
-                                    <i class="fas fa-check"></i>
-                                {% else %}
-                                    <i class="fas fa-motorcycle"></i>
-                                {% endif %}
-                            </div>
-                            <div class="step-label">Rider On The Way</div>
-                            <div class="step-date">
-                                {% if submission.status in 'on_the_way,arrived,picked,collected' %}
-                                    Updated
-                                {% else %}
-                                    Pending
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="progress-step {% if submission.status in 'arrived,picked,collected' %}completed{% endif %}">
-                            <div class="step-icon">
-                                {% if submission.status in 'arrived,picked,collected' %}
-                                    <i class="fas fa-check"></i>
-                                {% else %}
-                                    <i class="fas fa-map-marker-alt"></i>
-                                {% endif %}
-                            </div>
-                            <div class="step-label">Rider Arrived</div>
-                            <div class="step-date">
-                                {% if submission.status in 'arrived,picked,collected' %}
-                                    Updated
-                                {% else %}
-                                    Pending
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="progress-step {% if submission.status in 'picked,collected' %}completed{% endif %}">
-                            <div class="step-icon">
-                                {% if submission.status in 'picked,collected' %}
-                                    <i class="fas fa-check"></i>
-                                {% else %}
-                                    <i class="fas fa-hand-holding"></i>
-                                {% endif %}
-                            </div>
-                            <div class="step-label">Trash Picked Up</div>
-                            <div class="step-date">
-                                {% if submission.status in 'picked,collected' %}
-                                    Updated
-                                {% else %}
-                                    Pending
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="progress-step {% if submission.status == 'collected' %}completed{% endif %}">
-                            <div class="step-icon">
-                                {% if submission.status == 'collected' %}
-                                    <i class="fas fa-check"></i>
-                                {% else %}
-                                    <i class="fas fa-check-circle"></i>
-                                {% endif %}
-                            </div>
-                            <div class="step-label">Collection Completed</div>
-                            <div class="step-date">
-                                {% if submission.status == 'collected' %}
-                                    Completed
-                                {% else %}
-                                    Pending
-                                {% endif %}
-                            </div>
+                    <!-- Status Display -->
+                    <div class="text-center mb-4">
+                        <div class="status-indicator mb-3">
+                            {% if submission.status == 'pending' %}
+                                <div class="status-icon bg-warning">
+                                    <i class="fas fa-clock fa-3x text-white"></i>
+                                </div>
+                                <h4 class="text-warning mt-2">Pending</h4>
+                                <p class="text-muted">Waiting for rider assignment</p>
+                            {% elif submission.status == 'assigned' %}
+                                <div class="status-icon bg-info">
+                                    <i class="fas fa-user-plus fa-3x text-white"></i>
+                                </div>
+                                <h4 class="text-info mt-2">Assigned to Rider</h4>
+                                <p class="text-muted">A rider has been assigned to your submission</p>
+                            {% elif submission.status == 'on_the_way' %}
+                                <div class="status-icon bg-primary">
+                                    <i class="fas fa-motorcycle fa-3x text-white"></i>
+                                </div>
+                                <h4 class="text-primary mt-2">Rider On The Way</h4>
+                                <p class="text-muted">Your rider is heading to your location</p>
+                            {% elif submission.status == 'arrived' %}
+                                <div class="status-icon bg-info">
+                                    <i class="fas fa-map-marker-alt fa-3x text-white"></i>
+                                </div>
+                                <h4 class="text-info mt-2">Rider Arrived</h4>
+                                <p class="text-muted">Your rider has arrived at your location</p>
+                            {% elif submission.status == 'picked' %}
+                                <div class="status-icon bg-warning">
+                                    <i class="fas fa-hand-holding fa-3x text-white"></i>
+                                </div>
+                                <h4 class="text-warning mt-2">Trash Picked Up</h4>
+                                <p class="text-muted">Your trash has been collected</p>
+                            {% elif submission.status == 'collected' %}
+                                <div class="status-icon bg-success">
+                                    <i class="fas fa-check-circle fa-3x text-white"></i>
+                                </div>
+                                <h4 class="text-success mt-2">Collection Completed</h4>
+                                <p class="text-muted">Your submission has been completed successfully!</p>
+                            {% elif submission.status == 'cancelled' %}
+                                <div class="status-icon bg-danger">
+                                    <i class="fas fa-times-circle fa-3x text-white"></i>
+                                </div>
+                                <h4 class="text-danger mt-2">Cancelled</h4>
+                                <p class="text-muted">This submission has been cancelled</p>
+                            {% endif %}
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Submission Details -->
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="fas fa-info-circle me-2"></i>Submission Details
-                            </h5>
+                    <!-- Submission Details -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Description:</label>
+                            <p class="mb-0">{{ submission.trash_description|default:"No description provided" }}</p>
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <strong>Description:</strong>
-                                    <p class="mb-0">{{ submission.trash_description }}</p>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Location:</label>
+                            <p class="mb-0">
+                                <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                {{ submission.location }}
+                            </p>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Estimated Weight:</label>
+                            <p class="mb-0">
+                                {% if submission.quantity_kg %}
+                                    {{ submission.quantity_kg }} kg
+                                {% else %}
+                                    Not specified
+                                {% endif %}
+                            </p>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Created:</label>
+                            <p class="mb-0">{{ submission.created_at|date:"M d, Y H:i" }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Removed image display section -->
+
+                    <!-- Rider Information (if assigned) -->
+                    {% if submission.rider %}
+                    <div class="rider-info bg-light p-3 rounded mb-4">
+                        <h6 class="mb-3">
+                            <i class="fas fa-motorcycle me-2"></i>Assigned Rider
+                        </h6>
+                        <div class="d-flex align-items-center">
+                            {% if submission.rider.profile_image %}
+                                <img src="{{ submission.rider.profile_image.url }}" alt="Rider" 
+                                     class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                            {% else %}
+                                <div class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center" 
+                                     style="width: 50px; height: 50px;">
+                                    <i class="fas fa-motorcycle text-white"></i>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Location:</strong>
-                                    <p class="mb-0">{{ submission.location }}</p>
-                                </div>
-                            </div>
+                            {% endif %}
                             
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <strong>Estimated Weight:</strong>
-                                    <p class="mb-0">
-                                        {% if submission.quantity_kg %}
-                                            {{ submission.quantity_kg }} kg
-                                        {% else %}
-                                            Not specified
-                                        {% endif %}
+                            <div>
+                                <h6 class="mb-1">{{ submission.rider.get_full_name|default:submission.rider.username }}</h6>
+                                <p class="text-muted mb-0">Username: {{ submission.rider.username }}</p>
+                                {% if submission.rider.phone %}
+                                    <p class="text-muted mb-0">
+                                        <i class="fas fa-phone me-1"></i>{{ submission.rider.phone }}
                                     </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if submission.assigned_at %}
+                        <div class="mt-3 pt-3 border-top">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                Assigned on {{ submission.assigned_at|date:"M d, Y H:i" }}
+                            </small>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Progress Timeline -->
+                    <div class="progress-timeline">
+                        <h6 class="mb-3">
+                            <i class="fas fa-route me-2"></i>Progress Timeline
+                        </h6>
+                        <div class="timeline">
+                            <div class="timeline-item completed">
+                                <div class="timeline-marker">
+                                    <i class="fas fa-check"></i>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Created:</strong>
-                                    <p class="mb-0">{{ submission.created_at|date:"M d, Y H:i" }}</p>
+                                <div class="timeline-content">
+                                    <h6 class="mb-1">Submission Created</h6>
+                                    <small class="text-muted">{{ submission.created_at|date:"M d, Y H:i" }}</small>
                                 </div>
                             </div>
                             
                             {% if submission.rider %}
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <strong>Assigned Rider:</strong>
-                                    <p class="mb-0">{{ submission.rider.username }}</p>
+                            <div class="timeline-item completed">
+                                <div class="timeline-marker">
+                                    <i class="fas fa-check"></i>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Assigned:</strong>
-                                    <p class="mb-0">{{ submission.assigned_at|date:"M d, Y H:i" }}</p>
+                                <div class="timeline-content">
+                                    <h6 class="mb-1">Rider Assigned</h6>
+                                    <small class="text-muted">{{ submission.assigned_at|date:"M d, Y H:i" }}</small>
                                 </div>
                             </div>
                             {% endif %}
                             
-                            {% if submission.rider_notes %}
-                            <div class="row">
-                                <div class="col-12 mb-3">
-                                    <strong>Rider Notes:</strong>
-                                    <p class="mb-0">{{ submission.rider_notes }}</p>
+                            {% if submission.status == 'collected' %}
+                            <div class="timeline-item completed">
+                                <div class="timeline-marker">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-1">Collection Completed</h6>
+                                    <small class="text-muted">{{ submission.completion_time|date:"M d, Y H:i" }}</small>
                                 </div>
                             </div>
                             {% endif %}
@@ -202,39 +180,15 @@
                     </div>
                 </div>
                 
-                <div class="col-lg-4">
-                    <!-- Trash Image -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h6 class="mb-0">
-                                <i class="fas fa-image me-2"></i>Trash Image
-                            </h6>
-                        </div>
-                        <div class="card-body text-center">
-                            <img src="{{ submission.image.url }}" alt="Trash Image" class="img-fluid rounded">
-                        </div>
-                    </div>
-                    
-                    <!-- Actions -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h6 class="mb-0">
-                                <i class="fas fa-tools me-2"></i>Actions
-                            </h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-grid gap-2">
-                                <a href="{% url 'dashboard:home' %}" class="btn btn-outline-primary">
-                                    <i class="fas fa-home me-2"></i>Back to Home
-                                </a>
-                                {% if user.is_authenticated and user == submission.user %}
-                                    <a href="{% url 'dashboard:user_dashboard' %}" class="btn btn-primary">
-                                        <i class="fas fa-dashboard me-2"></i>Go to Dashboard
-                                    </a>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'dashboard:home' %}" class="btn btn-primary">
+                        <i class="fas fa-home me-2"></i>Back to Home
+                    </a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard:user_dashboard' %}" class="btn btn-outline-secondary ms-2">
+                            <i class="fas fa-dashboard me-2"></i>My Dashboard
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -242,79 +196,76 @@
 </div>
 
 <style>
-.progress-tracker {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin: 2rem 0;
-    position: relative;
+.status-indicator {
+    padding: 2rem;
 }
 
-.progress-tracker::before {
+.status-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.progress-timeline {
+    border-top: 1px solid #e9ecef;
+    padding-top: 1.5rem;
+}
+
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
     content: '';
     position: absolute;
-    top: 25px;
-    left: 0;
-    right: 0;
-    height: 3px;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
     background: #e9ecef;
-    z-index: 1;
 }
 
-.progress-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.timeline-item {
     position: relative;
-    z-index: 2;
-    flex: 1;
+    margin-bottom: 1.5rem;
 }
 
-.step-icon {
-    width: 50px;
-    height: 50px;
+.timeline-item.completed .timeline-marker {
+    background: #28a745;
+    color: white;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -22px;
+    top: 0;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     background: #e9ecef;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #6c757d;
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-    transition: all 0.3s ease;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px #e9ecef;
 }
 
-.progress-step.completed .step-icon {
-    background: var(--primary-color);
-    color: white;
-}
-
-.step-label {
+.timeline-content h6 {
+    margin-bottom: 0.25rem;
     font-weight: 600;
-    text-align: center;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
 }
 
-.step-date {
-    font-size: 0.8rem;
+.timeline-content small {
     color: #6c757d;
-    text-align: center;
 }
 
-@media (max-width: 768px) {
-    .progress-tracker {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .progress-tracker::before {
-        display: none;
-    }
-    
-    .progress-step {
-        margin-bottom: 1rem;
-    }
+.rider-info {
+    border-left: 4px solid #007bff;
 }
 </style>
 {% endblock %}
