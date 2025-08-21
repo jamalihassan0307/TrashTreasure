@@ -40,23 +40,23 @@
 /* Contact Form */
 .contact-form {
     background: var(--white);
-    border-radius: 20px;
-    padding: var(--spacing-xl);
+    border-radius: 16px;
+    padding: var(--spacing-lg);
     box-shadow: var(--shadow-lg);
     border: 1px solid rgba(76, 175, 80, 0.1);
     transition: all var(--transition-normal);
 }
 
 .contact-form:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
     box-shadow: var(--shadow-xl);
 }
 
 .contact-form .card-header {
     background: transparent;
     border-bottom: 2px solid rgba(76, 175, 80, 0.1);
-    padding-bottom: var(--spacing-lg);
-    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
 }
 
 .contact-form .card-header h3 {
@@ -68,11 +68,13 @@
 .contact-form .form-control,
 .contact-form .form-select {
     border: 2px solid rgba(76, 175, 80, 0.2);
-    border-radius: 15px;
-    padding: var(--spacing-md);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
     font-size: var(--font-size-base);
     transition: all var(--transition-normal);
     background: rgba(255, 255, 255, 0.9);
+    height: auto;
+    min-height: 44px;
 }
 
 .contact-form .form-control:focus,
@@ -85,7 +87,7 @@
 .contact-form .form-label {
     font-weight: 600;
     color: var(--dark);
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
 }
 
 .contact-form .form-check-input:checked {
@@ -101,17 +103,20 @@
 .contact-form .btn-primary {
     background: var(--primary-gradient);
     border: none;
-    padding: var(--spacing-md) var(--spacing-xl);
-    border-radius: 25px;
+    padding: 0.75rem 1.5rem;
+    border-radius: 20px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     transition: all var(--transition-bounce);
+    height: auto;
+    min-height: 44px;
+    font-size: var(--font-size-sm);
 }
 
 .contact-form .btn-primary:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: var(--shadow-xl);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: var(--shadow-lg);
     color: var(--white);
 }
 
@@ -124,23 +129,23 @@
 /* Contact Information */
 .contact-info {
     background: var(--white);
-    border-radius: 20px;
-    padding: var(--spacing-xl);
+    border-radius: 16px;
+    padding: var(--spacing-lg);
     box-shadow: var(--shadow-lg);
     border: 1px solid rgba(76, 175, 80, 0.1);
     transition: all var(--transition-normal);
 }
 
 .contact-info:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
     box-shadow: var(--shadow-xl);
 }
 
 .contact-info .card-header {
     background: transparent;
     border-bottom: 2px solid rgba(76, 175, 80, 0.1);
-    padding-bottom: var(--spacing-lg);
-    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
 }
 
 .contact-info .card-header h4 {
@@ -151,10 +156,10 @@
 
 .contact-item {
     text-align: center;
-    padding: var(--spacing-lg);
-    border-radius: 15px;
+    padding: var(--spacing-md);
+    border-radius: 12px;
     background: linear-gradient(135deg, #F1F8E9 0%, #DCEDC8 100%);
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
     transition: all var(--transition-normal);
     border: 1px solid rgba(76, 175, 80, 0.1);
 }
@@ -164,20 +169,20 @@
 }
 
 .contact-item:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
     box-shadow: var(--shadow-md);
     border-color: var(--primary-green);
 }
 
 .contact-icon {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     background: var(--eco-gradient);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto var(--spacing-md);
+    margin: 0 auto var(--spacing-sm);
     box-shadow: var(--shadow-md);
     transition: all var(--transition-normal);
 }
@@ -190,40 +195,43 @@
 .contact-item h6 {
     color: var(--primary-green);
     font-weight: 700;
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
+    font-size: var(--font-size-base);
 }
 
 .contact-item p {
     color: var(--dark);
     font-weight: 600;
     margin-bottom: var(--spacing-xs);
+    font-size: var(--font-size-sm);
 }
 
 .contact-item small {
     color: var(--dark);
     opacity: 0.7;
+    font-size: var(--font-size-xs);
 }
 
 /* Quick Links */
 .quick-links {
     background: var(--white);
-    border-radius: 20px;
-    padding: var(--spacing-xl);
+    border-radius: 16px;
+    padding: var(--spacing-lg);
     box-shadow: var(--shadow-lg);
     border: 1px solid rgba(76, 175, 80, 0.1);
     transition: all var(--transition-normal);
 }
 
 .quick-links:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
     box-shadow: var(--shadow-xl);
 }
 
 .quick-links .card-header {
     background: transparent;
     border-bottom: 2px solid rgba(76, 175, 80, 0.1);
-    padding-bottom: var(--spacing-lg);
-    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
 }
 
 .quick-links .card-header h5 {
@@ -238,13 +246,16 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
+    padding: 0.5rem 1rem;
+    height: auto;
+    min-height: 38px;
 }
 
 .quick-links .btn:hover {
-    transform: translateY(-3px) scale(1.05);
+    transform: translateY(-2px) scale(1.02);
     border-color: var(--primary-green);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-md);
 }
 
 .quick-links .btn-outline-primary:hover {
@@ -288,15 +299,15 @@
 
 .faq-item .dashboard-card {
     background: var(--white);
-    border-radius: 20px;
-    padding: var(--spacing-lg);
+    border-radius: 16px;
+    padding: var(--spacing-md);
     box-shadow: var(--shadow-md);
     border: 1px solid rgba(76, 175, 80, 0.1);
     transition: all var(--transition-normal);
 }
 
 .faq-item:hover .dashboard-card {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
     box-shadow: var(--shadow-lg);
     border-color: var(--primary-green);
 }
@@ -304,17 +315,19 @@
 .faq-item h5 {
     color: var(--primary-green);
     font-weight: 700;
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    font-size: var(--font-size-base);
 }
 
 .faq-item h5 i {
-    margin-right: var(--spacing-sm);
+    margin-right: var(--spacing-xs);
 }
 
 .faq-item p {
     color: var(--dark);
-    line-height: 1.6;
+    line-height: 1.5;
     margin: 0;
+    font-size: var(--font-size-sm);
 }
 
 /* Social Media Section */
@@ -331,7 +344,7 @@
 .social-links {
     display: flex;
     justify-content: center;
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
     flex-wrap: wrap;
 }
 
@@ -341,15 +354,17 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    font-size: var(--font-size-sm);
-    padding: var(--spacing-md) var(--spacing-xl);
-    border-radius: 25px;
+    font-size: var(--font-size-xs);
+    padding: 0.75rem 1.25rem;
+    border-radius: 20px;
+    height: auto;
+    min-height: 42px;
 }
 
 .social-links .btn:hover {
-    transform: translateY(-5px) scale(1.05);
+    transform: translateY(-3px) scale(1.02);
     border-color: currentColor;
-    box-shadow: var(--shadow-xl);
+    box-shadow: var(--shadow-lg);
 }
 
 .social-links .btn-primary {
@@ -414,7 +429,7 @@
     .contact-form,
     .contact-info,
     .quick-links {
-        margin-bottom: var(--spacing-lg);
+        margin-bottom: var(--spacing-md);
     }
     
     .social-links {
@@ -424,11 +439,11 @@
     
     .social-links .btn {
         width: 100%;
-        max-width: 300px;
+        max-width: 280px;
     }
     
     .faq-item {
-        margin-bottom: var(--spacing-lg);
+        margin-bottom: var(--spacing-md);
     }
 }
 
@@ -440,24 +455,25 @@
     .contact-form,
     .contact-info,
     .quick-links {
-        padding: var(--spacing-lg);
-    }
-    
-    .contact-item {
         padding: var(--spacing-md);
     }
     
+    .contact-item {
+        padding: var(--spacing-sm);
+    }
+    
     .contact-icon {
-        width: 50px;
-        height: 50px;
+        width: 45px;
+        height: 45px;
     }
     
     .contact-icon i {
-        font-size: var(--font-size-xl) !important;
+        font-size: var(--font-size-lg) !important;
     }
     
     .social-links .btn {
         font-size: var(--font-size-xs);
-        padding: var(--spacing-sm) var(--spacing-lg);
+        padding: 0.6rem 1rem;
+        min-height: 38px;
     }
 }

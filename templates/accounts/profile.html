@@ -182,6 +182,8 @@
         </div>
         {% endif %}
 
+        {% if user.user_type == 'user' %}
+
         <!-- Recent Activity -->
         <div class="col-12">
             <div class="card">
@@ -245,6 +247,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

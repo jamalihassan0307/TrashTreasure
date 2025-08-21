@@ -343,47 +343,8 @@
             </div>
         </div>
 
-        <div class="achievement-card">
-            <div class="achievement-icon">
-                <i class="fas fa-trophy"></i>
-            </div>
-            <h4 class="achievement-title">Eco Warrior</h4>
-            <p class="achievement-desc">Complete 10 collections</p>
-            <div class="achievement-progress">
-                <div class="achievement-bar" style="width: {% if completed_count >= 10 %}100{% else %}{{ completed_count|add:0 }}{% endif %}%"></div>
-            </div>
-            <div class="achievement-status">
-                {% if completed_count >= 10 %}Completed!{% else %}{{ completed_count }}/10{% endif %}
-            </div>
-        </div>
 
-        <div class="achievement-card">
-            <div class="achievement-icon">
-                <i class="fas fa-leaf"></i>
-            </div>
-            <h4 class="achievement-title">Green Master</h4>
-            <p class="achievement-desc">Earn 500 points</p>
-            <div class="achievement-progress">
-                <div class="achievement-bar" style="width: {% if total_points >= 500 %}100{% else %}{{ total_points|add:0 }}{% endif %}%"></div>
-            </div>
-            <div class="achievement-status">
-                {% if total_points >= 500 %}Completed!{% else %}{{ total_points }}/500{% endif %}
-            </div>
-        </div>
-
-        <div class="achievement-card">
-            <div class="achievement-icon">
-                <i class="fas fa-crown"></i>
-            </div>
-            <h4 class="achievement-title">Recycling Legend</h4>
-            <p class="achievement-desc">Complete 25 collections</p>
-            <div class="achievement-progress">
-                <div class="achievement-bar" style="width: {% if completed_count >= 25 %}100{% else %}{{ completed_count|add:0 }}{% endif %}%"></div>
-            </div>
-            <div class="achievement-status">
-                {% if completed_count >= 25 %}Completed!{% else %}{{ completed_count }}/25{% endif %}
-            </div>
-        </div>
+       
     </div>
 
     <!-- Points History Section -->
@@ -391,7 +352,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="h4 mb-0">
                 <i class="fas fa-history text-success me-2"></i>
-                Points History
+                My Points History
             </h3>
             
             <!-- Filters -->
@@ -487,10 +448,7 @@
                 <i class="fas fa-coins"></i>
                 <h4 class="mb-3">No points history yet</h4>
                 <p class="mb-4">Start recycling to earn your first points!</p>
-                <a href="{% url 'trash:submit_trash' %}" class="btn btn-success btn-lg">
-                    <i class="fas fa-plus me-2"></i>
-                    Submit Trash
-                </a>
+               
             </div>
         {% endif %}
     </div>

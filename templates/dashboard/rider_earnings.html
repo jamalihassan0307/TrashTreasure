@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}My Earnings & Performance - Trash to Treasure{% endblock %}
+{% block title %}History & Performance - Trash to Treasure{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/rider_dashboard.css' %}">
@@ -287,9 +287,8 @@
 <div class="container-fluid py-4">
     <!-- Earnings Hero Section -->
     <div class="earnings-hero">
-        <div class="earnings-display">RS {{ total_earnings|floatformat:2 }}</div>
-        <div class="earnings-label">Total Earnings</div>
-        <p class="mb-0 opacity-75">Your hard work is making a difference for the environment!</p>
+        <div class="earnings-label">My History</div>
+        <p class="mb-0 opacity-75">History of my collections</p>
     </div>
 
     <!-- Statistics Row -->
@@ -347,21 +346,7 @@
         </div>
     </div>
 
-    <!-- Performance Chart Section -->
-    <div class="performance-section">
-        <h3 class="h4 mb-4">
-            <i class="fas fa-chart-line text-success me-2"></i>
-            Performance Overview
-        </h3>
-        
-        <div class="performance-chart">
-            <div class="chart-placeholder">
-                <i class="fas fa-chart-area fa-3x mb-3 d-block text-muted"></i>
-                <p>Performance charts will be displayed here</p>
-                <small class="text-muted">Coming soon: Weekly earnings, completion rates, and more analytics</small>
-            </div>
-        </div>
-    </div>
+    
 
     <!-- Collection History Section -->
     <div class="collection-history">
@@ -441,9 +426,7 @@
                     {{ collection.collected_at|date:"M d, Y" }}
                 </div>
                 
-                <div class="history-earnings">
-                    RS {{ collection.earnings|floatformat:2 }}
-                </div>
+              
             </div>
             {% endfor %}
             

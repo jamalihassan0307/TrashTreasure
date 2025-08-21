@@ -389,17 +389,7 @@
             </div>
         </div>
         
-        <div class="metric-card">
-            <div class="metric-icon">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="metric-number">{{ completion_ratio }}%</div>
-            <div class="metric-label">Completion Ratio</div>
-            <div class="metric-change positive">
-                <i class="fas fa-chart-line me-1"></i>
-                Collection success rate
-            </div>
-        </div>
+       
         
         <div class="metric-card">
             <div class="metric-icon">
@@ -413,81 +403,10 @@
             </div>
         </div>
         
-        <div class="metric-card">
-            <div class="metric-icon">
-                <i class="fas fa-route"></i>
-            </div>
-            <div class="metric-number">{{ avg_collections_per_day }}</div>
-            <div class="metric-label">Collections/Day</div>
-            <div class="metric-change {% if submission_trend >= 0 %}positive{% else %}negative{% endif %}">
-                {% if submission_trend >= 0 %}
-                    <i class="fas fa-arrow-up me-1"></i>
-                {% else %}
-                    <i class="fas fa-arrow-down me-1"></i>
-                {% endif %}
-                {{ submission_trend }}% trend
-            </div>
-        </div>
+       
      </div>
 
-    <!-- Key Insights Summary -->
-    <div class="row g-4 mb-4">
-        <div class="col-lg-3 col-md-6">
-            <div class="insight-card text-center p-4 border rounded-3">
-                <div class="insight-icon mb-3">
-                    <i class="fas fa-trending-up fa-2x text-success"></i>
-                </div>
-                <h5 class="text-success mb-2">Growth Trend</h5>
-                <p class="mb-0">
-                    {% if submission_trend >= 0 %}
-                        <span class="text-success">↗ {{ submission_trend }}% increase</span>
-                    {% else %}
-                        <span class="text-danger">↘ {{ submission_trend|add:0|add:0 }}% decrease</span>
-                    {% endif %}
-                    <br><small class="text-muted">in daily submissions</small>
-                </p>
-            </div>
-        </div>
-        
-        <div class="col-lg-3 col-md-6">
-            <div class="insight-card text-center p-4 border rounded-3">
-                <div class="insight-icon mb-3">
-                    <i class="fas fa-bullseye fa-2x text-primary"></i>
-                </div>
-                <h5 class="text-primary mb-2">Efficiency</h5>
-                <p class="mb-0">
-                    <span class="text-primary">{{ avg_collection_time }}h</span>
-                    <br><small class="text-muted">avg collection time</small>
-                </p>
-            </div>
-        </div>
-        
-        <div class="col-lg-3 col-md-6">
-            <div class="insight-card text-center p-4 border rounded-3">
-                <div class="insight-icon mb-3">
-                    <i class="fas fa-map-marker-alt fa-2x text-warning"></i>
-                </div>
-                <h5 class="text-warning mb-2">Coverage</h5>
-                <p class="mb-0">
-                    <span class="text-warning">{{ total_distance_covered|floatformat:1 }} km</span>
-                    <br><small class="text-muted">total distance covered</small>
-                </p>
-            </div>
-        </div>
-        
-        <div class="col-lg-3 col-md-6">
-            <div class="insight-card text-center p-4 border rounded-3">
-                <div class="insight-icon mb-3">
-                    <i class="fas fa-calendar-check fa-2x text-info"></i>
-                </div>
-                <h5 class="text-info mb-2">Daily Activity</h5>
-                <p class="mb-0">
-                    <span class="text-info">{{ avg_collections_per_day }}</span>
-                    <br><small class="text-muted">collections per day</small>
-                </p>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Charts Section -->
     <div class="chart-section">
@@ -569,88 +488,7 @@
         </div>
     </div>
     
-    <!-- System Health Overview -->
-    <div class="row g-4 mb-4">
-        <div class="col-lg-6">
-            <div class="chart-section">
-                <div class="chart-header">
-                    <h3 class="chart-title">
-                        <i class="fas fa-heartbeat text-danger me-2"></i>
-                        System Health Metrics
-                    </h3>
-                </div>
-                
-                <div class="chart-container">
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <div class="health-metric text-center p-3 border rounded">
-                                <h4 class="text-success mb-2">{{ completion_ratio }}%</h4>
-                                <small class="text-muted">Completion Rate</small>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="health-metric text-center p-3 border rounded">
-                                <h4 class="text-info mb-2">{{ active_user_ratio }}%</h4>
-                                <small class="text-muted">Active Users</small>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="health-metric text-center p-3 border rounded">
-                                <h4 class="text-warning mb-2">{{ pending_ratio }}%</h4>
-                                <small class="text-muted">Pending Ratio</small>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="health-metric text-center p-3 border rounded">
-                                <h4 class="text-primary mb-2">{{ avg_response_time }}h</h4>
-                                <small class="text-muted">Avg Response</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-lg-6">
-            <div class="chart-section">
-                <div class="chart-header">
-                    <h3 class="chart-title">
-                        <i class="fas fa-tachometer-alt text-success me-2"></i>
-                        Performance Summary
-                    </h3>
-                </div>
-                
-                <div class="chart-container">
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <div class="performance-metric text-center p-3 border rounded">
-                                <h4 class="text-success mb-2">{{ total_weight|floatformat:1 }} kg</h4>
-                                <small class="text-muted">Total Weight Collected</small>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="performance-metric text-center p-3 border rounded">
-                                <h4 class="text-info mb-2">{{ total_distance_covered|floatformat:1 }} km</h4>
-                                <small class="text-muted">Distance Covered</small>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="performance-metric text-center p-3 border rounded">
-                                <h4 class="text-warning mb-2">{{ avg_collections_per_day }}</h4>
-                                <small class="text-muted">Avg Collections/Day</small>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="performance-metric text-center p-3 border rounded">
-                                <h4 class="text-primary mb-2">{{ avg_collection_time }}h</h4>
-                                <small class="text-muted">Avg Collection Time</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
 </div>
 {% endblock %}
 

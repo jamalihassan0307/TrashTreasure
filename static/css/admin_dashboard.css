@@ -49,13 +49,13 @@
 /* Stats Overview */
 .stats-icon {
     background: var(--eco-gradient);
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto var(--spacing-md);
+    margin: 0 auto var(--spacing-sm);
     box-shadow: var(--shadow-md);
     transition: all var(--transition-normal);
 }
@@ -70,7 +70,7 @@
 }
 
 .dashboard-card.text-center:hover {
-    transform: translateY(-5px) scale(1.02);
+    transform: translateY(-4px) scale(1.02);
     box-shadow: var(--shadow-xl);
 }
 
@@ -78,27 +78,30 @@
 .quick-actions .btn {
     transition: all var(--transition-bounce);
     border: 2px solid transparent;
-    min-height: 120px;
+    min-height: 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-decoration: none;
+    padding: var(--spacing-md);
+    border-radius: 16px;
 }
 
 .quick-actions .btn:hover {
-    transform: translateY(-5px) scale(1.05);
+    transform: translateY(-4px) scale(1.02);
     border-color: var(--primary-green);
-    box-shadow: var(--shadow-xl);
+    box-shadow: var(--shadow-lg);
 }
 
 .quick-actions .btn i {
     transition: all var(--transition-normal);
     margin-bottom: var(--spacing-sm);
+    font-size: 2rem;
 }
 
 .quick-actions .btn:hover i {
-    transform: scale(1.2);
+    transform: scale(1.15);
 }
 
 /* Recent Submissions */
@@ -112,7 +115,7 @@
     background: var(--primary-gradient);
     color: var(--white);
     border: none;
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -120,7 +123,7 @@
 }
 
 .recent-submissions .table tbody td {
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
     border-bottom: 1px solid rgba(76, 175, 80, 0.05);
     vertical-align: middle;
 }
@@ -132,8 +135,8 @@
 }
 
 .submission-image {
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     object-fit: cover;
     border-radius: 8px;
     border: 2px solid rgba(76, 175, 80, 0.2);
@@ -147,8 +150,8 @@
 }
 
 .user-avatar {
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid rgba(76, 175, 80, 0.2);
@@ -163,9 +166,9 @@
 
 /* Status Badges */
 .status-badge {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: 15px;
-    font-size: var(--font-size-sm);
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: var(--font-size-xs);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -214,14 +217,16 @@
 }
 
 .btn-action {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: 15px;
-    font-size: var(--font-size-sm);
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: var(--font-size-xs);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     border: none;
     transition: all var(--transition-normal);
+    height: auto;
+    min-height: 28px;
 }
 
 .btn-action.assign {
@@ -260,15 +265,15 @@
 /* Weekly Collections Chart */
 .chart-container {
     background: var(--white);
-    border-radius: 20px;
-    padding: var(--spacing-xl);
+    border-radius: 16px;
+    padding: var(--spacing-lg);
     box-shadow: var(--shadow-lg);
     border: 1px solid rgba(76, 175, 80, 0.1);
     transition: all var(--transition-normal);
 }
 
 .chart-container:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
     box-shadow: var(--shadow-xl);
 }
 
@@ -276,7 +281,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
 }
 
 .chart-title {
@@ -316,9 +321,9 @@
 /* System Health Metrics */
 .system-health {
     background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 100%);
-    border-radius: 20px;
-    padding: var(--spacing-xl);
-    margin-top: var(--spacing-lg);
+    border-radius: 16px;
+    padding: var(--spacing-lg);
+    margin-top: var(--spacing-md);
 }
 
 .system-health .col-6 {
@@ -327,7 +332,7 @@
 }
 
 .system-health .col-6:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
 }
 
 .system-health i {
@@ -336,17 +341,19 @@
 }
 
 .system-health .col-6:hover i {
-    transform: scale(1.2);
+    transform: scale(1.15);
 }
 
 .system-health h5 {
     color: var(--primary-green);
     font-weight: 700;
+    font-size: var(--font-size-base);
 }
 
 .system-health small {
     color: var(--dark);
     opacity: 0.7;
+    font-size: var(--font-size-sm);
 }
 
 /* Health Indicators */
@@ -354,9 +361,9 @@
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-xs);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: 15px;
-    font-size: var(--font-size-sm);
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: var(--font-size-xs);
     font-weight: 600;
 }
 
@@ -403,14 +410,15 @@
     .btn-action {
         width: 100%;
         text-align: center;
+        min-height: 32px;
     }
     
     .quick-actions .btn {
-        min-height: 100px;
+        min-height: 90px;
     }
     
     .quick-actions .btn i {
-        font-size: 2rem !important;
+        font-size: 1.75rem !important;
     }
     
     .chart-header {
@@ -458,8 +466,8 @@
 }
 
 .metric-mini-icon {
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border-radius: 50%;
     display: flex;
@@ -483,7 +491,7 @@
 
 .header-actions .badge {
     font-size: 0.75rem;
-    padding: 0.5rem 0.75rem;
+    padding: 0.4rem 0.6rem;
 }
 
 /* System Status Badge */
@@ -531,7 +539,7 @@
 
 .rider-stats .badge {
     font-size: 0.75rem;
-    padding: 0.5rem 0.75rem;
+    padding: 0.4rem 0.6rem;
 }
 
 /* Empty State Styling */
@@ -561,8 +569,8 @@
 }
 
 .activity-icon {
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border-radius: 50%;
     display: flex;
@@ -574,6 +582,7 @@
 .activity-content h6 {
     font-weight: 600;
     margin-bottom: 0.25rem;
+    font-size: var(--font-size-sm);
 }
 
 .activity-content p {
@@ -587,7 +596,7 @@
 
 .activity-status .badge {
     font-size: 0.75rem;
-    padding: 0.5rem 0.75rem;
+    padding: 0.4rem 0.6rem;
 }
 
 /* Scrollbar Styling for Activity Feed */

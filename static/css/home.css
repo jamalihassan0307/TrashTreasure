@@ -45,6 +45,23 @@
     animation: slideInUp 1s ease-out 0.4s both;
 }
 
+.hero-buttons .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all var(--transition-bounce);
+    height: auto;
+    min-height: 44px;
+    font-size: var(--font-size-sm);
+}
+
+.hero-buttons .btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--shadow-xl);
+}
+
 .hero-image-container {
     position: relative;
     z-index: 2;
@@ -53,8 +70,8 @@
 /* Features Section */
 .feature-icon {
     background: var(--eco-gradient);
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -67,6 +84,11 @@
 .feature-icon:hover {
     transform: scale(1.1);
     box-shadow: var(--shadow-xl);
+}
+
+.feature-icon i {
+    font-size: 1.75rem;
+    color: var(--primary-green);
 }
 
 /* How It Works Section */
@@ -99,9 +121,9 @@
 /* Environmental Impact Section */
 .environmental-impact {
     background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 100%);
-    border-radius: 20px;
-    padding: var(--spacing-xl);
-    margin-top: var(--spacing-lg);
+    border-radius: 16px;
+    padding: var(--spacing-lg);
+    margin-top: var(--spacing-md);
 }
 
 .environmental-impact .col-6 {
@@ -109,7 +131,7 @@
 }
 
 .environmental-impact .col-6:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
 }
 
 .environmental-impact i {
@@ -117,7 +139,7 @@
 }
 
 .environmental-impact .col-6:hover i {
-    transform: scale(1.2);
+    transform: scale(1.15);
 }
 
 /* CTA Section */
@@ -144,13 +166,30 @@
     z-index: 2;
 }
 
+.cta-content .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all var(--transition-bounce);
+    height: auto;
+    min-height: 44px;
+    font-size: var(--font-size-sm);
+}
+
+.cta-content .btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--shadow-xl);
+}
+
 /* Enhanced Card Animations */
 .card {
     transition: all var(--transition-bounce);
 }
 
 .card:hover {
-    transform: translateY(-10px) scale(1.02);
+    transform: translateY(-8px) scale(1.02);
     box-shadow: var(--shadow-2xl);
 }
 
@@ -170,7 +209,19 @@
     }
     
     .feature-icon i {
-        font-size: 2rem !important;
+        font-size: 1.5rem !important;
+    }
+    
+    .hero-buttons .btn {
+        padding: 0.6rem 1.25rem;
+        min-height: 40px;
+        font-size: var(--font-size-xs);
+    }
+    
+    .cta-content .btn {
+        padding: 0.6rem 1.25rem;
+        min-height: 40px;
+        font-size: var(--font-size-xs);
     }
 }
 
@@ -185,5 +236,17 @@
     
     .hero-subtitle {
         font-size: var(--font-size-base);
+    }
+    
+    .hero-buttons .btn {
+        padding: 0.5rem 1rem;
+        min-height: 38px;
+        font-size: var(--font-size-xs);
+    }
+    
+    .cta-content .btn {
+        padding: 0.5rem 1rem;
+        min-height: 38px;
+        font-size: var(--font-size-xs);
     }
 }
