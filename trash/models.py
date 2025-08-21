@@ -20,7 +20,6 @@ class TrashSubmission(models.Model):
     trash_description = models.CharField(max_length=255, blank=True, verbose_name="Trash Description")
     quantity_kg = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True, verbose_name="Estimated Weight (kg)")
     location = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='trash_images/')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -50,7 +49,6 @@ class CollectionRecord(models.Model):
     trash_type = models.CharField(max_length=50, verbose_name="Actual Trash Type")
     actual_quantity = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Actual Weight (kg)")
     points_awarded = models.PositiveIntegerField(default=0, verbose_name="Reward Points")
-    collected_image = models.ImageField(upload_to='collection_images/', blank=True, null=True)
     collected_at = models.DateTimeField(auto_now_add=True)
     admin_verified = models.BooleanField(default=False)
     verified_by = models.ForeignKey(CustomUser, null=True, blank=True, 

@@ -344,32 +344,34 @@
     <div class="settings-grid">
        
 
-        <!-- System Maintenance -->
+        <!-- General Settings -->
         <div class="settings-card">
             <div class="settings-header">
                 <div class="settings-icon">
-                    <i class="fas fa-tools"></i>
+                    <i class="fas fa-cog"></i>
                 </div>
-                <h3 class="settings-title-small">System Maintenance</h3>
+                <h3 class="settings-title-small">System Settings</h3>
             </div>
             
             <div class="settings-description">
-                System maintenance and performance optimization settings.
+                Configure system maintenance and application behavior.
             </div>
             
             <form  action="#">
                 {% csrf_token %}
-                <input type="hidden" name="section" value="maintenance">
+                <input type="hidden" name="section" value="general">
                 
-                <div class="toggle-label">
-                    <span class="toggle-text">Maintenance Mode</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" name="maintenance_mode" 
+                <div class="form-group">
+                    <label for="maintenance_mode" class="form-label">Maintenance Mode</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="maintenance_mode" name="maintenance_mode" 
                                {% if settings.maintenance_mode %}checked{% endif %}>
-                        <span class="slider"></span>
-                    </label>
+                        <label class="form-check-label" for="maintenance_mode">
+                            Enable maintenance mode (restricts access to admins only)
+                        </label>
+                    </div>
+                    <div class="form-text">When enabled, only admin users can access the system</div>
                 </div>
-                <div class="form-text">Enable maintenance mode (restricts access to admins only)</div>
                 
                 <div class="form-group">
                     <label for="maintenance_message" class="form-label">Maintenance Message</label>
@@ -378,15 +380,17 @@
                     <div class="form-text">Message displayed to users during maintenance</div>
                 </div>
                 
-                <div class="toggle-label">
-                    <span class="toggle-text">Debug Mode</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" name="debug_mode" 
+                <div class="form-group">
+                    <label for="debug_mode" class="form-label">Debug Mode</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="debug_mode" name="debug_mode" 
                                {% if settings.debug_mode %}checked{% endif %}>
-                        <span class="slider"></span>
-                    </label>
+                        <label class="form-check-label" for="debug_mode">
+                            Enable debug mode for development
+                        </label>
+                    </div>
+                    <div class="form-text">Not recommended for production use</div>
                 </div>
-                <div class="form-text">Enable debug mode for development (not recommended for production)</div>
                 
                 <div class="form-group">
                     <label for="log_level" class="form-label">Log Level</label>

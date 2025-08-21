@@ -99,7 +99,7 @@
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
-
+                        
                         
                         <div class="col-lg-3 col-md-6">
                             <a href="{% url 'accounts:profile' %}" class="btn btn-success w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4" 
@@ -110,12 +110,21 @@
                             </a>
                         </div>
                         
-                        <div class="col-lg-3 col-md-6">
-                            <a href="{% url 'dashboard:rider_earnings' %}" class="btn btn-info w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4" 
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'dashboard:rider_earnings' %}" class="btn btn-success w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4" 
                                style="min-height: 120px; text-decoration: none;">
                                 <i class="fas fa-dollar-sign fa-3x mb-3"></i>
                                 <span class="fw-bold">History</span>
                                 <small class="text-white-50">Collection History</small>
+                            </a>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'dashboard:rider_assigned_collections' %}" class="btn btn-info w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4" 
+                               style="min-height: 120px; text-decoration: none;">
+                                <i class="fas fa-list fa-3x mb-3"></i>
+                                <span class="fw-bold">My Collections</span>
+                                <small class="text-white-50">View assigned collections</small>
                             </a>
                         </div>
                         
@@ -133,214 +142,56 @@
         </div>
     </div>
 
-    <!-- Enhanced Assigned Collections -->
-    <div class="row mb-5">
-        <div class="col-12">
-            <div class="dashboard-card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">
-                        <i class="fas fa-tasks me-2"></i>Assigned Collections
-                    </h4>
-                    <div class="header-actions">
-                        <button class="btn btn-outline-primary btn-sm me-2" onclick="refreshAssignments()">
-                            <i class="fas fa-sync-alt me-1"></i>Refresh
-                        </button>
-                        <span class="badge bg-primary fs-6">{{ user.assigned_collections.all|length }} Active</span>
-                    </div>
-                </div>
-                <div class="card-body">
-                    {% if user.assigned_collections.all %}
-                        <div class="row g-4">
-                            {% for submission in user.assigned_collections.all %}
-                            <div class="col-lg-6 col-md-12">
-                                <div class="collection-card border rounded-3 p-4 h-100" 
-                                     style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
-                                    <div class="d-flex justify-content-between align-items-start mb-3">
-                                        <div>
-                                            <h6 class="fw-bold mb-1">
-                                                <i class="fas fa-hashtag me-2 text-primary"></i>{{ submission.track_id }}
-                                            </h6>
-                                            <small class="text-muted">{{ submission.location|truncatechars:40 }}</small>
-                                        </div>
-                                        <span class="badge badge-assigned">{{ submission.get_status_display }}</span>
-                                    </div>
-                                    
-                                    <div class="collection-details mb-3">
-                                        <div class="row g-2">
-                                            <div class="col-6">
-                                                <small class="text-muted d-block">Description</small>
-                                                <strong>{{ submission.trash_description|truncatechars:30 }}</strong>
-                                            </div>
-                                            <div class="col-6">
-                                                <small class="text-muted d-block">Est. Weight</small>
-                                                <strong>{{ submission.quantity_kg|default:"N/A" }} kg</strong>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    {% if submission.image %}
-                                    <div class="collection-image mb-3">
-                                        <img src="{{ submission.image.url }}" alt="Trash" class="img-fluid rounded" style="max-height: 120px; width: 100%; object-fit: cover;">
-                                    </div>
-                                    {% endif %}
-                                    
-                                    <div class="collection-actions">
-                                        <div class="row g-2">
-                                            <div class="col-6">
-                                                <button class="btn btn-outline-primary btn-sm w-100" 
-                                                        
-                                                        {% if submission.status != 'assigned' %}disabled{% endif %}>
-                                                    <i class="fas fa-motorcycle me-1"></i>On The Way
-                                                </button>
-                                            </div>
-                                            <div class="col-6">
-                                                <button class="btn btn-outline-success btn-sm w-100" 
-                                                        {% if submission.status not in 'on_the_way,assigned' %}disabled{% endif %}>
-                                                    <i class="fas fa-map-marker-alt me-1"></i>Arrived
-                                                </button>
-                                            </div>
-                                            <div class="col-6">
-                                                <button class="btn btn-outline-warning btn-sm w-100" 
-                                                        {% if submission.status not in 'arrived,on_the_way' %}disabled{% endif %}>
-                                                    <i class="fas fa-hand-paper me-1"></i>Picked Up
-                                                </button>
-                                            </div>
-                                            <div class="col-6">
-                                                <button class="btn btn-success btn-sm w-100" 
-                                                        {% if submission.status != 'picked' %}disabled{% endif %}>
-                                                    <i class="fas fa-check me-1"></i>Complete
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="collection-timeline mt-3">
-                                        <small class="text-muted">
-                                            <i class="fas fa-clock me-1"></i>
-                                            Assigned: {{ submission.assigned_at|date:"M d, H:i"|default:"N/A" }}
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="text-center py-5">
-                            <div class="empty-state mb-4">
-                                <i class="fas fa-motorcycle fa-4x text-muted mb-3"></i>
-                                <h5 class="text-muted">No assignments yet</h5>
-                                <p class="text-muted">You'll be notified when new collections are assigned to you.</p>
-                                <button class="btn btn-primary" onclick="refreshAssignments()">
-                                    <i class="fas fa-sync-alt me-2"></i>Check for New Assignments
-                                </button>
-                            </div>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Enhanced Recent Collections -->
+    <!-- Recent Activity -->
     <div class="row mb-5">
         <div class="col-12">
             <div class="dashboard-card">
                 <div class="card-header">
                     <h4 class="mb-0">
-                        <i class="fas fa-history me-2"></i>Recent Collections
+                        <i class="fas fa-history me-2"></i>Recent Activity
                     </h4>
                 </div>
                 <div class="card-body">
-                    {% if user.collections.all %}
-                        <div class="table-responsive">
-                            <table class="table table-hover user-table">
-                                <thead>
-                                    <tr>
-                                        <th>Track ID</th>
-                                        <th>Trash Type</th>
-                                        <th>Weight</th>
-                                        <th>Points</th>
-                                        <th>Collected</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for collection in user.collections.all|slice:":10" %}
-                                    <tr>
-                                        <td>
-                                            <span class="badge bg-dark">{{ collection.submission.track_id }}</span>
-                                        </td>
-                                        <td>
-                                            <strong>{{ collection.trash_type|truncatechars:25 }}</strong>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-info">{{ collection.actual_quantity }} kg</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-success">{{ collection.points_awarded }} pts</span>
-                                        </td>
-                                        <td>
-                                            <small class="text-muted">{{ collection.collected_at|date:"M d, H:i" }}</small>
-                                        </td>
-                                        <td>
-                                            {% if collection.admin_verified %}
-                                                <span class="badge bg-success">Verified</span>
-                                            {% else %}
-                                                <span class="badge bg-warning">Pending</span>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <div class="text-center py-4">
-                            <i class="fas fa-history fa-3x text-muted mb-3"></i>
-                            <h6 class="text-muted">No collections yet</h6>
-                            <p class="text-muted">Complete your first collection to see it here!</p>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
+                    <div class="activity-timeline">
+                        <div class="activity-item d-flex align-items-center p-3 border-bottom">
+                            <div class="activity-icon me-3">
+                                <i class="fas fa-check-circle fa-2x text-success"></i>
+                            </div>
+                            <div class="activity-content flex-grow-1">
+                                <h6 class="mb-1">Collection Completed</h6>
+                                <p class="text-muted mb-1">Successfully collected trash from DHA Phase 6</p>
+                                <small class="text-muted">2 hours ago</small>
+                            </div>
+                            <div class="activity-status">
+                                <span class="badge bg-success">Completed</span>
         </div>
     </div>
 
-    <!-- Enhanced Performance Metrics -->
-    <div class="row">
-        <div class="col-12">
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h4 class="mb-0">
-                        <i class="fas fa-chart-bar me-2"></i>Performance Metrics
-                    </h4>
+                        <div class="activity-item d-flex align-items-center p-3 border-bottom">
+                            <div class="activity-icon me-3">
+                                <i class="fas fa-motorcycle fa-2x text-primary"></i>
                 </div>
-                <div class="card-body">
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <div class="metric-card text-center p-4 border rounded-3">
-                                <h5 class="text-primary mb-3">Weekly Performance</h5>
-                                <div class="progress mb-3" style="height: 25px;">
-                                    <div class="progress-bar bg-success" role="progressbar" 
-                                         style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-                                        <strong>75%</strong>
+                            <div class="activity-content flex-grow-1">
+                                <h6 class="mb-1">New Assignment</h6>
+                                <p class="text-muted mb-1">New collection assigned in Gulberg III</p>
+                                <small class="text-muted">4 hours ago</small>
                                     </div>
-                                </div>
-                                <small class="text-muted">Target: 20 collections/week</small>
+                            <div class="activity-status">
+                                <span class="badge bg-primary">New</span>
                             </div>
                         </div>
                         
-                        <div class="col-md-6">
-                            <div class="metric-card text-center p-4 border rounded-3">
-                                <h5 class="text-primary mb-3">Customer Satisfaction</h5>
-                                <div class="rating-display mb-3">
+                        <div class="activity-item d-flex align-items-center p-3">
+                            <div class="activity-icon me-3">
                                     <i class="fas fa-star fa-2x text-warning"></i>
-                                    <i class="fas fa-star fa-2x text-warning"></i>
-                                    <i class="fas fa-star fa-2x text-warning"></i>
-                                    <i class="fas fa-star fa-2x text-warning"></i>
-                                    <i class="fas fa-star fa-2x text-muted"></i>
+                            </div>
+                            <div class="activity-content flex-grow-1">
+                                <h6 class="mb-1">Rating Received</h6>
+                                <p class="text-muted mb-1">5-star rating for collection service</p>
+                                <small class="text-muted">1 day ago</small>
                                 </div>
-                                <small class="text-muted">4.2/5.0 average rating</small>
+                            <div class="activity-status">
+                                <span class="badge bg-warning">5★</span>
                             </div>
                         </div>
                     </div>
@@ -414,11 +265,6 @@
                             <label for="pointsAwarded" class="form-label">Points to Award</label>
                             <input type="number" class="form-control" id="pointsAwarded" name="points_awarded" 
                                    min="1" step="1" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="collectedImage" class="form-label">Collection Photo</label>
-                            <input type="file" class="form-control" id="collectedImage" name="collected_image" 
-                                   accept="image/*">
                         </div>
                         <div class="col-12">
                             <label for="riderNotes" class="form-label">Rider Notes</label>
@@ -544,7 +390,6 @@ function submitCollectionCompletion() {
     const actualQuantity = document.getElementById('actualQuantity').value;
     const pointsAwarded = document.getElementById('pointsAwarded').value;
     const riderNotes = document.getElementById('riderNotes').value;
-    const collectedImage = document.getElementById('collectedImage').files[0];
     
     if (!trashType || !actualQuantity || !pointsAwarded) {
         alert('Please fill in all required fields');
@@ -567,9 +412,6 @@ function submitCollectionCompletion() {
     formData.append('actual_quantity', actualQuantity);
     formData.append('points_awarded', pointsAwarded);
     formData.append('rider_notes', riderNotes);
-    if (collectedImage) {
-        formData.append('collected_image', collectedImage);
-    }
     
     // Submit the collection completion
     fetch(`/trash/complete-collection/${currentSubmissionId}/`, {

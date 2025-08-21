@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -9,6 +9,7 @@ from django.db.models import Count, Q, Sum
 from datetime import datetime, timedelta
 from django.core.paginator import Paginator
 from django.utils import timezone
+from django.http import JsonResponse
 
 def is_rider(user):
     return user.is_authenticated and user.user_type == 'rider'
@@ -319,6 +320,52 @@ def rider_earnings(request):
         'page_obj': page_obj,
     }
     return render(request, 'dashboard/rider_earnings.html', context)
+
+@login_required
+@user_passes_test(is_rider)
+def rider_assigned_collections(request):
+    """View for riders to see their assigned collections with filtering and sorting"""
+    
+    # Get all collections assigned to the current rider
+    assigned_submissions = TrashSubmission.objects.filter(
+        rider=request.user
+    ).select_related('user').order_by('-updated_at')
+    
+    # Apply search filter if provided
+    search_query = request.GET.get('search', '')
+    if search_query:
+        assigned_submissions = assigned_submissions.filter(
+            Q(user__username__icontains=search_query) |
+            Q(user__email__icontains=search_query) |
+            Q(user__first_name__icontains=search_query) |
+            Q(user__last_name__icontains=search_query)
+        )
+    
+    # Apply status filter if provided
+    status_filter = request.GET.get('status', '')
+    if status_filter:
+        assigned_submissions = assigned_submissions.filter(status=status_filter)
+    
+    # Apply sorting
+    sort_order = request.GET.get('sort', 'updated_at')
+    if sort_order == 'created_at':
+        assigned_submissions = assigned_submissions.order_by('-created_at')
+    elif sort_order == 'priority':
+        # Note: Priority field doesn't exist in current model, but keeping for future use
+        assigned_submissions = assigned_submissions.order_by('-updated_at')
+    elif sort_order == 'location':
+        assigned_submissions = assigned_submissions.order_by('location')
+    else:  # Default: updated_at
+        assigned_submissions = assigned_submissions.order_by('-updated_at')
+    
+    context = {
+        'assigned_submissions': assigned_submissions,
+        'search_query': search_query,
+        'status_filter': status_filter,
+        'sort_order': sort_order,
+    }
+    
+    return render(request, 'dashboard/rider_assigned_collections_rider.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -857,25 +904,86 @@ def create_rider(request):
     return render(request, 'dashboard/create_rider.html')
 
 @login_required
-@user_passes_test(is_admin)
+@user_passes_test(lambda u: u.user_type == 'admin')
 def toggle_user_status(request, user_id):
+    """Toggle user status between active and suspended"""
     try:
-        user = CustomUser.objects.get(id=user_id)
+        user = get_object_or_404(CustomUser, id=user_id)
+        
         if user.user_type == 'admin':
-            messages.error(request, 'Cannot modify admin accounts.')
+            messages.error(request, 'Cannot modify admin user status.')
+            return redirect('dashboard:manage_users')
+        
+        # Toggle status
+        if user.status == 'active':
+            user.status = 'suspended'
+            action = 'suspended'
         else:
-            # Toggle between active and suspended
-            if user.status == 'active':
-                user.status = 'suspended'
-                messages.success(request, f'User {user.username} has been suspended.')
-            else:
-                user.status = 'active'
-                messages.success(request, f'User {user.username} has been activated.')
-            user.save()
-    except CustomUser.DoesNotExist:
-        messages.error(request, 'User not found.')
+            user.status = 'active'
+            action = 'activated'
+        
+        user.save()
+        
+        # Log the action
+        # ActivityLog.objects.create(
+        #     user=request.user,
+        #     action='toggled_user_status',
+        #     details={
+        #         'target_user_id': user.id,
+        #         'target_username': user.username,
+        #         'old_status': 'suspended' if action == 'activated' else 'active',
+        #         'new_status': action,
+        #         'admin_user': request.user.username
+        #     }
+        # )
+        
+        messages.success(request, f'User {user.username} has been {action}.')
+        
+    except Exception as e:
+        messages.error(request, f'Error updating user status: {str(e)}')
     
     return redirect('dashboard:manage_users')
+
+@login_required
+@user_passes_test(lambda u: u.user_type == 'admin')
+def clear_user_points(request, user_id):
+    """Clear all reward points for a specific user"""
+    if request.method == 'POST':
+        try:
+            user = get_object_or_404(CustomUser, id=user_id)
+            
+            if user.user_type == 'admin':
+                return JsonResponse({'success': False, 'error': 'Cannot modify admin user points.'})
+            
+            # Store the old points value for logging
+            old_points = user.reward_points
+            
+            # Clear the points
+            user.reward_points = 0
+            user.save()
+            
+            # Log the action
+            # ActivityLog.objects.create(
+            #     user=request.user,
+            #     action='cleared_user_points',
+            #     details={
+            #         'target_user_id': user.id,
+            #         'target_username': user.username,
+            #         'old_points': old_points,
+            #         'new_points': 0,
+            #         'admin_user': request.user.username
+            #     }
+            # )
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Points cleared successfully for {user.username}'
+            })
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 def contact(request):
     return render(request, 'dashboard/contact.html')

@@ -247,50 +247,16 @@
                             </span>
                         </div>
                         
-                        <!-- Image -->
-                        {% if submission.image %}
-                        <div class="mb-3">
-                            <img src="{{ submission.image.url }}" alt="Trash Image" class="submission-image">
-                        </div>
-                        {% endif %}
-                        
                         <!-- Details -->
-                        <div class="mb-3">
-                            <h6 class="fw-bold text-dark mb-2">
-                                <i class="fas fa-trash text-success me-2"></i>
-                                {{ submission.trash_description|default:"No description" }}
-                            </h6>
-                            
-                            {% if submission.quantity_kg %}
-                            <p class="text-muted mb-2">
-                                <i class="fas fa-weight-hanging me-2"></i>
-                                Estimated: {{ submission.quantity_kg }} kg
+                        <div class="submission-details">
+                            <h6 class="submission-title">{{ submission.trash_description|truncatechars:50 }}</h6>
+                            <p class="submission-location">
+                                <i class="fas fa-map-marker-alt me-1"></i>{{ submission.location }}
                             </p>
-                            {% endif %}
-                            
-                            <p class="text-muted mb-2">
-                                <i class="fas fa-map-marker-alt me-2"></i>
-                                {{ submission.location }}
-                            </p>
-                            
-                            <p class="text-muted mb-2">
-                                <i class="fas fa-calendar me-2"></i>
-                                Submitted: {{ submission.created_at|date:"M d, Y" }}
-                            </p>
-                            
-                            {% if submission.rider %}
-                            <p class="text-muted mb-2">
-                                <i class="fas fa-motorcycle me-2"></i>
-                                Rider: {{ submission.rider.get_full_name|default:submission.rider.username }}
-                            </p>
-                            {% endif %}
-                            
-                            {% if submission.completion_time %}
-                            <p class="text-muted mb-2">
-                                <i class="fas fa-check-circle me-2"></i>
-                                Completed: {{ submission.completion_time|date:"M d, Y" }}
-                            </p>
-                            {% endif %}
+                            <div class="submission-meta">
+                                <span class="badge bg-secondary">{{ submission.quantity_kg|default:"N/A" }} kg</span>
+                                <small class="text-muted ms-2">{{ submission.created_at|date:"M d, Y" }}</small>
+                            </div>
                         </div>
                         
                         <!-- Actions -->

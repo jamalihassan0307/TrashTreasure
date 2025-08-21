@@ -22,9 +22,9 @@ def submit_trash(request):
         trash_description = request.POST.get('trash_description')
         quantity_kg = request.POST.get('quantity_kg')
         location = request.POST.get('location')
-        image = request.FILES.get('image')
+        # Removed image handling
         
-        if not all([trash_description, location, image]):
+        if not all([trash_description, location]):
             messages.error(request, 'Please fill all required fields.')
             return render(request, 'trash/submit_trash.html')
         
@@ -38,8 +38,8 @@ def submit_trash(request):
             user=request.user,
             trash_description=trash_description,
             quantity_kg=quantity_kg,
-            location=location,
-            image=image
+            location=location
+            # Removed image field
         )
         
         messages.success(request, f'Trash submission created successfully! Track ID: {submission.track_id}')
@@ -140,7 +140,7 @@ def complete_collection(request, submission_id):
         trash_type = request.POST.get('trash_type')
         actual_quantity = request.POST.get('actual_quantity')
         points_awarded = request.POST.get('points_awarded')
-        collected_image = request.FILES.get('collected_image')
+        # Removed collected_image handling
         rider_notes = request.POST.get('rider_notes', '')
         
         if not all([trash_type, actual_quantity, points_awarded]):
@@ -160,8 +160,8 @@ def complete_collection(request, submission_id):
                 rider=request.user,
                 trash_type=trash_type,
                 actual_quantity=actual_quantity,
-                points_awarded=points_awarded,
-                collected_image=collected_image
+                points_awarded=points_awarded
+                # Removed collected_image field
             )
             
             # Update submission status
@@ -290,7 +290,7 @@ def verify_collection(request, submission_id):
             submission=submission,
             defaults={
                 'rider': submission.rider,
-                'trash_type': 'Mixed Waste',  # Default value
+                'trash_type': submission.trash_description or 'Mixed Waste',
                 'actual_quantity': submission.quantity_kg or 0,
                 'points_awarded': points,
                 'admin_verified': True,
@@ -312,18 +312,18 @@ def verify_collection(request, submission_id):
         user.reward_points += points
         user.save()
         
-        # Log the action
-        from accounts.models import ActivityLog
-        ActivityLog.objects.create(
-            user=request.user,
-            action='verified_collection',
-            details={
-                'submission_id': submission.id,
-                'track_id': submission.track_id,
-                'points_awarded': points,
-                'notes': notes,
-                'admin_notes': admin_notes
-            }
+        # Change submission status to 'verified' to prevent re-verification
+        submission.status = 'verified'
+        submission.save()
+        
+        # Create reward point history entry
+        from .models import RewardPointHistory
+        RewardPointHistory.objects.create(
+            user=user,
+            points=points,
+            reason=f'Collection verified by admin - {notes}' if notes else 'Collection verified by admin',
+            submission=submission,
+            awarded_by=request.user
         )
         
         return JsonResponse({

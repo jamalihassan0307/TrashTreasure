@@ -298,6 +298,8 @@
                                                 <span class="badge bg-warning">Picked</span>
                                             {% elif submission.status == 'collected' %}
                                                 <span class="badge badge-collected">Collected</span>
+                                            {% elif submission.status == 'verified' %}
+                                                <span class="badge bg-success">Verified</span>
                                             {% elif submission.status == 'cancelled' %}
                                                 <span class="badge badge-cancelled">Cancelled</span>
                                             {% endif %}
@@ -335,6 +337,8 @@
                                                     >
                                                         <i class="fas fa-check"></i>
                                                     </button>
+                                                {% elif submission.status == 'verified' %}
+                                                    <span class="badge bg-success">Verified</span>
                                                 {% endif %}
                                             </div>
                                         </td>
@@ -819,6 +823,32 @@ function refreshDashboard() {
     setTimeout(() => {
         location.reload();
     }, 500);
+}
+
+function clearUserPoints(userId, username) {
+    if (confirm(`Are you sure you want to clear all reward points for user "${username}"? This action cannot be undone!`)) {
+        // Submit the clear points request
+        fetch(`/clear-user-points/${userId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Points cleared successfully for ${username}!`);
+                location.reload();
+            } else {
+                alert('Error clearing points: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error clearing points');
+        });
+    }
 }
 </script>
 {% endblock %}

@@ -363,13 +363,37 @@
     </p>
     
     <div class="debug-indicator">
-      Debug Mode Active - Development in Progress
+      <i class="fas fa-tools me-2"></i>
+      Development in Progress
     </div>
     
     {% if settings.maintenance_message %}
     <div class="construction-message">
       <strong>Development Update:</strong><br>
       {{ settings.maintenance_message }}
+    </div>
+    {% endif %}
+    
+    {% if settings.log_level %}
+    <div class="construction-info">
+      <h4>Development Status:</h4>
+      <div class="log-level-display">
+        <span class="badge bg-{% if settings.log_level == 'ERROR' %}danger{% elif settings.log_level == 'WARNING' %}warning{% elif settings.log_level == 'INFO' %}info{% else %}secondary{% endif %}">
+          <i class="fas fa-{% if settings.log_level == 'ERROR' %}exclamation-circle{% elif settings.log_level == 'WARNING' %}exclamation-triangle{% elif settings.log_level == 'INFO' %}info-circle{% else %}bug{% endif %} me-1"></i>
+          Log Level: {{ settings.log_level }}
+        </span>
+      </div>
+      <small class="text-muted d-block mt-2">
+        {% if settings.log_level == 'ERROR' %}
+          Critical development issues detected. Emergency fixes in progress.
+        {% elif settings.log_level == 'WARNING' %}
+          Development warnings detected. Code review in progress.
+        {% elif settings.log_level == 'INFO' %}
+          Regular development progress. New features being built.
+        {% else %}
+          Debug mode active. Development diagnostics in progress.
+        {% endif %}
+      </small>
     </div>
     {% endif %}
     

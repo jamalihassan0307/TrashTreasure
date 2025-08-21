@@ -3,6 +3,7 @@
 {% block title %}Manage Users - Admin Dashboard{% endblock %}
 
 {% block content %}
+{% csrf_token %}
 <div class="container py-4">
     <div class="row mb-4">
         <div class="col-12">
@@ -135,7 +136,7 @@
                                                     <i class="fas fa-check"></i>
                                                 </a>
                                             {% endif %}
-                                           
+                                        
                                         </div>
                                     </td>
                                 </tr>
@@ -155,4 +156,31 @@
         </div>
     </div>
 </div>
+
+<script>
+function clearUserPoints(userId, username) {
+    if (confirm(`Are you sure you want to clear all reward points for user "${username}"? This action cannot be undone!`)) {
+        fetch(`/clear-user-points/${userId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Points cleared successfully for ${username}!`);
+                location.reload();
+            } else {
+                alert('Error clearing points: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error clearing points');
+        });
+    }
+}
+</script>
 {% endblock %}

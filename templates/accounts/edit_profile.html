@@ -97,16 +97,7 @@
                             </div>
                         </div>
                         
-                        <div class="mb-3">
-                            <label for="id_proof" class="form-label">ID Proof</label>
-                            <input type="file" class="form-control" id="id_proof" name="id_proof" accept="image/*">
-                            {% if user.id_proof %}
-                                <div class="mt-2">
-                                    <small class="text-muted">Current ID proof:</small>
-                                    <img src="{{ user.id_proof.url }}" alt="Current ID Proof" class="img-thumbnail ms-2" style="max-height: 100px;">
-                                </div>
-                            {% endif %}
-                        </div>
+                        <!-- Removed ID proof upload field -->
                         {% endif %}
                         
                         <div class="d-flex justify-content-between mt-4">
@@ -146,26 +137,6 @@ document.getElementById('profile_image').addEventListener('change', function(e) 
     }
 });
 
-{% if user.user_type == 'rider' %}
-document.getElementById('id_proof').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            // Create preview if it doesn't exist
-            let preview = document.getElementById('id_proof_preview');
-            if (!preview) {
-                preview = document.createElement('img');
-                preview.id = 'id_proof_preview';
-                preview.className = 'img-thumbnail ms-2';
-                preview.style.maxHeight = '100px';
-                document.getElementById('id_proof').parentNode.appendChild(preview);
-            }
-            preview.src = e.target.result;
-        }
-        reader.readAsDataURL(file);
-    }
-});
-{% endif %}
+// Removed ID proof JavaScript functionality
 </script>
 {% endblock %}

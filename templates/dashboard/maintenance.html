@@ -246,6 +246,7 @@
     </p>
     
     <div class="status-indicator">
+        <i class="fas fa-exclamation-triangle me-2"></i>
         Maintenance Mode Active
     </div>
     
@@ -256,6 +257,29 @@
     </div>
     {% endif %}
     
+    {% if settings.log_level %}
+    <div class="maintenance-info">
+        <h4>System Status:</h4>
+        <div class="log-level-display">
+            <span class="badge bg-{% if settings.log_level == 'ERROR' %}danger{% elif settings.log_level == 'WARNING' %}warning{% elif settings.log_level == 'INFO' %}info{% else %}secondary{% endif %}">
+                <i class="fas fa-{% if settings.log_level == 'ERROR' %}exclamation-circle{% elif settings.log_level == 'WARNING' %}exclamation-triangle{% elif settings.log_level == 'INFO' %}info-circle{% else %}bug{% endif %} me-1"></i>
+                Log Level: {{ settings.log_level }}
+            </span>
+        </div>
+        <small class="text-muted d-block mt-2">
+            {% if settings.log_level == 'ERROR' %}
+                Critical system issues detected. Emergency maintenance in progress.
+            {% elif settings.log_level == 'WARNING' %}
+                System warnings detected. Preventive maintenance in progress.
+            {% elif settings.log_level == 'INFO' %}
+                Regular system maintenance in progress.
+            {% else %}
+                Debug mode active. System diagnostics in progress.
+            {% endif %}
+        </small>
+    </div>
+    {% endif %}
+    
     <div class="maintenance-info">
         <h4>What we're working on:</h4>
         <ul>
@@ -263,14 +287,22 @@
             <li>Security updates and improvements</li>
             <li>New features and enhancements</li>
             <li>Database maintenance and cleanup</li>
+            {% if settings.log_level == 'ERROR' %}
+            <li>Critical bug fixes and system recovery</li>
+            {% endif %}
         </ul>
     </div>
     
     <div class="maintenance-info">
         <h4>Expected completion:</h4>
         <p style="margin: 0; color: #424242;">
-            We're working as quickly as possible to restore full service. 
-            Thank you for your patience!
+            {% if settings.log_level == 'ERROR' %}
+                We're working urgently to resolve critical issues. 
+                Please check back every 30 minutes for updates.
+            {% else %}
+                We're working as quickly as possible to restore full service. 
+                Thank you for your patience!
+            {% endif %}
         </p>
     </div>
     
