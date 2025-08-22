@@ -1,0 +1,252 @@
+/* Home Page Specific Styles - Green Eco Theme */
+
+/* Hero Section */
+.hero-section {
+    background: var(--primary-gradient);
+    color: var(--white);
+    padding: var(--spacing-3xl) 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') center/cover;
+    opacity: 0.1;
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-title {
+    font-size: var(--font-size-5xl);
+    font-weight: 900;
+    margin-bottom: var(--spacing-lg);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    animation: slideInUp 1s ease-out;
+}
+
+.hero-subtitle {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-xl);
+    opacity: 0.9;
+    animation: slideInUp 1s ease-out 0.2s both;
+}
+
+.hero-buttons {
+    animation: slideInUp 1s ease-out 0.4s both;
+}
+
+.hero-buttons .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all var(--transition-bounce);
+    height: auto;
+    min-height: 44px;
+    font-size: var(--font-size-sm);
+}
+
+.hero-buttons .btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--shadow-xl);
+}
+
+.hero-image-container {
+    position: relative;
+    z-index: 2;
+}
+
+/* Features Section */
+.feature-icon {
+    background: var(--eco-gradient);
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: var(--shadow-lg);
+    transition: all var(--transition-normal);
+}
+
+.feature-icon:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-xl);
+}
+
+.feature-icon i {
+    font-size: 1.75rem;
+    color: var(--primary-green);
+}
+
+/* How It Works Section */
+.step-number {
+    position: relative;
+    z-index: 2;
+}
+
+.step-number span {
+    box-shadow: var(--shadow-lg);
+    transition: all var(--transition-normal);
+}
+
+.step-number:hover span {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-xl);
+}
+
+/* Statistics Section */
+.stats-icon {
+    opacity: 0.7;
+    transition: all var(--transition-normal);
+}
+
+.stats-card:hover .stats-icon {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Environmental Impact Section */
+.environmental-impact {
+    background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 100%);
+    border-radius: 16px;
+    padding: var(--spacing-lg);
+    margin-top: var(--spacing-md);
+}
+
+.environmental-impact .col-6 {
+    transition: all var(--transition-normal);
+}
+
+.environmental-impact .col-6:hover {
+    transform: translateY(-4px);
+}
+
+.environmental-impact i {
+    transition: all var(--transition-normal);
+}
+
+.environmental-impact .col-6:hover i {
+    transform: scale(1.15);
+}
+
+/* CTA Section */
+.cta-section {
+    background: var(--primary-gradient);
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') center/cover;
+    opacity: 0.1;
+    z-index: 1;
+}
+
+.cta-content {
+    position: relative;
+    z-index: 2;
+}
+
+.cta-content .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all var(--transition-bounce);
+    height: auto;
+    min-height: 44px;
+    font-size: var(--font-size-sm);
+}
+
+.cta-content .btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--shadow-xl);
+}
+
+/* Enhanced Card Animations */
+.card {
+    transition: all var(--transition-bounce);
+}
+
+.card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-2xl);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: var(--font-size-3xl);
+    }
+    
+    .hero-subtitle {
+        font-size: var(--font-size-lg);
+    }
+    
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .feature-icon i {
+        font-size: 1.5rem !important;
+    }
+    
+    .hero-buttons .btn {
+        padding: 0.6rem 1.25rem;
+        min-height: 40px;
+        font-size: var(--font-size-xs);
+    }
+    
+    .cta-content .btn {
+        padding: 0.6rem 1.25rem;
+        min-height: 40px;
+        font-size: var(--font-size-xs);
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section {
+        padding: var(--spacing-2xl) 0;
+    }
+    
+    .hero-title {
+        font-size: var(--font-size-2xl);
+    }
+    
+    .hero-subtitle {
+        font-size: var(--font-size-base);
+    }
+    
+    .hero-buttons .btn {
+        padding: 0.5rem 1rem;
+        min-height: 38px;
+        font-size: var(--font-size-xs);
+    }
+    
+    .cta-content .btn {
+        padding: 0.5rem 1rem;
+        min-height: 38px;
+        font-size: var(--font-size-xs);
+    }
+}
