@@ -7,7 +7,7 @@ from accounts.models import CustomUser
 from trash.models import TrashSubmission, CollectionRecord, RewardPointHistory
 
 class Command(BaseCommand):
-    help = 'Create demo data for testing Trash to Treasure application'
+    help = 'Create demo data for testing Recycle Bin application'
 
     def handle(self, *args, **options):
         self.stdout.write('Creating demo data...')

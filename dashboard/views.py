@@ -782,7 +782,7 @@ def admin_settings(request):
     except:
         # Fallback to defaults if database error
         settings = {
-            'site_name': 'Trash to Treasure',
+            'site_name': 'Recycle Bin',
             'site_description': 'Transform waste into rewards with our eco-friendly recycling platform',
             'contact_email': 'admin@trashtotreasure.com',
             'default_timezone': 'UTC',

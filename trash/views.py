@@ -3,12 +3,14 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.http import JsonResponse
 from django.utils import timezone
-from .models import TrashSubmission, CollectionRecord
+from .models import TrashSubmission, CollectionRecord, RewardPointHistory, RewardClaim
 from accounts.models import CustomUser
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.views.decorators.http import require_http_methods
 from django.db import transaction
+from django.db.models import Q
+from django.core.paginator import Paginator
 
 def is_rider(user):
     return user.is_authenticated and user.user_type == 'rider'
@@ -19,27 +21,30 @@ def is_admin(user):
 @login_required
 def submit_trash(request):
     if request.method == 'POST':
-        trash_description = request.POST.get('trash_description')
         quantity_kg = request.POST.get('quantity_kg')
         location = request.POST.get('location')
-        # Removed image handling
+        # Removed trash_description and image handling
         
-        if not all([trash_description, location]):
+        if not location or not quantity_kg:
             messages.error(request, 'Please fill all required fields.')
             return render(request, 'trash/submit_trash.html')
         
-        # Convert quantity_kg to float if provided
+        # Convert quantity_kg to float
         try:
-            quantity_kg = float(quantity_kg) if quantity_kg else None
+            quantity_kg = float(quantity_kg)
+            # Validate minimum weight requirement
+            if quantity_kg < 5:
+                messages.error(request, 'Weight must be at least 5 kg.')
+                return render(request, 'trash/submit_trash.html')
         except (ValueError, TypeError):
-            quantity_kg = None
+            messages.error(request, 'Please enter a valid weight.')
+            return render(request, 'trash/submit_trash.html')
         
         submission = TrashSubmission.objects.create(
             user=request.user,
-            trash_description=trash_description,
             quantity_kg=quantity_kg,
             location=location
-            # Removed image field
+            # Removed trash_description and image field
         )
         
         messages.success(request, f'Trash submission created successfully! Track ID: {submission.track_id}')
@@ -330,8 +335,262 @@ def verify_collection(request, submission_id):
             'success': True,
             'message': f'Collection verified successfully. {points} points awarded to {user.username}'
         })
-        
     except json.JSONDecodeError:
         return JsonResponse({'success': False, 'error': 'Invalid JSON data'})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+
+
+
+@login_required
+def claim_rewards(request):
+    """View for the rewards claim page."""
+    user = request.user
+    user_claims = RewardClaim.objects.filter(user=user).order_by('-created_at')
+    
+    # Monetary conversion rate: 1 point = Rs. 10
+    min_claim_amount = 500
+    conversion_rate = 10
+    monetary_amount = min_claim_amount * conversion_rate
+    
+    context = {
+        'user': user,
+        'available_points': user.reward_points,
+        'min_claim_amount': min_claim_amount,
+        'monetary_amount': monetary_amount,
+        'conversion_rate': conversion_rate,
+        'user_claims': user_claims
+    }
+    
+    return render(request, 'trash/claim_rewards.html', context)
+
+
+@login_required
+@require_http_methods(["POST"])
+def submit_claim(request):
+    """Process a new reward claim submission."""
+    user = request.user
+    
+    try:
+        data = request.POST
+        claim_amount = int(data.get('claim_amount', 0))
+        claim_type = data.get('claim_type')
+        
+        # Validate claim amount and type
+        if not claim_type or claim_type not in ['payment', 'donation']:
+            messages.error(request, 'Please select a valid claim type.')
+            return redirect('trash:claim_rewards')
+            
+        if claim_amount < 500:
+            messages.error(request, 'Minimum claim amount is 500 points.')
+            return redirect('trash:claim_rewards')
+            
+        if claim_amount > user.reward_points:
+            messages.error(request, 'You cannot claim more points than you have available.')
+            return redirect('trash:claim_rewards')
+            
+        # Get hospital if donation type
+        donation_hospital = None
+        if claim_type == 'donation':
+            donation_hospital = data.get('donation_hospital')
+            if not donation_hospital:
+                messages.error(request, 'Please select a hospital for donation.')
+                return redirect('trash:claim_rewards')
+        
+        # Validate claim amount
+        if claim_amount < 500:
+            messages.error(request, 'Minimum claim amount is 500 points.')
+            return redirect('trash:claim_rewards')
+        
+        if claim_amount > user.reward_points:
+            messages.error(request, 'You cannot claim more points than you have available.')
+            return redirect('trash:claim_rewards')
+        
+        # Calculate monetary amount (Rs. 10 per point)
+        monetary_amount = claim_amount * 10
+        
+        # Create the claim
+        claim = RewardClaim.objects.create(
+            user=user,
+            claim_amount=claim_amount,
+            monetary_amount=monetary_amount,
+            claim_type=claim_type,
+            donation_hospital=donation_hospital,
+            status='pending'
+        )
+        
+        messages.success(request, 
+            f'Your claim for {claim_amount} points has been submitted successfully! ' 
+            f'Reference ID: {claim.reference_id}'
+        )
+        
+        return redirect('trash:claim_history')
+        
+    except Exception as e:
+        messages.error(request, f'An error occurred: {str(e)}')
+        return redirect('trash:claim_rewards')
+
+
+@login_required
+def claim_history(request):
+    """View for displaying user's claim history."""
+    user = request.user
+    
+    # Get all claims for this user
+    claims = RewardClaim.objects.filter(user=user).order_by('-created_at')
+    
+    # Filtering
+    status_filter = request.GET.get('status', '')
+    search_query = request.GET.get('search', '')
+    
+    if status_filter:
+        claims = claims.filter(status=status_filter)
+    
+    if search_query:
+        claims = claims.filter(
+            Q(reference_id__icontains=search_query) |
+            Q(claim_type__icontains=search_query) |
+            Q(notes__icontains=search_query)
+        )
+    
+    # Pagination
+    paginator = Paginator(claims, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'claims': page_obj,
+        'available_points': user.reward_points,
+        'status_filter': status_filter,
+        'search_query': search_query,
+        'is_paginated': paginator.num_pages > 1,
+        'page_obj': page_obj,
+    }
+    
+    return render(request, 'trash/claim_history.html', context)
+
+
+@login_required
+@user_passes_test(lambda u: u.user_type == 'admin')
+def manage_claims(request):
+    """Admin view for managing reward claims."""
+    claims = RewardClaim.objects.all().order_by('-created_at')
+    
+    # Filtering
+    status_filter = request.GET.get('status', '')
+    claim_type_filter = request.GET.get('claim_type', '')
+    search_query = request.GET.get('search', '')
+    
+    if status_filter:
+        claims = claims.filter(status=status_filter)
+    
+    if claim_type_filter:
+        claims = claims.filter(claim_type=claim_type_filter)
+    
+    if search_query:
+        claims = claims.filter(
+            Q(user__username__icontains=search_query) |
+            Q(reference_id__icontains=search_query) |
+            Q(notes__icontains=search_query) |
+            Q(donation_hospital__icontains=search_query)
+        )
+    
+    # Pagination
+    paginator = Paginator(claims, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Status counts for summary
+    status_counts = {
+        'pending': RewardClaim.objects.filter(status='pending').count(),
+        'processing': RewardClaim.objects.filter(status='processing').count(),
+        'completed': RewardClaim.objects.filter(status='completed').count(),
+        'cancelled': RewardClaim.objects.filter(status='cancelled').count(),
+    }
+    
+    context = {
+        'claims': page_obj,
+        'status_filter': status_filter,
+        'claim_type_filter': claim_type_filter,
+        'search_query': search_query,
+        'status_counts': status_counts,
+        'is_paginated': paginator.num_pages > 1,
+        'page_obj': page_obj,
+    }
+    
+    return render(request, 'trash/manage_claims.html', context)
+        
+
+@login_required
+@user_passes_test(lambda u: u.user_type == 'admin')
+@require_http_methods(["POST"])
+def update_claim_status(request, claim_id):
+    """API endpoint to update claim status."""
+    try:
+        claim = RewardClaim.objects.get(id=claim_id)
+        new_status = request.POST.get('status')
+        
+        if new_status not in ['processing', 'completed', 'cancelled']:
+            return JsonResponse({'success': False, 'error': 'Invalid status'})
+        
+        # Validate status transitions
+        if new_status == 'completed' and claim.claim_amount < 500:
+            return JsonResponse({'success': False, 'error': 'Claims below 500 points cannot be completed'})
+        
+        if new_status == 'completed' and claim.status != 'processing':
+            return JsonResponse({'success': False, 'error': 'Only processing claims can be completed'})
+        
+        if new_status == 'completed' and claim.status == 'completed':
+            return JsonResponse({'success': False, 'error': 'Claim is already completed'})
+        
+        # Update status
+        claim.status = new_status
+        claim.processed_by = request.user
+        claim.processed_at = timezone.now()
+        
+        # Handle completed claims - deduct points when claim is completed
+        if new_status == 'completed':
+            # Deduct points from user when claim is completed
+            user = claim.user
+            user.reward_points -= claim.claim_amount
+            user.save()
+            
+            # Log the point deduction
+            RewardPointHistory.objects.create(
+                user=user,
+                points=-claim.claim_amount,  # Negative points for deduction
+                reason=f"Claim {claim.reference_id} completed - points deducted",
+                awarded_by=request.user
+            )
+        elif new_status == 'cancelled' and claim.status in ['pending', 'processing']:
+            # Refund points if cancelling
+            user = claim.user
+            user.reward_points += claim.claim_amount
+            user.save()
+            
+            RewardPointHistory.objects.create(
+                user=user,
+                points=claim.claim_amount,
+                reason=f"Claim {claim.reference_id} cancelled - points refunded",
+                awarded_by=request.user
+            )
+        
+        claim.save()
+        
+        # Prepare success message
+        if new_status == 'completed':
+            message = f'Claim {claim.reference_id} completed successfully! {claim.claim_amount} points deducted from user.'
+        else:
+            message = f'Claim status updated to {new_status}'
+        
+        return JsonResponse({
+            'success': True, 
+            'message': message,
+            'new_status': new_status
+        })
+        
+    except RewardClaim.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Claim not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+        

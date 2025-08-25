@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             name='SystemSettings',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('site_name', models.CharField(default='Trash to Treasure', max_length=100)),
+                ('site_name', models.CharField(default='Recycle Bin', max_length=100)),
                 ('site_description', models.TextField(default='Transform waste into rewards with our eco-friendly recycling platform')),
                 ('contact_email', models.EmailField(default='admin@trashtotreasure.com', max_length=254)),
                 ('default_timezone', models.CharField(default='UTC', max_length=50)),

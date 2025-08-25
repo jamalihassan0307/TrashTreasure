@@ -11,4 +11,11 @@ urlpatterns = [
     path('complete-collection/<int:submission_id>/', views.complete_collection, name='complete_collection'),
     path('assign-rider/<int:submission_id>/', views.assign_rider, name='assign_rider'),
     path('verify-collection/<int:submission_id>/', views.verify_collection, name='verify_collection'),
+    
+    # Reward Claim URLs
+    path('claim-rewards/', views.claim_rewards, name='claim_rewards'),
+    path('submit-claim/', views.submit_claim, name='submit_claim'),
+    path('claim-history/', views.claim_history, name='claim_history'),
+    path('manage-claims/', views.manage_claims, name='manage_claims'),
+    path('update-claim-status/<int:claim_id>/', views.update_claim_status, name='update_claim_status'),
 ]
