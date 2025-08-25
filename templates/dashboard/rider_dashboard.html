@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Rider Dashboard - Trash to Treasure{% endblock %}
+{% block title %}Rider Dashboard - Recycle Bin{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/rider_dashboard.css' %}">
@@ -46,7 +46,7 @@
     <!-- Enhanced Stats Overview -->
     <div class="dashboard-stats mb-5">
         <div class="row g-4">
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="dashboard-card text-center" style="animation: slideInUp 0.8s ease-out 0.1s both;">
                     <div class="stats-icon mb-3">
                         <i class="fas fa-list fa-3x text-primary"></i>
@@ -56,7 +56,7 @@
                 </div>
             </div>
             
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="dashboard-card text-center" style="animation: slideInUp 0.8s ease-out 0.2s both;">
                     <div class="stats-icon mb-3">
                         <i class="fas fa-clock fa-3x text-warning"></i>
@@ -66,7 +66,7 @@
                 </div>
             </div>
             
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="dashboard-card text-center" style="animation: slideInUp 0.8s ease-out 0.3s both;">
                     <div class="stats-icon mb-3">
                         <i class="fas fa-check-circle fa-3x text-success"></i>
@@ -76,15 +76,7 @@
                 </div>
             </div>
             
-            <div class="col-lg-3 col-md-6">
-                <div class="dashboard-card text-center" style="animation: slideInUp 0.8s ease-out 0.4s both;">
-                    <div class="stats-icon mb-3">
-                        <i class="fas fa-star fa-3x text-info"></i>
-                    </div>
-                    <h3 class="fw-bold text-primary mb-2">{{ user.reward_points }}</h3>
-                    <p class="text-muted mb-0">Earned Points</p>
-                </div>
-            </div>
+           
         </div>
     </div>
 
@@ -99,9 +91,9 @@
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
+                       
                         
-                        
-                        <div class="col-lg-3 col-md-6">
+                        <div class="col-lg-4 col-md-6">
                             <a href="{% url 'accounts:profile' %}" class="btn btn-success w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4" 
                                style="min-height: 120px; text-decoration: none;">
                                 <i class="fas fa-user-edit fa-3x mb-3"></i>
@@ -113,7 +105,7 @@
                         <div class="col-lg-4 col-md-6">
                             <a href="{% url 'dashboard:rider_earnings' %}" class="btn btn-success w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4" 
                                style="min-height: 120px; text-decoration: none;">
-                                <i class="fas fa-dollar-sign fa-3x mb-3"></i>
+                                <i class="fas fa-history fa-3x mb-3"></i>
                                 <span class="fw-bold">History</span>
                                 <small class="text-white-50">Collection History</small>
                             </a>
@@ -128,77 +120,13 @@
                             </a>
                         </div>
                         
-                        <div class="col-lg-3 col-md-6">
-                            <a href="{% url 'accounts:profile' %}" class="btn btn-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4" 
-                               style="min-height: 120px; text-decoration: none;">
-                                <i class="fas fa-user-edit fa-3x mb-3"></i>
-                                <span class="fw-bold">Edit Profile</span>
-                                <small class="text-white-50">Update vehicle & contact info</small>
-                            </a>
-                        </div>
+                       
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Recent Activity -->
-    <div class="row mb-5">
-        <div class="col-12">
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h4 class="mb-0">
-                        <i class="fas fa-history me-2"></i>Recent Activity
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <div class="activity-timeline">
-                        <div class="activity-item d-flex align-items-center p-3 border-bottom">
-                            <div class="activity-icon me-3">
-                                <i class="fas fa-check-circle fa-2x text-success"></i>
-                            </div>
-                            <div class="activity-content flex-grow-1">
-                                <h6 class="mb-1">Collection Completed</h6>
-                                <p class="text-muted mb-1">Successfully collected trash from DHA Phase 6</p>
-                                <small class="text-muted">2 hours ago</small>
-                            </div>
-                            <div class="activity-status">
-                                <span class="badge bg-success">Completed</span>
-        </div>
-    </div>
-
-                        <div class="activity-item d-flex align-items-center p-3 border-bottom">
-                            <div class="activity-icon me-3">
-                                <i class="fas fa-motorcycle fa-2x text-primary"></i>
-                </div>
-                            <div class="activity-content flex-grow-1">
-                                <h6 class="mb-1">New Assignment</h6>
-                                <p class="text-muted mb-1">New collection assigned in Gulberg III</p>
-                                <small class="text-muted">4 hours ago</small>
-                                    </div>
-                            <div class="activity-status">
-                                <span class="badge bg-primary">New</span>
-                            </div>
-                        </div>
-                        
-                        <div class="activity-item d-flex align-items-center p-3">
-                            <div class="activity-icon me-3">
-                                    <i class="fas fa-star fa-2x text-warning"></i>
-                            </div>
-                            <div class="activity-content flex-grow-1">
-                                <h6 class="mb-1">Rating Received</h6>
-                                <p class="text-muted mb-1">5-star rating for collection service</p>
-                                <small class="text-muted">1 day ago</small>
-                                </div>
-                            <div class="activity-status">
-                                <span class="badge bg-warning">5★</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <!-- Status Update Modal -->

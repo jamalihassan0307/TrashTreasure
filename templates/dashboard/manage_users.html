@@ -114,10 +114,18 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-warning text-dark">{{ user.reward_points }}</span>
+                                        {% if user.user_type == 'rider' %}
+                                            <span class="text-muted">N/A</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark">{{ user.reward_points }}</span>
+                                        {% endif %}
                                     </td>
                                     <td>
-                                        <span class="badge bg-secondary">{{ user.submissions.count }}</span>
+                                        {% if user.user_type == 'rider' %}
+                                            <span class="text-muted">N/A</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ user.submissions.count }}</span>
+                                        {% endif %}
                                     </td>
                                     <td>
                                         <small class="text-muted">{{ user.created_at|date:"M d, Y" }}</small>
@@ -125,18 +133,24 @@
                                     <td>
                                         <div class="btn-group" role="group">
                                             {% if user.status == 'active' %}
-                                                <a href="#" 
+                                                <a href="" 
                                                    class="btn btn-sm btn-warning" 
-                                                   onclick="return confirm('Are you sure you want to suspend this user?')">
+                                                   onclick="">
                                                     <i class="fas fa-ban"></i>
                                                 </a>
                                             {% else %}
-                                                <a href="#" 
+                                                <a href="" 
                                                    class="btn btn-sm btn-success">
                                                     <i class="fas fa-check"></i>
                                                 </a>
                                             {% endif %}
-                                        
+                                            
+                                            <!-- Clear Points Button -->
+                                            <button class="btn btn-sm btn-outline-danger" 
+                                                    onclick=""
+                                                    title="Clear reward points">
+                                                <i class="fas fa-coins"></i>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>

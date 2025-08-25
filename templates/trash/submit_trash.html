@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Submit Trash - Trash to Treasure{% endblock %}
+{% block title %}Submit Trash - Recycle Bin{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -17,21 +17,14 @@
                     <form >
                         {% csrf_token %}
                         
-                        <div class="mb-3">
-                            <label for="trash_description" class="form-label">
-                                <i class="fas fa-trash me-2"></i>Trash Description *
-                            </label>
-                            <textarea class="form-control" id="trash_description" name="trash_description" 
-                                      rows="3" placeholder="Describe the type of trash you want to submit..." required></textarea>
-                        </div>
-                        
+
                         <div class="mb-3">
                             <label for="quantity_kg" class="form-label">
                                 <i class="fas fa-weight-hanging me-2"></i>Estimated Weight (kg)
                             </label>
                             <input type="number" class="form-control" id="quantity_kg" name="quantity_kg" 
-                                   step="0.01" min="0.1" placeholder="e.g., 2.5">
-                            <div class="form-text">Optional: Estimated weight in kilograms</div>
+                                   step="0.01" min="5" placeholder="e.g., 5.0" required>
+                            <div class="form-text">Required: Estimated weight must be at least 5 kg</div>
                         </div>
                         
                         <div class="mb-3">

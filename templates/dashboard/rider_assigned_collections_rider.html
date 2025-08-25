@@ -392,7 +392,6 @@ function loadCollections() {
                     first_name: '{{ submission.user.first_name|default:""|escapejs }}', 
                     last_name: '{{ submission.user.last_name|default:""|escapejs }}' 
                 },
-                trash_description: '{{ submission.trash_description|escapejs }}',
                 quantity_kg: {{ submission.quantity_kg|default:0 }},
                 location: '{{ submission.location|escapejs }}',
                 status: '{{ submission.status|escapejs }}',
@@ -490,16 +489,18 @@ function updateCollectionsDisplay() {
                             <h6 class="fw-bold mb-1">
                                 <i class="fas fa-hashtag me-2 text-primary"></i>${collection.track_id}
                             </h6>
-                            <small class="text-muted">${collection.location.length > 40 ? collection.location.substring(0, 40) + '...' : collection.location}</small>
-                        </div>
+                            
+                                <strong class="text-muted d-block">User : <small>${collection.user.username}</small></strong>
+                                
+                              </div>
                         <span class="badge badge-${collection.status}">${getStatusDisplay(collection.status)}</span>
                     </div>
                     
                     <div class="collection-details mb-3">
                         <div class="row g-2">
                             <div class="col-6">
-                                <small class="text-muted d-block">Description</small>
-                                <strong>${collection.trash_description.length > 30 ? collection.trash_description.substring(0, 30) + '...' : collection.trash_description}</strong>
+                       <strong class="text-muted d-block">Location : </strong>
+                                <small>${collection.location}</small>
                             </div>
                             <div class="col-6">
                                 <small class="text-muted d-block">Est. Weight</small>
@@ -662,13 +663,12 @@ function viewCollectionDetails(collectionId) {
                 <h6 class="fw-bold">Collection Information</h6>
                 <p><strong>Track ID:</strong> ${collection.track_id}</p>
                 <p><strong>Status:</strong> <span class="badge badge-${collection.status}">${getStatusDisplay(collection.status)}</span></p>
-                <p><strong>Description:</strong> ${collection.trash_description}</p>
                 <p><strong>Quantity:</strong> ${collection.quantity_kg} kg</p>
                 <p><strong>Location:</strong> ${collection.location}</p>
                 <p><strong>Priority:</strong> <span class="badge priority-${collection.priority}">${collection.priority.toUpperCase()}</span></p>
             </div>
             <div class="col-md-6">
-                <h6 class="fw-bold">User Information</h6>
+                <h6 class="fw-bold">User Information</h6    >
                 <p><strong>Username:</strong> ${collection.user.username}</p>
                 <p><strong>Name:</strong> ${collection.user.first_name} ${collection.user.last_name}</p>
                 <p><strong>Email:</strong> ${collection.user.email}</p>

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}My Points & Achievements - Trash to Treasure{% endblock %}
+{% block title %}My Points & Achievements - Recycle Bin{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/user_dashboard.css' %}">
@@ -308,7 +308,7 @@
             <h4 class="achievement-title">First Steps</h4>
             <p class="achievement-desc">Submit your first trash collection request</p>
             <div class="achievement-progress">
-                <div class="achievement-bar" style="width: {% if submissions_count > 0 %}100{% else %}0{% endif %}%"></div>
+                <div class="achievement-bar" style="width: '{% if submissions_count > 0 %}100{% else %}0{% endif %}%'"></div>
             </div>
             <div class="achievement-status">
                 {% if submissions_count > 0 %}Completed!{% else %}0/1{% endif %}

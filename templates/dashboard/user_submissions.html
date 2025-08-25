@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}My Submissions - Trash to Treasure{% endblock %}
+{% block title %}My Submissions - Recycle Bin{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/user_dashboard.css' %}">
@@ -216,7 +216,7 @@
             <div class="form-group">
                 <label for="search" class="form-label fw-semibold me-2">Search:</label>
                 <input type="text" name="search" id="search" class="search-input" 
-                       placeholder="Search by description or location..." 
+                       placeholder="Search by location..." 
                        value="{{ search_query }}">
             </div>
             
@@ -249,7 +249,6 @@
                         
                         <!-- Details -->
                         <div class="submission-details">
-                            <h6 class="submission-title">{{ submission.trash_description|truncatechars:50 }}</h6>
                             <p class="submission-location">
                                 <i class="fas fa-map-marker-alt me-1"></i>{{ submission.location }}
                             </p>

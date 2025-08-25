@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}System Settings - Trash to Treasure{% endblock %}
+{% block title %}System Settings - Recycle Bin{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
@@ -417,47 +417,7 @@
         </div>
     </div>
 
-    <!-- Danger Zone -->
-    <div class="danger-zone">
-        <h4><i class="fas fa-exclamation-triangle me-2"></i>Danger Zone</h4>
-        <p>These actions are irreversible and may affect system functionality. Use with extreme caution.</p>
-        
-        <div class="row g-3">
-            <div class="col-md-6">
-                <div class="card border-danger">
-                    <div class="card-body">
-                        <h5 class="card-title text-danger">Clear All Data</h5>
-                        <p class="card-text">Remove all user data, submissions, and collection records. This action cannot be undone.</p>
-                        <form  action="#" style="display: inline;">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="clear_data">
-                            <button  class="btn btn-danger" onclick="return confirm('Are you absolutely sure you want to clear all data? This action cannot be undone!')">
-                                <i class="fas fa-trash me-2"></i>
-                                Clear All Data
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6">
-                <div class="card border-danger">
-                    <div class="card-body">
-                        <h5 class="card-title text-danger">Reset System</h5>
-                        <p class="card-text">Reset all system settings to default values. This will affect all configurations.</p>
-                        <form action="#" style="display: inline;">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="reset_system">
-                            <button  class="btn btn-danger" onclick="return confirm('Are you sure you want to reset all system settings? This will affect all configurations!')">
-                                <i class="fas fa-redo me-2"></i>
-                                Reset System
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+  
 </div>
 {% endblock %}
 

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}About Us - Trash to Treasure{% endblock %}
+{% block title %}About Us - Recycle Bin{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/about.css' %}">
@@ -12,7 +12,7 @@
 <section class="hero" style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover;">
     <div class="hero-content">
         <div class="container text-center">
-            <h1 class="fade-in">About Trash to Treasure</h1>
+            <h1 class="fade-in">About Recycle Bin</h1>
             <p class="fade-in">Transforming waste management through innovation, community engagement, and environmental stewardship</p>
         </div>
     </div>
@@ -24,25 +24,11 @@
         <div class="row align-items-center">
             <div class="col-md-6">
                 <h2 class="display-5 fw-bold text-primary mb-4">Our Mission</h2>
-                <p class="lead mb-4">To create a sustainable ecosystem where waste becomes a valuable resource, communities thrive, and our planet benefits from every collection.</p>
-                <p class="mb-4">We believe that every piece of trash has the potential to become treasure when handled responsibly. Our platform connects environmentally conscious individuals with dedicated collection services, creating a win-win solution for everyone involved.</p>
-                <div class="row">
-                    <div class="col-6">
-                        <div class="text-center">
-                            <i class="fas fa-leaf fa-2x text-success mb-2"></i>
-                            <h5>Eco-Friendly</h5>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="text-center">
-                            <i class="fas fa-handshake fa-2x text-primary mb-2"></i>
-                            <h5>Community</h5>
-                        </div>
-                    </div>
-                </div>
+                <p class="mb-4">To create a sustainable ecosystem where waste becomes a valuable resource, communities thrive, and our planet benefits from every collection.<br> We believe that every piece of trash has the potential to become treasure when handled responsibly. Our platform connects environmentally conscious individuals with dedicated collection services, creating a win-win solution for everyone involved.</p>
+               
             </div>
             <div class="col-md-6">
-                <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                <img src="{% static 'images/bin.jpg' %}" 
                      alt="Environmental Conservation" class="img-fluid rounded shadow-lg">
             </div>
         </div>
@@ -75,7 +61,7 @@
                 </div>
             </div>
             <div class="col-md-6 order-md-1">
-                <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2126&q=80" 
+                <img src="{% static 'images/state.jpg' %}" 
                      alt="Innovation" class="img-fluid rounded shadow-lg">
             </div>
         </div>
@@ -218,7 +204,7 @@
                 </div>
             </div>
             <div class="col-md-6">
-                <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                <img src="{% static 'images/recycle.jpg' %}" 
                      alt="Environmental Impact" class="img-fluid rounded shadow-lg">
             </div>
         </div>

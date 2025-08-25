@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block title %}Claim History - Recycle Bin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h1 class="mb-0">
+                    <i class="fas fa-history me-2 text-primary"></i>Reward Claim History
+                </h1>
+                <div>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>New Claim
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Points Summary -->
+            <div class="card shadow-lg mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                            <span class="text-muted">Available Points</span>
+                            <h3 class="display-5 fw-bold text-primary mb-0">{{ available_points }}</h3>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-center justify-content-md-end">
+                                <a href="{% url 'dashboard:user_points' %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-coins me-2"></i>Points History
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filters Section -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="status_filter" class="form-label fw-semibold me-2">Status:</label>
+                            <select name="status" id="status_filter" class="form-select">
+                                <option value="">All Statuses</option>
+                                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="processing" {% if status_filter == 'processing' %}selected{% endif %}>In Processing</option>
+                                <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+                                <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="search" class="form-label fw-semibold me-2">Search:</label>
+                            <input type="text" name="search" id="search" class="form-control" 
+                                   placeholder="Search by reference ID or notes..." 
+                                   value="{{ search_query }}">
+                        </div>
+                        
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-filter me-2"></i>
+                                Apply
+                            </button>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <a href="{% url 'trash:claim_history' %}" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-times me-2"></i>
+                                Clear
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Claims Table -->
+            <div class="card shadow-lg">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-list me-2"></i>Your Claims
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if claims %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Reference ID</th>
+                                        <th>Amount</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for claim in claims %}
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-dark">{{ claim.reference_id }}</span>
+                                        </td>
+                                        <td>
+                                            <strong class="text-primary">{{ claim.claim_amount }}</strong> points
+                                            <br>
+                                            <small class="text-muted">Rs. {{ claim.monetary_amount }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge {% if claim.claim_type == 'payment' %}bg-primary{% else %}bg-success{% endif %}">
+                                                {{ claim.get_claim_type_display }}
+                                            </span>
+                                            {% if claim.claim_type == 'donation' and claim.donation_hospital %}
+                                            <br>
+                                            <small class="text-muted">{{ claim.donation_hospital }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge 
+                                            {% if claim.status == 'pending' %}bg-warning{% endif %}
+                                            {% if claim.status == 'processing' %}bg-info{% endif %}
+                                            {% if claim.status == 'completed' %}bg-success{% endif %}
+                                            {% if claim.status == 'cancelled' %}bg-danger{% endif %}
+                                            ">
+                                                {{ claim.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">{{ claim.created_at|date:"M d, Y H:i" }}</small>
+                                        </td>
+                                        
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="empty-state mb-4">
+                                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                                <h5 class="text-muted">No claims yet</h5>
+                                <p class="text-muted">You haven't made any reward claims yet.</p>
+                            </div>
+                            <a href="{% url 'trash:claim_rewards' %}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Make Your First Claim
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="Claim history pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1&status={{ status_filter }}&search={{ search_query }}">&laquo; First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&status={{ status_filter }}&search={{ search_query }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    <li class="page-item active">
+                        <span class="page-link">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}&status={{ status_filter }}&search={{ search_query }}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&status={{ status_filter }}&search={{ search_query }}">Last &raquo;</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            <!-- Back Button -->
+            <div class="mt-4 text-center">
+                <a href="{% url 'dashboard:user_dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .empty-state {
+        padding: 2rem;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}

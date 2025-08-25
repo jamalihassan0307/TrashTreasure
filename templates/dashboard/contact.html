@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us - Recycle Bin{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <!-- Logo Section -->
+            <div class="text-center mb-5">
+                <div class="logo-container">
+                    <img src="{% static '../static/images/logo.jpg' %}" alt="Recycle Bin Logo" class="company-logo">
+                </div>
+            </div>
+            
+            <!-- Company Information -->
+            <div class="company-info text-center">
+                <h1 class="display-4 fw-bold text-primary mb-4">Recycle Bin</h1>
+                <p class="lead text-muted mb-5">For A Better Tomorrow</p>
+                
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="info-card">
+                            <div class="info-icon mb-3">
+                                <i class="fas fa-envelope fa-2x text-primary"></i>
+                            </div>
+                            <h5 class="fw-bold">Email</h5>
+                            <p class="mb-1">recyclebin.pakistan@gmail.com</p>
+                            <small class="text-muted">We'll respond within 24 hours</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="info-card">
+                            <div class="info-icon mb-3">
+                                <i class="fas fa-phone fa-2x text-success"></i>
+                            </div>
+                            <h5 class="fw-bold">Phone</h5>
+                            <p class="mb-1">+92 323 4694162</p>
+                            <small class="text-muted">Mon-Fri: 9:00 AM - 6:00 PM</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="info-card">
+                            <div class="info-icon mb-3">
+                                <i class="fas fa-map-marker-alt fa-2x text-warning"></i>
+                            </div>
+                            <h5 class="fw-bold">Address</h5>
+                            <p class="mb-1">NICL Dafterkhwan Vogue town</p>
+                            <small class="text-muted">MM Alam Road, Lahore, Pakistan</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-5">
+                    <h4 class="fw-bold text-primary mb-3">Business Hours</h4>
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Monday - Friday:</strong> 9:00 AM - 6:00 PM</p>
+                            <p class="mb-1"><strong>Saturday:</strong> 10:00 AM - 4:00 PM</p>
+                            <p class="mb-0"><strong>Sunday:</strong> Closed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.logo-container {
+    margin-bottom: 2rem;
+}
+
+.company-logo {
+    max-width: 300px;
+    height: auto;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border: 3px solid #4CAF50;
+}
+
+.info-card {
+    background: white;
+    padding: 2rem 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2);
+    border-color: #4CAF50;
+}
+
+.info-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    transition: all 0.3s ease;
+}
+
+.info-card:hover .info-icon {
+    transform: scale(1.1);
+    background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+    color: white !important;
+}
+
+.info-card h5 {
+    color: #2E7D32;
+    margin-bottom: 0.5rem;
+}
+
+.info-card p {
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.info-card small {
+    color: #666;
+    font-size: 0.875rem;
+}
+
+.company-info h1 {
+    color: #2E7D32;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.company-info .lead {
+    color: #4CAF50;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .company-logo {
+        max-width: 250px;
+    }
+    
+    .info-card {
+        margin-bottom: 1rem;
+    }
+}
+</style>
+{% endblock %}

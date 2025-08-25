@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block title %}Claim Rewards - Recycle Bin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Success/Error Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Points Information Card -->
+            <div class="card shadow-lg mb-4">
+                <div class="card-header text-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-coins me-2"></i>Your Reward Points
+                    </h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="display-3 fw-bold text-primary mb-3">{{ available_points }}</div>
+                    <p class="lead">
+                        {% if available_points >= min_claim_amount %}
+                            You have enough points to claim rewards!
+                        {% else %}
+                            Collect more trash to earn {{ min_claim_amount|add:"-"|add:available_points }} more points and claim rewards.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Claim Form -->
+            <div class="card shadow-lg mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-gift me-2"></i>Claim Your Rewards
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if available_points >= min_claim_amount %}
+                        <form id="claimForm" action="{% url 'trash:submit_claim' %}">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="claim_amount" class="form-label">Amount to Claim (points)</label>
+                                <input type="number" class="form-control" id="claim_amount" name="claim_amount" 
+                                       min="{{ min_claim_amount }}" max="{{ available_points }}" required
+                                       value="{{ min_claim_amount }}">
+                                <div class="form-text">Minimum {{ min_claim_amount }} points, maximum {{ available_points }} points</div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label d-block">Claim Type</label>
+                                <div class="btn-group" role="group">
+                                    <input type="radio" class="btn-check" name="claim_type" id="payment" value="payment" autocomplete="off" checked>
+                                    <label class="btn btn-outline-primary" for="payment">
+                                        <i class="fas fa-money-bill-wave me-2"></i>Payment
+                                    </label>
+                                    
+                                    <input type="radio" class="btn-check" name="claim_type" id="donation" value="donation" autocomplete="off">
+                                    <label class="btn btn-outline-success" for="donation">
+                                        <i class="fas fa-hand-holding-heart me-2"></i>Donation
+                                    </label>
+                                </div>
+                                <div class="form-text mt-2">Select how you'd like to redeem your points</div>
+                            </div>
+                            
+                            <!-- Hidden hospital field for donation -->
+                            <div id="hospitalField" class="mb-3" style="display: none;">
+                                <label for="donation_hospital" class="form-label">
+                                    <i class="fas fa-hospital me-2"></i>Select Hospital *
+                                </label>
+                                <select class="form-select" id="donation_hospital" name="donation_hospital">
+                                    <option value="">-- Select a Hospital --</option>
+                                    <option value="Lahore General Hospital">Lahore General Hospital</option>
+                                    <option value="Mayo Hospital Lahore">Mayo Hospital Lahore</option>
+                                    <option value="Jinnah Hospital Lahore">Jinnah Hospital Lahore</option>
+                                    <option value="Services Hospital Lahore">Services Hospital Lahore</option>
+                                </select>
+                                <div class="form-text">Required for donation claims</div>
+                            </div>
+                            
+                            <div id="paymentDetails" class="alert alert-info mb-4">
+                                <h5><i class="fas fa-info-circle me-2"></i>Payment Details</h5>
+                                <p>You will receive a payment equivalent to <strong>Rs. <span id="monetary-amount">{{ monetary_amount }}</span></strong> (Rs. {{ conversion_rate }} per point).</p>
+                                <p>Our team will contact you for payment details.</p>
+                            </div>
+                            
+                            <div id="donationDetails" class="alert alert-success mb-4" style="display: none;">
+                                <h5><i class="fas fa-heart me-2"></i>Donation Details</h5>
+                                <p>Your points worth <strong>Rs. <span id="donation-amount">{{ monetary_amount }}</span></strong> will be donated to your selected hospital.</p>
+                                
+                                <div class="mt-3 mb-1">
+                                    <label for="donation_hospital" class="form-label">Select Hospital:</label>
+                                    <select class="form-select" id="donation_hospital" name="donation_hospital" required>
+                                        <option value="">-- Select a Hospital --</option>
+                                        <option value="Lahore General Hospital">Lahore General Hospital</option>
+                                        <option value="Mayo Hospital Lahore">Mayo Hospital Lahore</option>
+                                        <option value="Jinnah Hospital Lahore">Jinnah Hospital Lahore</option>
+                                        <option value="Shokat Khanam Hospital Lahore">Shokat Khanam Hospital Lahore</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button  class="btn btn-primary btn-lg animated-button">
+                                    <i class="fas fa-paper-plane me-2"></i>Submit Claim
+                                </button>
+                            </div>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Not enough points!</strong> You need at least {{ min_claim_amount }} points to claim rewards.
+                        </div>
+                        <div class="text-center py-3">
+                            <a href="{% url 'trash:submit_trash' %}" class="btn btn-success">
+                                <i class="fas fa-plus me-2"></i>Submit More Trash
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="card shadow-lg">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-link me-2"></i>Quick Links
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'trash:claim_history' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-history me-2"></i>View Claim History
+                        </a>
+                        <a href="{% url 'dashboard:user_dashboard' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-home me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .animated-button {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const paymentRadio = document.getElementById('payment');
+        const donationRadio = document.getElementById('donation');
+        const paymentDetails = document.getElementById('paymentDetails');
+        const donationDetails = document.getElementById('donationDetails');
+        const claimAmountInput = document.getElementById('claim_amount');
+        const monetaryAmountSpan = document.getElementById('monetary-amount');
+        const donationAmountSpan = document.getElementById('donation-amount');
+        const hospitalField = document.getElementById('hospitalField');
+        const donationHospital = document.getElementById('donation_hospital');
+        
+        // Update monetary amount when claim amount changes
+        claimAmountInput.addEventListener('input', function() {
+            const points = parseInt(this.value) || 0;
+            const amount = points * 10;
+            monetaryAmountSpan.textContent = amount;
+            donationAmountSpan.textContent = amount;
+        });
+        
+        paymentRadio.addEventListener('change', function() {
+            if (this.checked) {
+                paymentDetails.style.display = 'block';
+                donationDetails.style.display = 'none';
+                hospitalField.style.display = 'none';
+                donationHospital.removeAttribute('required');
+                donationHospital.value = '';
+            }
+        });
+        
+        donationRadio.addEventListener('change', function() {
+            if (this.checked) {
+                paymentDetails.style.display = 'none';
+                donationDetails.style.display = 'block';
+                hospitalField.style.display = 'block';
+                donationHospital.setAttribute('required', 'required');
+            }
+        });
+        
+        // Form validation before submit
+        document.getElementById('claimForm').addEventListener('submit', function(e) {
+            const selectedType = document.querySelector('input[name="claim_type"]:checked').value;
+            const claimAmount = parseInt(claimAmountInput.value) || 0;
+            
+            if (claimAmount < 500) {
+                e.preventDefault();
+                alert('Claim amount must be at least 500 points.');
+                return false;
+            }
+            
+            if (selectedType === 'donation' && !donationHospital.value) {
+                e.preventDefault();
+                alert('Please select a hospital for donation.');
+                return false;
+            }
+            
+            return true;
+        });
+    });
+</script>
+{% endblock %}

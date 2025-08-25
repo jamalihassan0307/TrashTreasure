@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Analytics & Insights - Trash to Treasure{% endblock %}
+{% block title %}Analytics & Insights - Recycle Bin{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
@@ -292,6 +292,7 @@
             <div class="form-group">
                 <label for="period" class="form-label fw-semibold me-2">Period:</label>
                 <select name="period" id="period" class="filter-select">
+                    <option value="1" {% if period == '1' %}selected{% endif %}>Today</option>
                     <option value="7" {% if period == '7' %}selected{% endif %}>Last 7 Days</option>
                     <option value="30" {% if period == '30' %}selected{% endif %}>Last 30 Days</option>
                     <option value="90" {% if period == '90' %}selected{% endif %}>Last 90 Days</option>
@@ -443,24 +444,6 @@
             <div class="chart-section">
                 <div class="chart-header">
                     <h3 class="chart-title">
-                        <i class="fas fa-chart-bar text-success me-2"></i>
-                        Top Rider Performance
-                    </h3>
-                </div>
-                
-                <div class="chart-container">
-                    <canvas id="riderPerformanceChart" width="400" height="300"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Additional Analytics Charts -->
-    <div class="row g-4 mb-4">
-        <div class="col-lg-6">
-            <div class="chart-section">
-                <div class="chart-header">
-                    <h3 class="chart-title">
                         <i class="fas fa-chart-line text-info me-2"></i>
                         Daily Activity (Last 30 Days)
                     </h3>
@@ -471,24 +454,7 @@
                 </div>
             </div>
         </div>
-        
-        <div class="col-lg-6">
-            <div class="chart-section">
-                <div class="chart-header">
-                    <h3 class="chart-title">
-                        <i class="fas fa-chart-bar text-warning me-2"></i>
-                        Top Locations
-                    </h3>
-                </div>
-                
-                <div class="chart-container">
-                    <canvas id="locationChart" width="400" height="300"></canvas>
-                </div>
-            </div>
-        </div>
     </div>
-    
-
 </div>
 {% endblock %}
 
@@ -500,6 +466,12 @@
         const periodSelect = document.getElementById('period');
         
         if (periodSelect) {
+            // Set default to today if no period is selected
+            if (!periodSelect.value) {
+                periodSelect.value = '1';
+                periodSelect.closest('form').submit();
+            }
+            
             periodSelect.addEventListener('change', function() {
                 this.closest('form').submit();
             });
@@ -612,47 +584,6 @@
             });
         }
         
-                 // Rider Performance Bar Chart
-         const riderPerfCtx = document.getElementById('riderPerformanceChart');
-         if (riderPerfCtx) {
-             new Chart(riderPerfCtx, {
-                 type: 'bar',
-                 data: {
-                     labels: {{ rider_names|safe }},
-                     datasets: [{
-                         label: 'Collections',
-                         data: {{ rider_performance|safe }},
-                         backgroundColor: '#4CAF50',
-                         borderColor: '#2E7D32',
-                         borderWidth: 1,
-                         borderRadius: 4
-                     }]
-                 },
-                 options: {
-                     responsive: true,
-                     maintainAspectRatio: false,
-                     plugins: {
-                         legend: {
-                             display: false
-                         }
-                     },
-                     scales: {
-                         y: {
-                             beginAtZero: true,
-                             grid: {
-                                 color: 'rgba(0,0,0,0.1)'
-                             }
-                         },
-                         x: {
-                             grid: {
-                                 display: false
-                             }
-                         }
-                     }
-                 }
-             });
-         }
-         
          // Daily Activity Chart
          const dailyActivityCtx = document.getElementById('dailyActivityChart');
          if (dailyActivityCtx) {
@@ -694,42 +625,6 @@
                          x: {
                              grid: {
                                  color: 'rgba(0,0,0,0.1)'
-                             }
-                         }
-                     }
-                 }
-             });
-         }
-         
-         // Top Locations Chart
-         const locationCtx = document.getElementById('locationChart');
-         if (locationCtx) {
-             new Chart(locationCtx, {
-                 type: 'doughnut',
-                 data: {
-                     labels: {{ location_labels|safe }},
-                     datasets: [{
-                         data: {{ location_counts|safe }},
-                         backgroundColor: [
-                             '#FF9800',
-                             '#9C27B0',
-                             '#F44336',
-                             '#00BCD4',
-                             '#795548'
-                         ],
-                         borderWidth: 2,
-                         borderColor: '#fff'
-                     }]
-                 },
-                 options: {
-                     responsive: true,
-                     maintainAspectRatio: false,
-                     plugins: {
-                         legend: {
-                             position: 'bottom',
-                             labels: {
-                                 padding: 20,
-                                 usePointStyle: true
                              }
                          }
                      }
