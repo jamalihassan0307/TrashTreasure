@@ -19,4 +19,11 @@ urlpatterns = [
     
     # Points history
     path('points/history/', api_views.user_points_history, name='api_points_history'),
+    
+    # Reward Claim endpoints
+    path('claims/info/', api_views.get_claim_rewards_info, name='api_claim_rewards_info'),
+    path('claims/submit/', api_views.submit_claim, name='api_submit_claim'),
+    path('claims/history/', api_views.get_claim_history, name='api_claim_history'),
+    path('claims/manage/', api_views.get_manage_claims, name='api_manage_claims'),
+    path('claims/<int:claim_id>/update-status/', api_views.update_claim_status, name='api_update_claim_status'),
 ]
