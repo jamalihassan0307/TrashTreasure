@@ -13,7 +13,7 @@
                     </h3>
                 </div>
                 <div class="card-body p-4">
-                    <form >
+                    <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         
                         <!-- Basic Information -->
@@ -47,8 +47,16 @@
                         </div>
                         
                         <div class="mb-3">
-                            <label for="address" class="form-label">Address</label>
-                            <textarea class="form-control" id="address" name="address" rows="3">{{ user.address|default:'' }}</textarea>
+                            <label for="location" class="form-label">
+                                <i class="fas fa-map-marker-alt me-2"></i>Collection Location *
+                            </label>
+                            <input type="text" class="form-control" id="location" name="location" 
+                                   value="{{ user.location|default:'' }}" 
+                                   placeholder="Enter your collection location..." required>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                This location will be automatically used when submitting trash collection requests.
+                            </div>
                         </div>
                         
                         <!-- Profile Image -->
@@ -104,7 +112,7 @@
                             <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left me-2"></i>Back to Profile
                             </a>
-                            <button  class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save me-2"></i>Save Changes
                             </button>
                         </div>

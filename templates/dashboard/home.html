@@ -234,9 +234,9 @@
                         <a href="{% url 'dashboard:user_dashboard' %}" class="btn btn-warning btn-lg">
                             <i class="fas fa-dashboard me-2"></i>Go to Dashboard
                         </a>
-                        <a href="{% url 'trash:submit_trash' %}" class="btn btn-outline-light btn-lg">
+                        <button type="button" class="btn btn-outline-light btn-lg" data-bs-toggle="modal" data-bs-target="#submitTrashModal">
                             <i class="fas fa-plus me-2"></i>Submit Trash
-                        </a>
+                        </button>
                     {% endif %}
                 </div>
             </div>

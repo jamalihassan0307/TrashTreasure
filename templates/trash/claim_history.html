@@ -12,7 +12,7 @@
                     <i class="fas fa-history me-2 text-primary"></i>Reward Claim History
                 </h1>
                 <div>
-                    <a href="#" class="btn btn-primary">
+                    <a href="{% url 'trash:claim_rewards' %}" class="btn btn-primary">
                         <i class="fas fa-plus me-2"></i>New Claim
                     </a>
                 </div>
@@ -52,11 +52,20 @@
                             </select>
                         </div>
                         
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label for="search" class="form-label fw-semibold me-2">Search:</label>
                             <input type="text" name="search" id="search" class="form-control" 
                                    placeholder="Search by reference ID or notes..." 
                                    value="{{ search_query }}">
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <label for="per_page" class="form-label fw-semibold me-2">Per Page:</label>
+                            <select name="per_page" id="per_page" class="form-select">
+                                <option value="10" {% if per_page == '10' %}selected{% endif %}>10</option>
+                                <option value="20" {% if per_page == '20' %}selected{% endif %}>20</option>
+                                <option value="50" {% if per_page == '50' %}selected{% endif %}>50</option>
+                            </select>
                         </div>
                         
                         <div class="col-md-2 d-flex align-items-end">
@@ -149,35 +158,84 @@
                 </div>
             </div>
             
-            <!-- Pagination -->
+            <!-- Enhanced Pagination -->
             {% if is_paginated %}
-            <nav aria-label="Claim history pagination" class="mt-4">
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page=1&status={{ status_filter }}&search={{ search_query }}">&laquo; First</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&status={{ status_filter }}&search={{ search_query }}">Previous</a>
-                        </li>
-                    {% endif %}
-                    
-                    <li class="page-item active">
-                        <span class="page-link">
-                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                        </span>
-                    </li>
-                    
-                    {% if page_obj.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.next_page_number }}&status={{ status_filter }}&search={{ search_query }}">Next</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&status={{ status_filter }}&search={{ search_query }}">Last &raquo;</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <!-- Pagination Info -->
+                                <div class="pagination-info mb-3 mb-md-0">
+                                    <span class="text-muted">
+                                        Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} claims
+                                    </span>
+                                </div>
+                                
+                                <!-- Pagination Controls -->
+                                <nav aria-label="Claim history pagination">
+                                    <ul class="pagination pagination-lg mb-0">
+                                        <!-- First Page -->
+                                        {% if page_obj.has_previous %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page=1{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}{% if per_page %}&per_page={{ per_page }}{% endif %}">
+                                                    <i class="fas fa-angle-double-left"></i>
+                                                </a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}{% if per_page %}&per_page={{ per_page }}{% endif %}">
+                                                    <i class="fas fa-angle-left"></i>
+                                                </a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link"><i class="fas fa-angle-double-left"></i></span>
+                                            </li>
+                                            <li class="page-item disabled">
+                                                <span class="page-link"><i class="fas fa-angle-left"></i></span>
+                                            </li>
+                                        {% endif %}
+
+                                        <!-- Page Numbers -->
+                                        {% for num in page_obj.paginator.page_range %}
+                                            {% if page_obj.number == num %}
+                                                <li class="page-item active">
+                                                    <span class="page-link">{{ num }}</span>
+                                                </li>
+                                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page={{ num }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}{% if per_page %}&per_page={{ per_page }}{% endif %}">{{ num }}</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        <!-- Next and Last Page -->
+                                        {% if page_obj.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}{% if per_page %}&per_page={{ per_page }}{% endif %}">
+                                                    <i class="fas fa-angle-right"></i>
+                                                </a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}{% if per_page %}&per_page={{ per_page }}{% endif %}">
+                                                    <i class="fas fa-angle-double-right"></i>
+                                                </a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link"><i class="fas fa-angle-right"></i></span>
+                                            </li>
+                                            <li class="page-item disabled">
+                                                <span class="page-link"><i class="fas fa-angle-double-right"></i></span>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% endif %}
 
             <!-- Back Button -->

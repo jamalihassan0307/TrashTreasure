@@ -43,7 +43,7 @@
                 </div>
                 <div class="card-body">
                     {% if available_points >= min_claim_amount %}
-                        <form id="claimForm" action="{% url 'trash:submit_claim' %}">
+                        <form id="claimForm" method="post" action="{% url 'trash:submit_claim' %}">
                             {% csrf_token %}
                             
                             <div class="mb-3">
@@ -108,7 +108,7 @@
                             </div>
                             
                             <div class="d-grid">
-                                <button  class="btn btn-primary btn-lg animated-button">
+                                <button type="submit" class="btn btn-primary btn-lg animated-button">
                                     <i class="fas fa-paper-plane me-2"></i>Submit Claim
                                 </button>
                             </div>
@@ -119,9 +119,9 @@
                             <strong>Not enough points!</strong> You need at least {{ min_claim_amount }} points to claim rewards.
                         </div>
                         <div class="text-center py-3">
-                            <a href="{% url 'trash:submit_trash' %}" class="btn btn-success">
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#submitTrashModal">
                                 <i class="fas fa-plus me-2"></i>Submit More Trash
-                            </a>
+                            </button>
                         </div>
                     {% endif %}
                 </div>

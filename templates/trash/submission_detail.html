@@ -236,9 +236,9 @@
                         </a>
                         
                         {% if submission.status == 'pending' %}
-                        <a href="{% url 'trash:submit_trash' %}" class="btn btn-success">
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#submitTrashModal">
                             <i class="fas fa-plus me-2"></i>Submit Another
-                        </a>
+                        </button>
                         {% endif %}
                         
                         <a href="{% url 'dashboard:user_dashboard' %}" class="btn btn-outline-secondary">

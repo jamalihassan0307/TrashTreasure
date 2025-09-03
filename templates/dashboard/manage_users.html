@@ -24,12 +24,12 @@
             <div class="card">
                 <div class="card-body">
                     <form method="get" class="row g-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="search" class="form-label">Search Users</label>
                             <input type="text" class="form-control" id="search" name="search" 
                                    value="{{ search_query }}" placeholder="Search by username, email, or name">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label for="user_type" class="form-label">User Type</label>
                             <select class="form-select" id="user_type" name="user_type">
                                 <option value="">All Types</option>
@@ -37,7 +37,7 @@
                                 <option value="rider" {% if user_type_filter == 'rider' %}selected{% endif %}>Riders</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label for="status" class="form-label">Status</label>
                             <select class="form-select" id="status" name="status">
                                 <option value="">All Status</option>
@@ -47,6 +47,14 @@
                             </select>
                         </div>
                         <div class="col-md-2">
+                            <label for="per_page" class="form-label">Per Page</label>
+                            <select class="form-select" id="per_page" name="per_page">
+                                <option value="10" {% if per_page == '10' %}selected{% endif %}>10</option>
+                                <option value="20" {% if per_page == '20' %}selected{% endif %}>20</option>
+                                <option value="50" {% if per_page == '50' %}selected{% endif %}>50</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
                             <label class="form-label">&nbsp;</label>
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary">
@@ -133,13 +141,13 @@
                                     <td>
                                         <div class="btn-group" role="group">
                                             {% if user.status == 'active' %}
-                                                <a href="" 
+                                                <a href="{% url 'dashboard:toggle_user_status' user.id %}" 
                                                    class="btn btn-sm btn-warning" 
-                                                   onclick="">
+                                                   onclick="return confirm('Are you sure you want to suspend this user?')">
                                                     <i class="fas fa-ban"></i>
                                                 </a>
                                             {% else %}
-                                                <a href="" 
+                                                <a href="{% url 'dashboard:toggle_user_status' user.id %}" 
                                                    class="btn btn-sm btn-success">
                                                     <i class="fas fa-check"></i>
                                                 </a>
@@ -147,7 +155,7 @@
                                             
                                             <!-- Clear Points Button -->
                                             <button class="btn btn-sm btn-outline-danger" 
-                                                    onclick=""
+                                                    onclick="clearUserPoints('{{ user.id }}', '{{ user.username }}')"
                                                     title="Clear reward points">
                                                 <i class="fas fa-coins"></i>
                                             </button>
@@ -169,6 +177,86 @@
             </div>
         </div>
     </div>
+
+    <!-- Enhanced Pagination -->
+    {% if is_paginated %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <!-- Pagination Info -->
+                        <div class="pagination-info mb-3 mb-md-0">
+                            <span class="text-muted">
+                                Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} users
+                            </span>
+                        </div>
+                        
+                        <!-- Pagination Controls -->
+                        <nav aria-label="Users pagination">
+                            <ul class="pagination pagination-lg mb-0">
+                                <!-- First Page -->
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if user_type_filter %}&user_type={{ user_type_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if per_page %}&per_page={{ per_page }}{% endif %}">
+                                            <i class="fas fa-angle-double-left"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if user_type_filter %}&user_type={{ user_type_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if per_page %}&per_page={{ per_page }}{% endif %}">
+                                            <i class="fas fa-angle-left"></i>
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link"><i class="fas fa-angle-double-left"></i></span>
+                                    </li>
+                                    <li class="page-item disabled">
+                                        <span class="page-link"><i class="fas fa-angle-left"></i></span>
+                                    </li>
+                                {% endif %}
+
+                                <!-- Page Numbers -->
+                                {% for num in page_obj.paginator.page_range %}
+                                    {% if page_obj.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ num }}</span>
+                                        </li>
+                                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if user_type_filter %}&user_type={{ user_type_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if per_page %}&per_page={{ per_page }}{% endif %}">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                <!-- Next and Last Page -->
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if user_type_filter %}&user_type={{ user_type_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if per_page %}&per_page={{ per_page }}{% endif %}">
+                                            <i class="fas fa-angle-right"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if user_type_filter %}&user_type={{ user_type_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if per_page %}&per_page={{ per_page }}{% endif %}">
+                                            <i class="fas fa-angle-double-right"></i>
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link"><i class="fas fa-angle-right"></i></span>
+                                    </li>
+                                    <li class="page-item disabled">
+                                        <span class="page-link"><i class="fas fa-angle-double-right"></i></span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 
 <script>
