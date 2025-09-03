@@ -4,7 +4,7 @@ from . import views
 app_name = 'trash'
 
 urlpatterns = [
-    path('submit/', views.submit_trash, name='submit_trash'),
+    # Removed submit_trash page - now using modal
     path('track/<str:track_id>/', views.track_submission, name='track_submission'),
     path('submission/<int:submission_id>/', views.submission_detail, name='submission_detail'),
     path('update-status/<int:submission_id>/', views.update_status, name='update_status'),

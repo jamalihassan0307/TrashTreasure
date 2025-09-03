@@ -1,6 +1,8 @@
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from django.db import transaction
 from django.db.models import Q
@@ -22,15 +24,43 @@ from .serializers import (
 )
 from accounts.utils import token_required, get_user_id_by_token
 
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def check_user_location(request):
+    """Check if user has location set"""
+    user = request.user
+    has_location = bool(user.location and user.location.strip())
+    
+    return Response({
+        'success': True,
+        'has_location': has_location,
+        'location': user.location if has_location else None,
+        'user_id': user.id
+    })
+
 @api_view(['POST'])
-@token_required()
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
 def submit_trash(request):
     """Submit new trash collection request"""
     serializer = TrashSubmissionCreateSerializer(data=request.data)
     if serializer.is_valid():
         try:
             with transaction.atomic():
+                # Always use user's saved location for trash submissions
+                if not request.user.location or not request.user.location.strip():
+                    return Response({
+                        'success': False,
+                        'error': 'Please set your location in profile settings first'
+                    }, status=status.HTTP_400_BAD_REQUEST)
+                
+                # Use user's saved location
+                location = request.user.location.strip()
+                serializer.validated_data['location'] = location
+
                 submission = serializer.save(user=request.user)
+
                 full_serializer = TrashSubmissionSerializer(submission)
                 return Response({
                     'success': True,
@@ -57,6 +87,7 @@ def get_user_submissions(request):
     date_filter = request.GET.get('date', '')
     search_query = request.GET.get('search', '')
     page = request.GET.get('page', 1)
+    per_page = int(request.GET.get('per_page', 10))
     
     submissions = TrashSubmission.objects.filter(user=request.user).order_by('-created_at')
     
@@ -80,7 +111,7 @@ def get_user_submissions(request):
         )
     
     # Pagination
-    paginator = Paginator(submissions, 12)
+    paginator = Paginator(submissions, per_page)
     try:
         page_obj = paginator.page(page)
     except:
@@ -97,6 +128,7 @@ def get_user_submissions(request):
             'total_count': paginator.count,
             'has_next': page_obj.has_next(),
             'has_previous': page_obj.has_previous(),
+            'per_page': per_page,
         }
     })
 
@@ -122,15 +154,15 @@ def submission_detail(request, submission_id):
     """Get detailed submission info"""
     try:
         submission = TrashSubmission.objects.get(id=submission_id)
-        
+    
         # Check permission
         if not (request.user == submission.user or 
                 request.user.user_type in ['rider', 'admin'] or
                 (request.user.user_type == 'rider' and submission.rider == request.user)):
-            return Response({
-                'success': False,
-                'error': 'Permission denied'
-            }, status=status.HTTP_403_FORBIDDEN)
+                    return Response({
+                        'success': False,
+                        'error': 'Permission denied'
+                    }, status=status.HTTP_403_FORBIDDEN)
         
         serializer = TrashSubmissionSerializer(submission)
         return Response({
@@ -387,6 +419,7 @@ def rider_collections(request):
     date_filter = request.GET.get('date', '')
     search_query = request.GET.get('search', '')
     page = request.GET.get('page', 1)
+    per_page = int(request.GET.get('per_page', 10))
     
     if date_filter:
         today = timezone.now().date()
@@ -406,7 +439,7 @@ def rider_collections(request):
         )
     
     # Pagination
-    paginator = Paginator(collections, 20)
+    paginator = Paginator(collections, per_page)
     try:
         page_obj = paginator.page(page)
     except:
@@ -423,6 +456,7 @@ def rider_collections(request):
             'total_count': paginator.count,
             'has_next': page_obj.has_next(),
             'has_previous': page_obj.has_previous(),
+            'per_page': per_page,
         }
     })
 
@@ -436,6 +470,7 @@ def user_points_history(request):
     type_filter = request.GET.get('type', '')
     date_filter = request.GET.get('date', '')
     page = request.GET.get('page', 1)
+    per_page = int(request.GET.get('per_page', 10))
     
     if type_filter:
         if type_filter == 'earned':
@@ -455,7 +490,7 @@ def user_points_history(request):
             history = history.filter(created_at__date__gte=month_ago)
     
     # Pagination
-    paginator = Paginator(history, 20)
+    paginator = Paginator(history, per_page)
     try:
         page_obj = paginator.page(page)
     except:
@@ -472,6 +507,7 @@ def user_points_history(request):
             'total_count': paginator.count,
             'has_next': page_obj.has_next(),
             'has_previous': page_obj.has_previous(),
+            'per_page': per_page,
         }
     })
 
@@ -569,6 +605,7 @@ def get_claim_history(request):
     status_filter = request.GET.get('status', '')
     search_query = request.GET.get('search', '')
     page = request.GET.get('page', 1)
+    per_page = int(request.GET.get('per_page', 10))
     
     if status_filter:
         claims = claims.filter(status=status_filter)
@@ -581,7 +618,7 @@ def get_claim_history(request):
         )
     
     # Pagination
-    paginator = Paginator(claims, 10)
+    paginator = Paginator(claims, per_page)
     try:
         page_obj = paginator.page(page)
     except:
@@ -599,6 +636,7 @@ def get_claim_history(request):
             'total_count': paginator.count,
             'has_next': page_obj.has_next(),
             'has_previous': page_obj.has_previous(),
+            'per_page': per_page,
         }
     })
 
@@ -613,6 +651,7 @@ def get_manage_claims(request):
     claim_type_filter = request.GET.get('claim_type', '')
     search_query = request.GET.get('search', '')
     page = request.GET.get('page', 1)
+    per_page = int(request.GET.get('per_page', 10))
     
     if status_filter:
         claims = claims.filter(status=status_filter)
@@ -629,7 +668,7 @@ def get_manage_claims(request):
         )
     
     # Pagination
-    paginator = Paginator(claims, 20)
+    paginator = Paginator(claims, per_page)
     try:
         page_obj = paginator.page(page)
     except:
@@ -655,6 +694,7 @@ def get_manage_claims(request):
             'total_count': paginator.count,
             'has_next': page_obj.has_next(),
             'has_previous': page_obj.has_previous(),
+            'per_page': per_page,
         }
     })
 

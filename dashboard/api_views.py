@@ -122,7 +122,7 @@ def get_admin_dashboard_stats(request):
         recent_submissions = TrashSubmission.objects.all().order_by('-created_at')[:10]
         from trash.serializers import TrashSubmissionSerializer
         recent_serializer = TrashSubmissionSerializer(recent_submissions, many=True)
-        
+    
         # Weekly stats
         start_of_week = now - timedelta(days=now.weekday())
         start_of_week = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -159,10 +159,10 @@ def get_admin_dashboard_stats(request):
             collection_count=Count('collections')
         ).order_by('-collection_count')[:5]
         
-        # Get daily collection data for the chart
+            # Get daily collection data for the chart
         daily_collections = []
         daily_labels = []
-        
+            
         for i in range(7):
             date = start_of_week + timedelta(days=i)
             count = CollectionRecord.objects.filter(
@@ -170,9 +170,9 @@ def get_admin_dashboard_stats(request):
             ).count()
             daily_collections.append(count)
             daily_labels.append(date.strftime('%a'))
-        
+            
         return Response({
-            'success': True,
+                'success': True,
             'basic_stats': {
                 'total_users': total_users,
                 'total_submissions': total_submissions,
@@ -180,13 +180,13 @@ def get_admin_dashboard_stats(request):
                 'active_riders': active_riders,
                 'total_points': total_points,
             },
-            'recent_submissions': recent_serializer.data,
+                'recent_submissions': recent_serializer.data,
             'weekly_stats': {
                 'this_week_collections': this_week_collections,
                 'last_week_collections': last_week_collections,
                 'weekly_growth': weekly_growth,
-                'daily_collections': daily_collections,
-                'daily_labels': daily_labels,
+                    'daily_collections': daily_collections,
+                    'daily_labels': daily_labels,
             },
             'system_health': {
                 'completion_rate': completion_rate,
@@ -211,7 +211,7 @@ def get_admin_dashboard_stats(request):
 def get_admin_analytics(request):
     """Get detailed analytics data for admins"""
     try:
-        # Get period filter
+    # Get period filter
         period = int(request.GET.get('period', 30))
         start_date = request.GET.get('start_date', '')
         end_date = request.GET.get('end_date', '')
@@ -239,10 +239,10 @@ def get_admin_analytics(request):
         user_growth = ((current_users - prev_users) / prev_users * 100) if prev_users > 0 else 0
         submission_growth = ((current_submissions - prev_submissions) / prev_submissions * 100) if prev_submissions > 0 else 0
         
-        # Get monthly submission trends for the last 6 months
+            # Get monthly submission trends for the last 6 months
         monthly_submissions = []
         monthly_labels = []
-        
+            
         for i in range(6):
             month_start = end.replace(day=1) - timedelta(days=30*i)
             month_end = month_start.replace(day=28) + timedelta(days=4)
@@ -255,30 +255,30 @@ def get_admin_analytics(request):
             
             monthly_submissions.insert(0, count)
             monthly_labels.insert(0, month_start.strftime('%b %Y'))
-        
-        # Get user type distribution
-        user_types = CustomUser.objects.values('user_type').annotate(count=Count('user_type'))
-        user_type_labels = []
-        user_type_counts = []
-        
-        for user_type in user_types:
-            user_type_labels.append(user_type['user_type'].title())
-            user_type_counts.append(user_type['count'])
-        
-        # Get rider performance data
-        rider_performance = []
-        rider_names = []
-        
-        top_riders = CustomUser.objects.filter(user_type='rider').annotate(
-            collection_count=Count('collections')
-        ).order_by('-collection_count')[:10]
-        
-        for rider in top_riders:
-            rider_names.append(rider.username)
-            rider_performance.append(rider.collection_count)
+            
+            # Get user type distribution
+            user_types = CustomUser.objects.values('user_type').annotate(count=Count('user_type'))
+            user_type_labels = []
+            user_type_counts = []
+            
+            for user_type in user_types:
+                user_type_labels.append(user_type['user_type'].title())
+                user_type_counts.append(user_type['count'])
+            
+            # Get rider performance data
+            rider_performance = []
+            rider_names = []
+            
+            top_riders = CustomUser.objects.filter(user_type='rider').annotate(
+                collection_count=Count('collections')
+            ).order_by('-collection_count')[:10]
+            
+            for rider in top_riders:
+                rider_names.append(rider.username)
+                rider_performance.append(rider.collection_count)
         
         return Response({
-            'success': True,
+                'success': True,
             'period_stats': {
                 'current_users': current_users,
                 'current_submissions': current_submissions,
@@ -289,14 +289,14 @@ def get_admin_analytics(request):
                 'user_growth': user_growth,
                 'submission_growth': submission_growth,
             },
-            'trends': {
-                'monthly_submissions': monthly_submissions,
-                'monthly_labels': monthly_labels,
-                'user_type_labels': user_type_labels,
-                'user_type_counts': user_type_counts,
-                'rider_names': rider_names,
-                'rider_performance': rider_performance,
-            },
+                'trends': {
+                    'monthly_submissions': monthly_submissions,
+                    'monthly_labels': monthly_labels,
+                    'user_type_labels': user_type_labels,
+                    'user_type_counts': user_type_counts,
+                    'rider_names': rider_names,
+                    'rider_performance': rider_performance,
+                },
             'date_range': {
                 'start_date': start.strftime('%Y-%m-%d'),
                 'end_date': end.strftime('%Y-%m-%d'),
@@ -319,25 +319,25 @@ def manage_system_settings(request):
         if request.method == 'GET':
             serializer = SystemSettingsSerializer(settings)
             return Response({
-                'success': True,
-                'settings': serializer.data
-            })
+                    'success': True,
+                    'settings': serializer.data
+                })
         
         elif request.method == 'PUT':
             serializer = SystemSettingsSerializer(settings, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response({
-                    'success': True,
-                    'message': 'System settings updated successfully',
-                    'settings': serializer.data
-                })
-            return Response({
-                'success': False,
-                'error': 'Invalid data',
-                'details': serializer.errors
-            }, status=status.HTTP_400_BAD_REQUEST)
-            
+                        'success': True,
+                        'message': 'System settings updated successfully',
+                        'settings': serializer.data
+                    })
+                return Response({
+                    'success': False,
+                    'error': 'Invalid data',
+                    'details': serializer.errors
+                }, status=status.HTTP_400_BAD_REQUEST)
+                
     except Exception as e:
         return Response({
             'success': False,
@@ -399,6 +399,7 @@ def get_user_management_data(request):
         user_type_filter = request.GET.get('user_type', '')
         status_filter = request.GET.get('status', '')
         page = request.GET.get('page', 1)
+        per_page = int(request.GET.get('per_page', 10))
         
         # Start with all users except admins
         users = CustomUser.objects.exclude(user_type='admin')
@@ -422,7 +423,7 @@ def get_user_management_data(request):
         users = users.order_by('-created_at')
         
         # Pagination
-        paginator = Paginator(users, 20)
+        paginator = Paginator(users, per_page)
         try:
             page_obj = paginator.page(page)
         except:
@@ -454,6 +455,7 @@ def get_user_management_data(request):
                 'total_count': paginator.count,
                 'has_next': page_obj.has_next(),
                 'has_previous': page_obj.has_previous(),
+                'per_page': per_page,
             }
         })
         
@@ -559,6 +561,7 @@ def get_pending_submissions(request):
         search_query = request.GET.get('search', '')
         date_filter = request.GET.get('date', '')
         page = request.GET.get('page', 1)
+        per_page = int(request.GET.get('per_page', 10))
         
         if search_query:
             submissions = submissions.filter(
@@ -578,7 +581,7 @@ def get_pending_submissions(request):
                 submissions = submissions.filter(created_at__date__gte=month_ago)
         
         # Pagination
-        paginator = Paginator(submissions, 20)
+        paginator = Paginator(submissions, per_page)
         try:
             page_obj = paginator.page(page)
         except:
@@ -597,6 +600,7 @@ def get_pending_submissions(request):
                 'total_count': paginator.count,
                 'has_next': page_obj.has_next(),
                 'has_previous': page_obj.has_previous(),
+                'per_page': per_page,
             }
         })
         

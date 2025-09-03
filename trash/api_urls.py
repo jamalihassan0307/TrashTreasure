@@ -2,6 +2,9 @@ from django.urls import path
 from . import api_views
 
 urlpatterns = [
+    # User location check
+    path('check-location/', api_views.check_user_location, name='api_check_location'),
+    
     # Submission endpoints
     path('submit/', api_views.submit_trash, name='api_submit_trash'),
     path('submissions/', api_views.get_user_submissions, name='api_user_submissions'),

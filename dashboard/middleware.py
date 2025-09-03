@@ -25,7 +25,7 @@ class SystemStatusMiddleware:
                     # If user is not admin and maintenance mode is on, show maintenance page
                     # But only if they're not already trying to access it
                     if request.path != '/maintenance/':
-                        return redirect('dashboard:maintenance_page')
+                        return redirect('dashboard:maintenance')
             
             # Check debug mode
             if system_settings.debug_mode:
@@ -33,10 +33,11 @@ class SystemStatusMiddleware:
                     # If user is not admin and debug mode is on, show under construction page
                     # But only if they're not already trying to access it
                     if request.path != '/under-construction/':
-                        return redirect('dashboard:under_construction_page')
+                        return redirect('dashboard:under_construction')
                     
-        except Exception:
+        except Exception as e:
             # If there's an error getting settings, continue normally
+            # You can log this error if needed
             pass
         
         return self.get_response(request)
@@ -67,10 +68,15 @@ class SystemStatusMiddleware:
         if request.path == '/register/':
             return True
         
+        # Skip for API endpoints
+        if request.path.startswith('/api/'):
+            return True
+        
         return False
     
     def _is_admin_user(self, request):
         """Check if the current user is an admin"""
-        return (request.user.is_authenticated and 
+        return (request.user and 
+                request.user.is_authenticated and 
                 hasattr(request.user, 'user_type') and 
                 request.user.user_type == 'admin')

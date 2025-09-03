@@ -5,7 +5,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone', 
-                 'reward_points', 'profile_image', 'address', 'status', 'user_type')
+                 'reward_points', 'profile_image', 'location', 'status', 'user_type')
         read_only_fields = ('reward_points', 'user_type', 'status')
         extra_kwargs = {
             'password': {'write_only': True}

@@ -18,7 +18,7 @@ class CustomUser(AbstractUser):
     phone = models.CharField(max_length=15, blank=True)
     reward_points = models.PositiveIntegerField(default=0)
     profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
-    address = models.TextField(blank=True)
+    location = models.CharField(max_length=255, blank=True, help_text="Default collection location")
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

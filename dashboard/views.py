@@ -84,6 +84,7 @@ def register_view(request):
         email = request.POST.get('email')
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
+        location = request.POST.get('location')
         
         if password1 != password2:
             messages.error(request, 'Passwords do not match.')
@@ -93,12 +94,17 @@ def register_view(request):
             messages.error(request, 'Username already exists.')
             return render(request, 'dashboard/register.html')
         
+        if not location or location.strip() == '':
+            messages.error(request, 'Location is required.')
+            return render(request, 'dashboard/register.html')
+        
         # Only allow regular users to register
         user = CustomUser.objects.create_user(
             username=username,
             email=email,
             password=password1,
-            user_type='user'  # Force user type to 'user'
+            user_type='user',  # Force user type to 'user'
+            location=location.strip()
         )
         messages.success(request, 'Account created successfully! Please log in.')
         return redirect('dashboard:login')
@@ -130,6 +136,7 @@ def user_submissions(request):
     status_filter = request.GET.get('status', '')
     date_filter = request.GET.get('date', '')
     search_query = request.GET.get('search', '')
+    per_page = int(request.GET.get('per_page', 10))
     
     if status_filter:
         user_submissions = user_submissions.filter(status=status_filter)
@@ -152,7 +159,7 @@ def user_submissions(request):
         )
     
     # Pagination
-    paginator = Paginator(user_submissions, 12)
+    paginator = Paginator(user_submissions, per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
@@ -170,6 +177,7 @@ def user_submissions(request):
         'status_filter': status_filter,
         'date_filter': date_filter,
         'search_query': search_query,
+        'per_page': per_page,
         'is_paginated': paginator.num_pages > 1,
         'page_obj': page_obj,
     }
@@ -184,6 +192,7 @@ def user_points(request):
     # Apply filters
     type_filter = request.GET.get('type', '')
     date_filter = request.GET.get('date', '')
+    per_page = int(request.GET.get('per_page', 10))
     
     if type_filter:
         if type_filter == 'earned':
@@ -203,7 +212,7 @@ def user_points(request):
             point_history = point_history.filter(created_at__date__gte=month_ago)
     
     # Pagination
-    paginator = Paginator(point_history, 20)
+    paginator = Paginator(point_history, per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
@@ -223,6 +232,7 @@ def user_points(request):
         'completed_count': completed_count,
         'type_filter': type_filter,
         'date_filter': date_filter,
+        'per_page': per_page,
         'is_paginated': paginator.num_pages > 1,
         'page_obj': page_obj,
     }
@@ -358,11 +368,20 @@ def rider_assigned_collections(request):
     else:  # Default: updated_at
         assigned_submissions = assigned_submissions.order_by('-updated_at')
     
+    # Pagination
+    per_page = int(request.GET.get('per_page', 10))
+    paginator = Paginator(assigned_submissions, per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     context = {
-        'assigned_submissions': assigned_submissions,
+        'assigned_submissions': page_obj,
         'search_query': search_query,
         'status_filter': status_filter,
         'sort_order': sort_order,
+        'per_page': per_page,
+        'is_paginated': paginator.num_pages > 1,
+        'page_obj': page_obj,
     }
     
     return render(request, 'dashboard/rider_assigned_collections_rider.html', context)
@@ -377,8 +396,12 @@ def admin_dashboard(request):
     active_riders_list = CustomUser.objects.filter(user_type='rider', status='active')
     total_points = sum([user.reward_points for user in CustomUser.objects.all()])
     
-    # Recent submissions
-    recent_submissions = TrashSubmission.objects.all().order_by('-created_at')[:10]
+    # Recent submissions with pagination
+    recent_submissions_query = TrashSubmission.objects.all().order_by('-created_at')
+    recent_per_page = int(request.GET.get('per_page', 10))
+    recent_paginator = Paginator(recent_submissions_query, recent_per_page)
+    recent_page_number = request.GET.get('page', 1)
+    recent_submissions = recent_paginator.get_page(recent_page_number)
     
     # Weekly collections data with proper date calculations
     now = timezone.now()
@@ -495,6 +518,10 @@ def admin_dashboard(request):
         'total_weight_collected': total_weight_collected,
         'avg_collections_per_day': avg_collections_per_day,
         'system_status': system_status,
+        'recent_per_page': recent_per_page,
+        'recent_paginator': recent_paginator,
+        'recent_page_obj': recent_submissions,
+        'recent_is_paginated': recent_paginator.num_pages > 1,
     }
     return render(request, 'dashboard/admin_dashboard.html', context)
 
@@ -836,6 +863,7 @@ def manage_users(request):
     search_query = request.GET.get('search', '')
     user_type_filter = request.GET.get('user_type', '')
     status_filter = request.GET.get('status', '')
+    per_page = int(request.GET.get('per_page', 10))
     
     # Start with all users except admins
     users = CustomUser.objects.exclude(user_type='admin')
@@ -858,11 +886,19 @@ def manage_users(request):
     # Order by creation date
     users = users.order_by('-created_at')
     
+    # Pagination
+    paginator = Paginator(users, per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     context = {
-        'users': users,
+        'users': page_obj,
         'search_query': search_query,
         'user_type_filter': user_type_filter,
         'status_filter': status_filter,
+        'per_page': per_page,
+        'is_paginated': paginator.num_pages > 1,
+        'page_obj': page_obj,
     }
     return render(request, 'dashboard/manage_users.html', context)
 

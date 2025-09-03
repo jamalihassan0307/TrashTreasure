@@ -44,7 +44,7 @@ class TrashSubmission(models.Model):
 
 class CollectionRecord(models.Model):
     submission = models.OneToOneField(TrashSubmission, on_delete=models.CASCADE, related_name='collection_record')
-    rider = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='collections')
+    rider = models.ForeignKey(CustomUser, null=True, blank=True, on_delete=models.CASCADE, related_name='collections')
     trash_type = models.CharField(max_length=50, verbose_name="Actual Trash Type")
     actual_quantity = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Actual Weight (kg)")
     points_awarded = models.PositiveIntegerField(default=0, verbose_name="Reward Points")

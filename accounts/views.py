@@ -17,7 +17,7 @@ def edit_profile(request):
         user.last_name = request.POST.get('last_name', '')
         user.email = request.POST.get('email', '')
         user.phone = request.POST.get('phone', '')
-        user.address = request.POST.get('address', '')
+        user.location = request.POST.get('location', '')
         
         if request.FILES.get('profile_image'):
             user.profile_image = request.FILES['profile_image']

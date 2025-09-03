@@ -19,38 +19,7 @@ def is_admin(user):
     return user.is_authenticated and user.user_type == 'admin'
 
 @login_required
-def submit_trash(request):
-    if request.method == 'POST':
-        quantity_kg = request.POST.get('quantity_kg')
-        location = request.POST.get('location')
-        # Removed trash_description and image handling
-        
-        if not location or not quantity_kg:
-            messages.error(request, 'Please fill all required fields.')
-            return render(request, 'trash/submit_trash.html')
-        
-        # Convert quantity_kg to float
-        try:
-            quantity_kg = float(quantity_kg)
-            # Validate minimum weight requirement
-            if quantity_kg < 5:
-                messages.error(request, 'Weight must be at least 5 kg.')
-                return render(request, 'trash/submit_trash.html')
-        except (ValueError, TypeError):
-            messages.error(request, 'Please enter a valid weight.')
-            return render(request, 'trash/submit_trash.html')
-        
-        submission = TrashSubmission.objects.create(
-            user=request.user,
-            quantity_kg=quantity_kg,
-            location=location
-            # Removed trash_description and image field
-        )
-        
-        messages.success(request, f'Trash submission created successfully! Track ID: {submission.track_id}')
-        return redirect('trash:submission_detail', submission_id=submission.id)
-    
-    return render(request, 'trash/submit_trash.html')
+# Removed submit_trash view - now using modal with API
 
 def track_submission(request, track_id):
     try:
@@ -442,6 +411,7 @@ def claim_history(request):
     # Filtering
     status_filter = request.GET.get('status', '')
     search_query = request.GET.get('search', '')
+    per_page = int(request.GET.get('per_page', 10))
     
     if status_filter:
         claims = claims.filter(status=status_filter)
@@ -454,7 +424,7 @@ def claim_history(request):
         )
     
     # Pagination
-    paginator = Paginator(claims, 10)
+    paginator = Paginator(claims, per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
@@ -463,6 +433,7 @@ def claim_history(request):
         'available_points': user.reward_points,
         'status_filter': status_filter,
         'search_query': search_query,
+        'per_page': per_page,
         'is_paginated': paginator.num_pages > 1,
         'page_obj': page_obj,
     }
@@ -480,6 +451,7 @@ def manage_claims(request):
     status_filter = request.GET.get('status', '')
     claim_type_filter = request.GET.get('claim_type', '')
     search_query = request.GET.get('search', '')
+    per_page = int(request.GET.get('per_page', 10))
     
     if status_filter:
         claims = claims.filter(status=status_filter)
@@ -496,7 +468,7 @@ def manage_claims(request):
         )
     
     # Pagination
-    paginator = Paginator(claims, 20)
+    paginator = Paginator(claims, per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
@@ -513,6 +485,7 @@ def manage_claims(request):
         'status_filter': status_filter,
         'claim_type_filter': claim_type_filter,
         'search_query': search_query,
+        'per_page': per_page,
         'status_counts': status_counts,
         'is_paginated': paginator.num_pages > 1,
         'page_obj': page_obj,
