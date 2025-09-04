@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.db import transaction
 from django.db.models import Q
 from django.core.paginator import Paginator
+from django.shortcuts import get_object_or_404
 
 from .models import TrashSubmission, CollectionRecord, RewardPointHistory, RewardClaim
 from .serializers import (
@@ -58,6 +59,7 @@ def submit_trash(request):
                 # Use user's saved location
                 location = request.user.location.strip()
                 serializer.validated_data['location'] = location
+                serializer.validated_data['rider_notes'] = None  # Explicitly set to None
 
                 submission = serializer.save(user=request.user)
 
@@ -786,6 +788,186 @@ def update_claim_status(request, claim_id):
             'success': False,
             'error': 'Claim not found'
         }, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({
+            'success': False,
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def update_submission_status(request, submission_id):
+    """Update submission status (for riders)"""
+    try:
+        submission = get_object_or_404(TrashSubmission, id=submission_id)
+        
+        # Check if user is the assigned rider
+        if submission.rider != request.user:
+            return Response({
+                'success': False,
+                'error': 'You are not assigned to this submission'
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        new_status = request.data.get('status')
+        if not new_status:
+            return Response({
+                'success': False,
+                'error': 'Status is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Validate status transition
+        valid_transitions = {
+            'assigned': ['on_the_way'],
+            'on_the_way': ['arrived'],
+            'arrived': ['picked'],
+            'picked': ['collected']
+        }
+        
+        if submission.status not in valid_transitions:
+            return Response({
+                'success': False,
+                'error': f'Cannot update status from {submission.status}'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if new_status not in valid_transitions[submission.status]:
+            return Response({
+                'success': False,
+                'error': f'Invalid status transition from {submission.status} to {new_status}'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Update status
+        submission.status = new_status
+        submission.updated_at = timezone.now()
+        
+        # Set pickup time when status becomes 'picked'
+        if new_status == 'picked' and not submission.pickup_time:
+            submission.pickup_time = timezone.now()
+        
+        # Set completion time when status becomes 'collected'
+        if new_status == 'collected' and not submission.completion_time:
+            submission.completion_time = timezone.now()
+        
+        submission.save()
+        
+        # Award points to user when status becomes 'collected'
+        if new_status == 'collected':
+            # Use the current quantity_kg for points calculation
+            weight_kg = float(submission.quantity_kg or 0)
+            points_to_award = int(weight_kg * 10)  # 10 points per kg
+            if points_to_award > 0:
+                # Update user's reward points
+                submission.user.reward_points += points_to_award
+                submission.user.save()
+                
+                # Create point history record
+                RewardPointHistory.objects.create(
+                    user=submission.user,
+                    points=points_to_award,
+                    reason=f"Trash collection completed - {weight_kg}kg (Track ID: {submission.track_id})",
+                    submission=submission,
+                    awarded_by=request.user  # The rider who completed it
+                )
+        
+        message = f'Status updated to {new_status}'
+        if new_status == 'collected':
+            points_awarded = int(weight_kg * 10)
+            message += f'. Points awarded to user: {points_awarded} points'
+        
+        return Response({
+            'success': True,
+            'message': message,
+            'submission': TrashSubmissionSerializer(submission).data
+        })
+        
+    except Exception as e:
+        return Response({
+            'success': False,
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def update_submission_weight(request, submission_id):
+    """Update submission weight and status (for riders when picking up)"""
+    try:
+        submission = get_object_or_404(TrashSubmission, id=submission_id)
+        
+        # Check if user is the assigned rider
+        if submission.rider != request.user:
+            return Response({
+                'success': False,
+                'error': 'You are not assigned to this submission'
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        quantity_kg = request.data.get('quantity_kg')
+        rider_notes = request.data.get('rider_notes', '') or None
+        new_status = request.data.get('status', 'picked')
+        
+        if not quantity_kg:
+            return Response({
+                'success': False,
+                'error': 'Weight is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            quantity_kg = float(quantity_kg)
+            if quantity_kg <= 0:
+                return Response({
+                    'success': False,
+                    'error': 'Weight must be greater than 0'
+                }, status=status.HTTP_400_BAD_REQUEST)
+        except (ValueError, TypeError):
+            return Response({
+                'success': False,
+                'error': 'Invalid weight value'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Update submission
+        submission.quantity_kg = quantity_kg
+        submission.rider_notes = rider_notes
+        submission.status = new_status
+        submission.updated_at = timezone.now()
+        
+        # Set pickup time when status becomes 'picked'
+        if new_status == 'picked' and not submission.pickup_time:
+            submission.pickup_time = timezone.now()
+        
+        # Set completion time when status becomes 'collected'
+        if new_status == 'collected' and not submission.completion_time:
+            submission.completion_time = timezone.now()
+        
+        submission.save()
+        
+        # Award points to user when status becomes 'collected'
+        if new_status == 'collected':
+            points_to_award = int(quantity_kg * 10)  # 10 points per kg
+            if points_to_award > 0:
+                # Update user's reward points
+                submission.user.reward_points += points_to_award
+                submission.user.save()
+                
+                # Create point history record
+                RewardPointHistory.objects.create(
+                    user=submission.user,
+                    points=points_to_award,
+                    reason=f"Trash collection completed - {quantity_kg}kg (Track ID: {submission.track_id})",
+                    submission=submission,
+                    awarded_by=request.user  # The rider who completed it
+                )
+        
+        message = f'Weight updated to {quantity_kg} kg and status updated to {new_status}'
+        if new_status == 'collected':
+            points_awarded = int(quantity_kg * 10)
+            message += f'. Points awarded to user: {points_awarded} points'
+        
+        return Response({
+            'success': True,
+            'message': message,
+            'submission': TrashSubmissionSerializer(submission).data
+        })
+        
     except Exception as e:
         return Response({
             'success': False,

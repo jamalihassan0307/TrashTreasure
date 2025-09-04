@@ -29,7 +29,7 @@ class TrashSubmission(models.Model):
     assigned_at = models.DateTimeField(null=True, blank=True)
     pickup_time = models.DateTimeField(null=True, blank=True)
     completion_time = models.DateTimeField(null=True, blank=True)
-    rider_notes = models.TextField(blank=True, verbose_name="Rider's Notes")
+    rider_notes = models.TextField(blank=True, null=True, verbose_name="Rider's Notes")
     
     def save(self, *args, **kwargs):
         if not self.track_id:

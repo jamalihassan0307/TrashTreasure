@@ -32,11 +32,19 @@ def home(request):
     active_riders = CustomUser.objects.filter(user_type='rider', status='active').count()
     total_points = sum([user.reward_points for user in CustomUser.objects.all()])
     
+    # Get environmental impact data from system settings
+    from .models import SystemSettings
+    try:
+        environmental_data = SystemSettings.get_settings()
+    except:
+        environmental_data = None
+    
     context = {
         'total_users': total_users,
         'total_submissions': total_submissions,
         'active_riders': active_riders,
         'total_points': total_points,
+        'environmental_data': environmental_data,
     }
     return render(request, 'dashboard/home.html', context)
 
@@ -293,7 +301,6 @@ def rider_earnings(request):
     page_obj = paginator.get_page(page_number)
     
     # Calculate statistics
-    total_collections = collection_history.count()
     collections_this_month = collection_history.filter(
         collected_at__month=timezone.now().month
     ).count()
@@ -301,8 +308,6 @@ def rider_earnings(request):
         collected_at__date=timezone.now().date()
     ).count()
     
-    # Calculate earnings (assuming $1 per collection for demo)
-    total_earnings = total_collections * 1.0
     
     # Calculate performance metrics
     total_weight = collection_history.aggregate(Sum('actual_quantity'))['actual_quantity__sum'] or 0
@@ -310,18 +315,14 @@ def rider_earnings(request):
     
     # Mock data for demo
     avg_completion_time = 2.5  # hours
-    total_distance = total_collections * 5.2  # km
     avg_rating = 4.8
     
     context = {
         'collection_history': page_obj,
-        'total_earnings': total_earnings,
-        'total_collections': total_collections,
         'collections_this_month': collections_this_month,
         'collections_today': collections_today,
         'avg_rating': avg_rating,
         'avg_completion_time': avg_completion_time,
-        'total_distance': total_distance,
         'total_weight': total_weight,
         'total_points_awarded': total_points_awarded,
         'date_filter': date_filter,
@@ -776,27 +777,27 @@ def admin_settings(request):
         elif section == 'general':
             try:
                 settings = SystemSettings.get_settings()
-                settings.site_name = request.POST.get('site_name')
-                settings.site_description = request.POST.get('site_description')
-                settings.contact_email = request.POST.get('contact_email')
-                settings.default_timezone = request.POST.get('default_timezone')
+                settings.maintenance_mode = request.POST.get('maintenance_mode') == 'on'
+                settings.maintenance_message = request.POST.get('maintenance_message')
+                settings.debug_mode = request.POST.get('debug_mode') == 'on'
+                settings.log_level = request.POST.get('log_level')
                 settings.save()
                 messages.success(request, 'General settings updated successfully!')
             except Exception as e:
                 messages.error(request, f'Error updating general settings: {str(e)}')
             return redirect('dashboard:admin_settings')
         
-        elif section == 'maintenance':
+        elif section == 'environmental':
             try:
                 settings = SystemSettings.get_settings()
-                settings.maintenance_mode = request.POST.get('maintenance_mode') == 'on'
-                settings.maintenance_message = request.POST.get('maintenance_message')
-                settings.debug_mode = request.POST.get('debug_mode') == 'on'
-                settings.log_level = request.POST.get('log_level')
+                settings.co2_reduction_tons = int(request.POST.get('co2_reduction_tons', 15))
+                settings.water_saved_gallons = int(request.POST.get('water_saved_gallons', 1000))
+                settings.landfill_space_acres = int(request.POST.get('landfill_space_acres', 10))
+                settings.trees_saved_count = int(request.POST.get('trees_saved_count', 500))
                 settings.save()
-                messages.success(request, 'Maintenance settings updated successfully!')
+                messages.success(request, 'Environmental impact data updated successfully!')
             except Exception as e:
-                messages.error(request, f'Error updating maintenance settings: {str(e)}')
+                messages.error(request, f'Error updating environmental data: {str(e)}')
             return redirect('dashboard:admin_settings')
         
         else:
@@ -931,7 +932,7 @@ def create_rider(request):
             first_name=first_name,
             last_name=last_name,
             phone=phone,
-            address=address,
+            location=address,
             user_type='rider'
         )
         messages.success(request, f'Rider account created successfully for {username}!')

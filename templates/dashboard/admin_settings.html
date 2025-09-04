@@ -415,6 +415,64 @@
                 </div>
             </form>
         </div>
+
+        <!-- Environmental Impact Settings -->
+        <div class="settings-card">
+            <div class="settings-header">
+                <div class="settings-icon">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <h3 class="settings-title-small">Environmental Impact Data</h3>
+            </div>
+            
+            <div class="settings-description">
+                Configure the environmental impact statistics displayed on the homepage.
+            </div>
+            
+            <form method="POST" action="{% url 'dashboard:admin_settings' %}">
+                {% csrf_token %}
+                <input type="hidden" name="section" value="environmental">
+                
+                <div class="form-group">
+                    <label for="co2_reduction_tons" class="form-label">CO2 Reduction (Tons Annually)</label>
+                    <input type="number" class="form-control" id="co2_reduction_tons" name="co2_reduction_tons" 
+                           value="{{ settings.co2_reduction_tons|default:15 }}" min="0" required>
+                    <div class="form-text">Amount of CO2 reduced in tons per year</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="water_saved_gallons" class="form-label">Water Saved (Gallons)</label>
+                    <input type="number" class="form-control" id="water_saved_gallons" name="water_saved_gallons" 
+                           value="{{ settings.water_saved_gallons|default:1000 }}" min="0" required>
+                    <div class="form-text">Amount of water saved in gallons</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="landfill_space_acres" class="form-label">Landfill Space Saved (Acres)</label>
+                    <input type="number" class="form-control" id="landfill_space_acres" name="landfill_space_acres" 
+                           value="{{ settings.landfill_space_acres|default:10 }}" min="0" required>
+                    <div class="form-text">Amount of landfill space saved in acres</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="trees_saved_count" class="form-label">Trees Saved</label>
+                    <input type="number" class="form-control" id="trees_saved_count" name="trees_saved_count" 
+                           value="{{ settings.trees_saved_count|default:500 }}" min="0" required>
+                    <div class="form-text">Number of trees saved through recycling efforts</div>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-save">
+                        <i class="fas fa-save me-2"></i>
+                        Save Environmental Data
+                    </button>
+                    <button type="reset" class="btn btn-reset">
+                        <i class="fas fa-undo me-2"></i>
+                        Reset
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
   

@@ -64,7 +64,7 @@
                     <div class="stats-icon mb-3">
                         <i class="fas fa-clock fa-3x text-info"></i>
                     </div>
-                    <h3 class="fw-bold text-primary mb-2">{{ user.submissions.all|length }}</h3>
+                    <h3 class="fw-bold text-primary mb-2">{{ pending_submissions }}</h3>
                     <p class="text-muted mb-0">Pending Collections</p>
                 </div>
             </div>
@@ -74,7 +74,7 @@
                     <div class="stats-icon mb-3">
                         <i class="fas fa-check-circle fa-3x text-success"></i>
                     </div>
-                    <h3 class="fw-bold text-primary mb-2">{{ user.submissions.all|length }}</h3>
+                    <h3 class="fw-bold text-primary mb-2">{{ completed_submissions }}</h3>
                     <p class="text-muted mb-0">Completed</p>
                 </div>
             </div>
@@ -292,72 +292,7 @@
         </div>
     </div>
 
-    <!-- Enhanced Environmental Impact -->
-    <div class="row">
-        <div class="col-12">
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h4 class="mb-0">
-                        <i class="fas fa-leaf me-2"></i>Your Environmental Impact
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <div class="row g-4">
-                        <div class="col-md-3 text-center">
-                            <div class="impact-stat">
-                                <div class="impact-icon mb-3">
-                                    <i class="fas fa-tree fa-3x text-success"></i>
-                                </div>
-                                <h5 class="fw-bold text-success">{{ user.submissions.all|length|add:1 }}</h5>
-                                <p class="text-muted mb-0">Trees Saved</p>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-3 text-center">
-                            <div class="impact-stat">
-                                <div class="impact-icon mb-3">
-                                    <i class="fas fa-water fa-3x text-info"></i>
-                                </div>
-                                <h5 class="fw-bold text-info">{{ user.submissions.all|length|add:1 }}</h5>
-                                <p class="text-muted mb-0">Gallons of Water</p>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-3 text-center">
-                            <div class="impact-stat">
-                                <div class="impact-icon mb-3">
-                                    <i class="fas fa-leaf fa-3x text-success"></i>
-                                </div>
-                                <h5 class="fw-bold text-success">{{ user.submissions.all|length|add:1 }}</h5>
-                                <p class="text-muted mb-0">CO2 Tons Saved</p>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-3 text-center">
-                            <div class="impact-stat">
-                                <div class="impact-icon mb-3">
-                                    <i class="fas fa-recycle fa-3x text-warning"></i>
-                                </div>
-                                <h5 class="fw-bold text-warning">{{ user.submissions.all|length|add:1 }}</h5>
-                                <p class="text-muted mb-0">Landfill Space (sq ft)</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="text-center mt-4">
-                        <div class="progress" style="height: 20px;">
-                            <div class="progress-bar bg-success" role="progressbar" 
-                                 style="width: {% widthratio user.submissions.all|length 10 100 %}%;" 
-                                 aria-valuenow="{{ user.submissions.all|length }}" aria-valuemin="0" aria-valuemax="10">
-                                <strong>{{ user.submissions.all|length }}/10 Collections</strong>
-                            </div>
-                        </div>
-                        <small class="text-muted mt-2 d-block">Progress to next milestone</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+   
 </div>
 {% endblock %}
 

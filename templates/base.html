@@ -13,6 +13,100 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'style.css' %}">
     
+    <!-- Mobile Navigation Fix -->
+    <style>
+        /* Force mobile navigation to work properly */
+        @media (max-width: 1199.98px) {
+            .navbar-toggler {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+            .navbar-collapse {
+                display: none !important;
+            }
+            .navbar-nav {
+                display: none !important;
+            }
+        }
+        @media (min-width: 1200px) {
+            .navbar-toggler {
+                display: none !important;
+            }
+            .navbar-collapse {
+                display: block !important;
+            }
+            .navbar-nav {
+                display: flex !important;
+            }
+        }
+        
+        /* Ensure mobile drawer works */
+        .offcanvas {
+            z-index: 1050;
+        }
+        
+        /* Mobile drawer content styling */
+        .offcanvas-body {
+            padding: 1rem;
+        }
+        
+        .offcanvas-body .navbar-nav {
+            display: block !important;
+            width: 100%;
+        }
+        
+        .offcanvas-body .nav-item {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        
+        .offcanvas-body .nav-link {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            color: var(--dark) !important;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all var(--transition-normal);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.2);
+        }
+        
+        .offcanvas-body .nav-link:hover {
+            background: var(--primary-green);
+            color: var(--white) !important;
+            transform: translateX(5px);
+        }
+        
+        .offcanvas-body .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Mobile navigation button styling */
+        .navbar-toggler {
+            border: 2px solid var(--primary-green);
+            border-radius: 8px;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all var(--transition-normal);
+        }
+        
+        .navbar-toggler:hover {
+            background: var(--primary-green);
+            transform: scale(1.05);
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+        }
+        
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2846, 125, 50, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+    </style>
+    
     {% block extra_css %}{% endblock %}
 </head>
 
@@ -20,13 +114,13 @@
       
 {% if not settings.maintenance_mode and not settings.debug_mode %}
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-xl navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="{% url 'dashboard:home' %}">
                 <img src="{% static 'images/logo-bg.png' %}" alt="Recycle Bin Logo" style="height: 32px; width: 32px; object-fit: contain; margin-right: 8px; vertical-align: middle;">Recycle Bin
             </a>
             
-            <button class="navbar-toggler d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavDrawer" aria-controls="mobileNavDrawer">
+            <button class="navbar-toggler d-block d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavDrawer" aria-controls="mobileNavDrawer" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
@@ -148,7 +242,7 @@
     </nav>
 
     <!-- Mobile Navigation Drawer -->
-    <div class="offcanvas offcanvas-end d-xl-none" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel">
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="mobileNavDrawerLabel">
                 <i class="fas fa-bars me-2"></i>Menu
@@ -369,6 +463,33 @@
                 bsAlert.close();
             });
         }, 5000);
+
+        // Mobile Navigation Swipe Support
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const swipeDistance = touchEndX - touchStartX;
+            
+            // Swipe right to open mobile drawer
+            if (swipeDistance > swipeThreshold && window.innerWidth < 1200) {
+                const mobileDrawer = document.getElementById('mobileNavDrawer');
+                if (mobileDrawer) {
+                    const bsOffcanvas = new bootstrap.Offcanvas(mobileDrawer);
+                    bsOffcanvas.show();
+                }
+            }
+        }
 
         // Submit Trash Modal Functionality
         document.addEventListener('DOMContentLoaded', function() {

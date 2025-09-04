@@ -293,10 +293,7 @@
 
     <!-- Statistics Row -->
     <div class="stats-row">
-        <div class="stat-item">
-            <div class="stat-number">{{ total_collections }}</div>
-            <div class="stat-label">Total Collections</div>
-        </div>
+        
         <div class="stat-item">
             <div class="stat-number">{{ collections_this_month }}</div>
             <div class="stat-label">This Month</div>
@@ -306,46 +303,12 @@
             <div class="stat-label">Today</div>
         </div>
         <div class="stat-item">
-            <div class="stat-number">{{ avg_rating|floatformat:1 }}</div>
-            <div class="stat-label">Avg Rating</div>
+            <div class="stat-number">{{ total_weight|floatformat:1 }}</div>
+            <div class="stat-label">Total Weight</div>
         </div>
     </div>
 
-    <!-- Performance Metrics -->
-    <div class="metrics-grid">
-        <div class="metric-card">
-            <div class="metric-icon">
-                <i class="fas fa-clock"></i>
-            </div>
-            <div class="metric-number">{{ avg_completion_time|floatformat:1 }}</div>
-            <div class="metric-label">Avg Completion Time (hrs)</div>
-        </div>
-
-        <div class="metric-card">
-            <div class="metric-icon">
-                <i class="fas fa-map-marker-alt"></i>
-            </div>
-            <div class="metric-number">{{ total_distance|floatformat:1 }}</div>
-            <div class="metric-label">Total Distance (km)</div>
-        </div>
-
-        <div class="metric-card">
-            <div class="metric-icon">
-                <i class="fas fa-weight-hanging"></i>
-            </div>
-            <div class="metric-number">{{ total_weight|floatformat:1 }}</div>
-            <div class="metric-label">Total Weight (kg)</div>
-        </div>
-
-        <div class="metric-card">
-            <div class="metric-icon">
-                <i class="fas fa-star"></i>
-            </div>
-            <div class="metric-number">{{ total_points_awarded }}</div>
-            <div class="metric-label">Points Awarded</div>
-        </div>
-    </div>
-
+ 
     
 
     <!-- Collection History Section -->

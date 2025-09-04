@@ -16,7 +16,7 @@ class TrashSubmissionSerializer(serializers.ModelSerializer):
 class TrashSubmissionCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrashSubmission
-        fields = ('quantity_kg',)
+        fields = ('quantity_kg', 'rider_notes')
 
 class CollectionRecordSerializer(serializers.ModelSerializer):
     submission = TrashSubmissionSerializer(read_only=True)

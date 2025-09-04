@@ -259,7 +259,7 @@
                             <i class="fas fa-tree text-success fa-2x me-3"></i>
                             <div>
                                 <h5 class="mb-0 fw-bold">CO2 Reduction</h5>
-                                <small class="text-muted">15 Tons saved annually</small>
+                                <small class="text-muted">{{ environmental_data.co2_reduction_tons|default:"15" }} Tons saved annually</small>
                             </div>
                         </div>
                     </div>
@@ -268,7 +268,7 @@
                             <i class="fas fa-water text-info fa-2x me-3"></i>
                             <div>
                                 <h5 class="mb-0 fw-bold">Water Saved</h5>
-                                <small class="text-muted">1000 Gallons preserved</small>
+                                <small class="text-muted">{{ environmental_data.water_saved_gallons|default:"1000" }} Gallons preserved</small>
                             </div>
                         </div>
                     </div>
@@ -277,7 +277,7 @@
                             <i class="fas fa-leaf text-success fa-2x me-3"></i>
                             <div>
                                 <h5 class="mb-0 fw-bold">Landfill Space</h5>
-                                <small class="text-muted">10 Acres saved</small>
+                                <small class="text-muted">{{ environmental_data.landfill_space_acres|default:"10" }} Acres saved</small>
                             </div>
                         </div>
                     </div>
@@ -285,8 +285,8 @@
                         <div class="d-flex align-items-center">
                             <i class="fas fa-recycle text-warning fa-2x me-3"></i>
                             <div>
-                                <h5 class="mb-0 fw-bold">Recycling Rate</h5>
-                                <small class="text-muted">Trees saved</small>
+                                <h5 class="mb-0 fw-bold">Trees Saved</h5>
+                                <small class="text-muted">{{ environmental_data.trees_saved_count|default:"500" }} Trees saved</small>
                             </div>
                         </div>
                     </div>

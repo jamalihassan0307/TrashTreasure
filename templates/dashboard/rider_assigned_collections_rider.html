@@ -180,10 +180,55 @@
         background-color: #20c997;
         color: white;
     }
+    
+    /* Weight Modal Styling */
+    #weightModal .modal-content {
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    #weightModal .modal-header {
+        border-radius: 15px 15px 0 0;
+        border-bottom: 2px solid #ffc107;
+    }
+    
+    #weightModal .form-control-lg {
+        font-size: 1.1rem;
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    #weightModal .form-control-lg:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+    }
+    
+    #weightModal .alert-info {
+        border-radius: 10px;
+        border-left: 4px solid #17a2b8;
+    }
+    
+    #weightModal .btn-warning {
+        background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%);
+        border: none;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+    }
+    
+    #weightModal .btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+    }
 </style>
 {% endblock %}
 
 {% block content %}
+<!-- CSRF Token for API calls -->
+{% csrf_token %}
+
 <!-- Page Header -->
 <div class="dashboard-header">
     <div class="container">
@@ -387,6 +432,30 @@
 
 {% block extra_js %}
 <script>
+// Django template data
+window.collectionsData = [
+    {% for submission in assigned_submissions %}
+    {
+        id: {{ submission.id }},
+        track_id: '{{ submission.track_id|escapejs }}',
+        user: { 
+            username: '{{ submission.user.username|escapejs }}', 
+            email: '{{ submission.user.email|escapejs }}', 
+            first_name: '{{ submission.user.first_name|default:""|escapejs }}', 
+            last_name: '{{ submission.user.last_name|default:""|escapejs }}' 
+        },
+        quantity_kg: {{ submission.quantity_kg|default:0 }},
+        location: '{{ submission.location|escapejs }}',
+        status: '{{ submission.status|escapejs }}',
+        priority: '{{ submission.priority|default:"medium"|escapejs }}',
+        created_at: '{{ submission.created_at|date:"c"|escapejs }}',
+        updated_at: '{{ submission.updated_at|date:"c"|escapejs }}',
+        assigned_at: '{{ submission.assigned_at|date:"c"|default:""|escapejs }}',
+        rider_notes: '{{ submission.rider_notes|default:""|escapejs }}'
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
 let allCollections = [];
 let filteredCollections = [];
 let activeFilters = {};
@@ -416,31 +485,7 @@ function setupEventListeners() {
 
 function loadCollections() {
     // Use Django template data instead of fetching
-    {% if assigned_submissions %}
-        allCollections = [
-            {% for submission in assigned_submissions %}
-            {
-                id: {{ submission.id }},
-                track_id: '{{ submission.track_id|escapejs }}',
-                user: { 
-                    username: '{{ submission.user.username|escapejs }}', 
-                    email: '{{ submission.user.email|escapejs }}', 
-                    first_name: '{{ submission.user.first_name|default:""|escapejs }}', 
-                    last_name: '{{ submission.user.last_name|default:""|escapejs }}' 
-                },
-                quantity_kg: {{ submission.quantity_kg|default:0 }},
-                location: '{{ submission.location|escapejs }}',
-                status: '{{ submission.status|escapejs }}',
-                priority: '{{ submission.priority|default:"medium"|escapejs }}',
-                created_at: '{{ submission.created_at|date:"c"|escapejs }}',
-                updated_at: '{{ submission.updated_at|date:"c"|escapejs }}',
-                assigned_at: '{{ submission.assigned_at|date:"c"|default:""|escapejs }}'
-            }{% if not forloop.last %},{% endif %}
-            {% endfor %}
-        ];
-    {% else %}
-        allCollections = [];
-    {% endif %}
+    allCollections = window.collectionsData || [];
     
     filteredCollections = [...allCollections];
     totalPages = Math.ceil(filteredCollections.length / itemsPerPage);
@@ -559,10 +604,22 @@ function updateCollectionsDisplay() {
                                 <small>${collection.location}</small>
                             </div>
                             <div class="col-6">
-                                <small class="text-muted d-block">Est. Weight</small>
-                                <strong>${collection.quantity_kg || 'N/A'} kg</strong>
+                                <small class="text-muted d-block">
+                                    ${['picked', 'collected'].includes(collection.status) ? 'Actual Weight ✅' : 'Est. Weight'}
+                                </small>
+                                <strong class="${['picked', 'collected'].includes(collection.status) ? 'text-success' : ''}">
+                                    ${collection.quantity_kg || 'N/A'} kg
+                                </strong>
                             </div>
                         </div>
+                        ${collection.rider_notes ? `
+                            <div class="row g-2 mt-2">
+                                <div class="col-12">
+                                    <small class="text-muted d-block">Notes:</small>
+                                    <small class="text-info">${collection.rider_notes}</small>
+                                </div>
+                            </div>
+                        ` : ''}
                     </div>
                     
                     <div class="collection-actions">
@@ -734,21 +791,208 @@ function formatDate(dateString) {
 }
 
 function updateStatus(collectionId, newStatus) {
-    // Here you would typically make an AJAX call to update the status
-    // For now, we'll just update the local data and refresh the display
+    const collection = allCollections.find(c => c.id == collectionId);
+    if (!collection) return;
     
+    // Special handling for "picked" status - get actual weight
+    if (newStatus === 'picked') {
+        getActualWeight(collectionId, collection);
+        return;
+    }
+    
+    // For other statuses, call API to update
+    updateStatusAPI(collectionId, newStatus);
+}
+
+function getActualWeight(collectionId, collection) {
+    // Create a custom modal for weight input
+    const modalHTML = `
+        <div class="modal fade" id="weightModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title">
+                            <i class="fas fa-weight me-2"></i>Record Actual Weight
+                        </h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Collection Details:</strong><br>
+                            Track ID: <code>${collection.track_id}</code><br>
+                            Estimated Weight: <strong>${collection.quantity_kg || 'N/A'} kg</strong><br>
+                            Location: ${collection.location}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="actualWeight" class="form-label fw-bold">
+                                <i class="fas fa-balance-scale me-2"></i>Actual Weight (kg)
+                            </label>
+                            <input type="number" 
+                                   class="form-control form-control-lg" 
+                                   id="actualWeight" 
+                                   placeholder="Enter actual weight in kg"
+                                   min="0.1" 
+                                   max="1000" 
+                                   step="0.1"
+                                   required>
+                            <div class="form-text">
+                                Please weigh the trash and enter the actual weight in kilograms.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="weightNotes" class="form-label">
+                                <i class="fas fa-sticky-note me-2"></i>Notes (Optional)
+                            </label>
+                            <textarea class="form-control" 
+                                      id="weightNotes" 
+                                      rows="3" 
+                                      placeholder="Any additional notes about the collection..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </button>
+                        <button type="button" class="btn btn-warning" onclick="confirmWeightUpdate(${collectionId})">
+                            <i class="fas fa-check me-2"></i>Update Weight & Status
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('weightModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('weightModal'));
+    modal.show();
+    
+    // Focus on weight input
+    setTimeout(() => {
+        document.getElementById('actualWeight').focus();
+    }, 500);
+}
+
+function confirmWeightUpdate(collectionId) {
+    const actualWeight = document.getElementById('actualWeight').value;
+    const weightNotes = document.getElementById('weightNotes').value;
+    
+    // Validate weight input
+    if (!actualWeight || parseFloat(actualWeight) <= 0) {
+        alert('Please enter a valid weight greater than 0 kg.');
+        document.getElementById('actualWeight').focus();
+        return;
+    }
+    
+    const weight = parseFloat(actualWeight);
+    if (weight > 1000) {
+        alert('Weight seems too high. Please verify the weight.');
+        document.getElementById('actualWeight').focus();
+        return;
+    }
+    
+    // Close modal first
+    const modal = bootstrap.Modal.getInstance(document.getElementById('weightModal'));
+    modal.hide();
+    
+    // Call API to update weight and status
+    updateWeightAndStatusAPI(collectionId, weight, weightNotes);
+}
+
+// API Functions
+function updateStatusAPI(collectionId, newStatus) {
+    fetch(`/api/trash/update-status/${collectionId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+        body: JSON.stringify({
+            status: newStatus
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update local data
     const collection = allCollections.find(c => c.id == collectionId);
     if (collection) {
         collection.status = newStatus;
         collection.updated_at = new Date().toISOString();
+            }
         
-        // Update the display
+            // Update display
         updateCollectionsDisplay();
         updateStats();
         
         // Show success message
+            if (newStatus === 'collected') {
+                const collection = allCollections.find(c => c.id == collectionId);
+                const weight = collection ? parseFloat(collection.quantity_kg || 0) : 0;
+                const pointsAwarded = Math.floor(weight * 10);
+                alert(`✅ Collection completed!\nStatus: ${getStatusDisplay(newStatus)}\nPoints awarded to user: ${pointsAwarded} points (${weight}kg × 10)`);
+            } else {
         alert(`Status updated to: ${getStatusDisplay(newStatus)}`);
     }
+        } else {
+            alert(`Error: ${data.error || 'Failed to update status'}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating status. Please try again.');
+    });
+}
+
+function updateWeightAndStatusAPI(collectionId, weight, notes) {
+    fetch(`/api/trash/update-weight/${collectionId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+        body: JSON.stringify({
+            quantity_kg: weight,
+            rider_notes: notes,
+            status: 'picked'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update local data
+            const collection = allCollections.find(c => c.id == collectionId);
+            if (collection) {
+                collection.quantity_kg = weight;
+                collection.status = 'picked';
+                collection.rider_notes = notes;
+                collection.updated_at = new Date().toISOString();
+            }
+            
+            // Update display
+            updateCollectionsDisplay();
+            updateStats();
+            
+            // Show success message
+            alert(`✅ Weight recorded: ${weight} kg\nStatus updated to: Picked`);
+        } else {
+            alert(`Error: ${data.error || 'Failed to update weight and status'}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating weight. Please try again.');
+    });
 }
 
 function updateActiveFilters() {
@@ -813,9 +1057,15 @@ function viewCollectionDetails(collectionId) {
                 <h6 class="fw-bold">Collection Information</h6>
                 <p><strong>Track ID:</strong> ${collection.track_id}</p>
                 <p><strong>Status:</strong> <span class="badge badge-${collection.status}">${getStatusDisplay(collection.status)}</span></p>
-                <p><strong>Quantity:</strong> ${collection.quantity_kg} kg</p>
+                <p><strong>Weight:</strong> 
+                    <span class="${['picked', 'collected'].includes(collection.status) ? 'text-success fw-bold' : ''}">
+                        ${collection.quantity_kg || 'N/A'} kg
+                        ${['picked', 'collected'].includes(collection.status) ? ' ✅' : ''}
+                    </span>
+                </p>
                 <p><strong>Location:</strong> ${collection.location}</p>
                 <p><strong>Priority:</strong> <span class="badge priority-${collection.priority}">${collection.priority.toUpperCase()}</span></p>
+                ${collection.rider_notes ? `<p><strong>Rider Notes:</strong> ${collection.rider_notes}</p>` : ''}
             </div>
             <div class="col-md-6">
                 <h6 class="fw-bold">User Information</h6    >

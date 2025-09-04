@@ -88,6 +88,125 @@ h1, h2, h3, h4, h5, h6 {
     z-index: 1000;
 }
 
+/* Mobile Navigation Button */
+.navbar-toggler {
+    border: 2px solid var(--primary-green);
+    border-radius: 8px;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all var(--transition-normal);
+    display: none;
+}
+
+.navbar-toggler:hover {
+    background: var(--primary-green);
+    transform: scale(1.05);
+}
+
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2846, 125, 50, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    width: 1.5em;
+    height: 1.5em;
+}
+
+/* Mobile Navigation Responsive */
+@media (max-width: 1199.98px) {
+    .navbar-toggler {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    .navbar-collapse {
+        display: none !important;
+    }
+    .navbar-nav {
+        display: none !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .navbar-toggler {
+        display: none !important;
+    }
+    .navbar-collapse {
+        display: block !important;
+    }
+    .navbar-nav {
+        display: flex !important;
+    }
+}
+
+/* Mobile Drawer Styling */
+.offcanvas {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-left: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.offcanvas-header {
+    background: var(--primary-gradient);
+    color: var(--white);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.offcanvas-title {
+    font-weight: 600;
+    margin: 0;
+}
+
+.offcanvas-body {
+    padding: 1rem;
+    background: linear-gradient(135deg, #F1F8E9 0%, #DCEDC8 100%);
+}
+
+.offcanvas-body .navbar-nav {
+    display: block !important;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.offcanvas-body .nav-item {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    list-style: none;
+}
+
+.offcanvas-body .nav-link {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    color: var(--dark) !important;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all var(--transition-normal);
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(76, 175, 80, 0.2);
+    font-weight: 500;
+}
+
+.offcanvas-body .nav-link:hover {
+    background: var(--primary-green);
+    color: var(--white) !important;
+    transform: translateX(5px);
+    box-shadow: var(--shadow-md);
+}
+
+.offcanvas-body .nav-link i {
+    width: 20px;
+    text-align: center;
+    margin-right: 0.5rem;
+}
+
+.offcanvas-body hr {
+    border-color: rgba(76, 175, 80, 0.3);
+    margin: 1rem 0;
+}
+
 .navbar-brand {
     font-family: 'Poppins', sans-serif;
     font-weight: 800;

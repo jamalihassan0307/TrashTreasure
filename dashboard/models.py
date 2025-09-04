@@ -17,6 +17,12 @@ class SystemSettings(models.Model):
         ('DEBUG', 'Debug'),
     ], default='INFO')
     
+    # Environmental Impact Data
+    co2_reduction_tons = models.IntegerField(default=15, help_text="CO2 reduction in tons annually")
+    water_saved_gallons = models.IntegerField(default=1000, help_text="Water saved in gallons")
+    landfill_space_acres = models.IntegerField(default=10, help_text="Landfill space saved in acres")
+    trees_saved_count = models.IntegerField(default=500, help_text="Number of trees saved")
+    
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -50,5 +56,9 @@ class SystemSettings(models.Model):
         settings.maintenance_message = 'System is currently under maintenance. Please check back later.'
         settings.debug_mode = False
         settings.log_level = 'INFO'
+        settings.co2_reduction_tons = 15
+        settings.water_saved_gallons = 1000
+        settings.landfill_space_acres = 10
+        settings.trees_saved_count = 500
         settings.save()
         return settings

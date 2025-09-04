@@ -358,12 +358,7 @@
                                                     <button class="btn btn-outline-success btn-sm" onclick="assignRider('{{ submission.id }}')">
                                                         <i class="fas fa-user-plus"></i>
                                                     </button>
-                                                {% elif submission.status == 'collected' %}
-                                                    <button class="btn btn-outline-warning btn-sm" onclick="verifyCollection('{{ submission.id }}')">
-                                                        <i class="fas fa-check"></i>
-                                                    </button>
-                                                {% elif submission.status == 'verified' %}
-                                                    <span class="badge bg-success">Verified</span>
+                                                
                                                 {% endif %}
                                             </div>
                                         </td>

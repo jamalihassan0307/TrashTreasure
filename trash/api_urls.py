@@ -29,4 +29,8 @@ urlpatterns = [
     path('claims/history/', api_views.get_claim_history, name='api_claim_history'),
     path('claims/manage/', api_views.get_manage_claims, name='api_manage_claims'),
     path('claims/<int:claim_id>/update-status/', api_views.update_claim_status, name='api_update_claim_status'),
+    
+    # Rider status and weight updates
+    path('update-status/<int:submission_id>/', api_views.update_submission_status, name='api_update_submission_status'),
+    path('update-weight/<int:submission_id>/', api_views.update_submission_weight, name='api_update_submission_weight'),
 ]
