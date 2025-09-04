@@ -19,7 +19,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('{% static "../../static/images/welcome_image.jpg" %}') center/cover;
+    background: url('{% static "../static/images/welcome_image.jpg" %}') center/cover;
     opacity: 0.1;
     z-index: 1;
 }
