@@ -152,7 +152,14 @@
                                                     <i class="fas fa-check"></i>
                                                 </a>
                                             {% endif %}
-                                            
+                                            {% if user.user_type == 'user' %}
+                                            <!-- Bonus Points Button -->
+                                            <button class="btn btn-sm btn-success" 
+                                                    onclick="showBonusPointsModal('{{ user.id }}', '{{ user.username }}')"
+                                                    title="Add bonus points">
+                                                <i class="fas fa-gift"></i>
+                                            </button>
+                                            {% endif %}
                                             <!-- Clear Points Button -->
                                             <button class="btn btn-sm btn-outline-danger" 
                                                     onclick="clearUserPoints('{{ user.id }}', '{{ user.username }}')"
@@ -259,7 +266,104 @@
     {% endif %}
 </div>
 
+<!-- Bonus Points Modal -->
+<div class="modal fade" id="bonusPointsModal" tabindex="-1" aria-labelledby="bonusPointsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="bonusPointsModalLabel">
+                    <i class="fas fa-gift me-2"></i>Add Bonus Points
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="bonusPointsForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="bonusUserId" name="user_id">
+                    
+                    <div class="mb-3">
+                        <label for="bonusUsername" class="form-label">User</label>
+                        <input type="text" class="form-control" id="bonusUsername" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="bonusPoints" class="form-label">Bonus Points *</label>
+                        <input type="number" class="form-control" id="bonusPoints" name="points" 
+                               min="1" max="10000" required placeholder="Enter points to award">
+                        <div class="form-text">Enter the number of points to award (1-10,000)</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="bonusReason" class="form-label">Reason *</label>
+                        <textarea class="form-control" id="bonusReason" name="reason" rows="3" 
+                                  required placeholder="Enter reason for bonus points (e.g., Special achievement, Referral bonus, etc.)"></textarea>
+                        <div class="form-text">Provide a clear reason for awarding these bonus points</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="submitBonusPoints">
+                    <i class="fas fa-gift me-2"></i>Award Bonus Points
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+// Show bonus points modal
+function showBonusPointsModal(userId, username) {
+    document.getElementById('bonusUserId').value = userId;
+    document.getElementById('bonusUsername').value = username;
+    document.getElementById('bonusPoints').value = '';
+    document.getElementById('bonusReason').value = '';
+    
+    const modal = new bootstrap.Modal(document.getElementById('bonusPointsModal'));
+    modal.show();
+}
+
+// Submit bonus points
+document.getElementById('submitBonusPoints').addEventListener('click', function() {
+    const userId = document.getElementById('bonusUserId').value;
+    const points = document.getElementById('bonusPoints').value;
+    const reason = document.getElementById('bonusReason').value;
+    
+    if (!points || !reason) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    if (points < 1 || points > 10000) {
+        alert('Points must be between 1 and 10,000.');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('user_id', userId);
+    formData.append('points', points);
+    formData.append('reason', reason);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    fetch('{% url "dashboard:award_bonus_points" %}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Successfully awarded ${points} bonus points to ${data.username}!`);
+            location.reload();
+        } else {
+            alert('Error awarding bonus points: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error awarding bonus points');
+    });
+});
+
 function clearUserPoints(userId, username) {
     if (confirm(`Are you sure you want to clear all reward points for user "${username}"? This action cannot be undone!`)) {
         fetch(`/clear-user-points/${userId}/`, {

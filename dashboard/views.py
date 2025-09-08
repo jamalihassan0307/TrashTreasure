@@ -69,6 +69,9 @@ def login_view(request):
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            if user.status == 'suspended':
+                messages.error(request, 'Your account has been suspended. Please contact support.')
+                return redirect('dashboard:login')
             login(request, user)
             messages.success(request, f'Welcome back, {user.username}!')
             if user.user_type == 'user':
@@ -1017,6 +1020,72 @@ def clear_user_points(request, user_id):
                 'message': f'Points cleared successfully for {user.username}'
             })
             
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+@login_required
+@user_passes_test(lambda u: u.user_type == 'admin')
+def award_bonus_points(request):
+    """Award bonus points to a user with reason"""
+    if request.method == 'POST':
+        try:
+            user_id = request.POST.get('user_id')
+            points = int(request.POST.get('points', 0))
+            reason = request.POST.get('reason', '').strip()
+            
+            if not user_id or not points or not reason:
+                return JsonResponse({'success': False, 'error': 'All fields are required.'})
+            
+            if points < 1 or points > 10000:
+                return JsonResponse({'success': False, 'error': 'Points must be between 1 and 10,000.'})
+            
+            user = get_object_or_404(CustomUser, id=user_id)
+            
+            if user.user_type == 'admin':
+                return JsonResponse({'success': False, 'error': 'Cannot modify admin user points.'})
+            
+            # Store the old points value
+            old_points = user.reward_points
+            
+            # Add bonus points
+            user.reward_points += points
+            user.save()
+            
+            # Create reward point history entry
+            RewardPointHistory.objects.create(
+                user=user,
+                points=points,
+                reason=f"Bonus: {reason}",
+                awarded_by=request.user
+            )
+            
+            # Log the action
+            # ActivityLog.objects.create(
+            #     user=request.user,
+            #     action='awarded_bonus_points',
+            #     details={
+            #         'target_user_id': user.id,
+            #         'target_username': user.username,
+            #         'points_awarded': points,
+            #         'old_points': old_points,
+            #         'new_points': user.reward_points,
+            #         'reason': reason,
+            #         'admin_user': request.user.username
+            #     }
+            # )
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Successfully awarded {points} bonus points to {user.username}',
+                'username': user.username,
+                'points_awarded': points,
+                'new_total': user.reward_points
+            })
+            
+        except ValueError:
+            return JsonResponse({'success': False, 'error': 'Invalid points value.'})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
     

@@ -193,60 +193,166 @@
     box-shadow: var(--shadow-2xl);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* Mobile UI Design for screens less than 850px */
+@media (max-width: 849.98px) {
+    .hero-section {
+        padding: 2rem 0;
+        min-height: 70vh;
+    }
+    
+    .hero-content {
+        text-align: center;
+        padding: 1rem;
+    }
+    
     .hero-title {
-        font-size: var(--font-size-3xl);
+        font-size: 2.2rem;
+        line-height: 1.2;
+        margin-bottom: 1rem;
     }
     
     .hero-subtitle {
-        font-size: var(--font-size-lg);
+        font-size: 1rem;
+        margin-bottom: 2rem;
+        padding: 0 1rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .hero-buttons .btn {
+        width: 100%;
+        max-width: 280px;
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 12px;
+        font-weight: 600;
+        min-height: 50px;
+    }
+    
+    .hero-image-container {
+        margin-top: 2rem;
+        text-align: center;
+    }
+    
+    .hero-image-container img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 15px;
     }
     
     .feature-icon {
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
+        margin-bottom: 1rem;
     }
     
     .feature-icon i {
-        font-size: 1.5rem !important;
+        font-size: 1.2rem !important;
     }
     
-    .hero-buttons .btn {
-        padding: 0.6rem 1.25rem;
-        min-height: 40px;
-        font-size: var(--font-size-xs);
+    .step-number {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+    }
+    
+    .stats-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+    
+    .environmental-impact {
+        padding: 1.5rem;
+        margin: 1rem 0;
+    }
+    
+    .environmental-impact .col-6 {
+        padding: 1rem 0.5rem;
+        text-align: center;
+    }
+    
+    .environmental-impact i {
+        font-size: 1.5rem;
+    }
+    
+    .cta-section {
+        padding: 3rem 1rem;
     }
     
     .cta-content .btn {
-        padding: 0.6rem 1.25rem;
-        min-height: 40px;
-        font-size: var(--font-size-xs);
+        width: 100%;
+        max-width: 280px;
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 12px;
+        min-height: 50px;
+    }
+    
+    .card {
+        margin-bottom: 1.5rem;
+        border-radius: 12px;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    /* Mobile-specific button styles */
+    .btn {
+        min-height: 44px;
+        font-size: 0.95rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+    }
+    
+    .btn-sm {
+        min-height: 36px;
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .btn-lg {
+        min-height: 52px;
+        font-size: 1.1rem;
+        padding: 1rem 1.5rem;
     }
 }
 
-@media (max-width: 576px) {
+@media (min-width: 850px) {
     .hero-section {
-        padding: var(--spacing-2xl) 0;
+        padding: 4rem 0;
+        min-height: 80vh;
     }
     
     .hero-title {
-        font-size: var(--font-size-2xl);
+        font-size: var(--font-size-5xl);
     }
     
     .hero-subtitle {
-        font-size: var(--font-size-base);
+        font-size: var(--font-size-xl);
     }
     
     .hero-buttons .btn {
-        padding: 0.5rem 1rem;
-        min-height: 38px;
-        font-size: var(--font-size-xs);
+        padding: 0.75rem 1.5rem;
+        font-size: var(--font-size-sm);
+    }
+    
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .feature-icon i {
+        font-size: 1.75rem;
     }
     
     .cta-content .btn {
-        padding: 0.5rem 1rem;
-        min-height: 38px;
-        font-size: var(--font-size-xs);
+        padding: 0.75rem 1.5rem;
+        font-size: var(--font-size-sm);
     }
 }

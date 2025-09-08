@@ -12,6 +12,8 @@
     <!-- Custom CSS -->
     {% load static %}
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    <!-- Mobile Responsive CSS -->
+    <link rel="stylesheet" href="{% static 'css/mobile-responsive.css' %}">
     
     <!-- Mobile Navigation Fix -->
     <style>
@@ -120,7 +122,7 @@
                 <img src="{% static 'images/logo-bg.png' %}" alt="Recycle Bin Logo" style="height: 32px; width: 32px; object-fit: contain; margin-right: 8px; vertical-align: middle;">Recycle Bin
             </a>
             
-            <button class="navbar-toggler d-block d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavDrawer" aria-controls="mobileNavDrawer" aria-label="Toggle navigation">
+            <button class="navbar-toggler d-block d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavDrawer" aria-controls="mobileNavDrawer" aria-label="Toggle navigation" style="border: none; padding: 0.5rem;">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
@@ -242,122 +244,122 @@
     </nav>
 
     <!-- Mobile Navigation Drawer -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="mobileNavDrawerLabel">
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel" style="width: 280px;">
+        <div class="offcanvas-header" style="background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%); color: white; padding: 1.5rem;">
+            <h5 class="offcanvas-title" id="mobileNavDrawerLabel" style="margin: 0; font-weight: 600;">
                 <i class="fas fa-bars me-2"></i>Menu
             </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close" style="filter: invert(1);"></button>
         </div>
-        <div class="offcanvas-body">
-            <ul class="navbar-nav">
+        <div class="offcanvas-body" style="padding: 0;">
+            <ul class="navbar-nav" style="padding: 1rem 0;">
                 {% if user.is_authenticated %}
                     {% if user.user_type == 'user' %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard:user_dashboard' %}">
-                                <i class="fas fa-home me-2"></i>Dashboard
+                            <a class="nav-link" href="{% url 'dashboard:user_dashboard' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                                <i class="fas fa-home me-3" style="width: 20px; text-align: center;"></i>Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard:user_submissions' %}">
-                                <i class="fas fa-recycle me-2"></i>My Submissions
+                            <a class="nav-link" href="{% url 'dashboard:user_submissions' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                                <i class="fas fa-recycle me-3" style="width: 20px; text-align: center;"></i>My Submissions
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard:user_points' %}">
-                                <i class="fas fa-coins me-2"></i>My Points
+                            <a class="nav-link" href="{% url 'dashboard:user_points' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                                <i class="fas fa-coins me-3" style="width: 20px; text-align: center;"></i>My Points
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'trash:claim_history' %}">
-                                <i class="fas fa-history me-2"></i>Claim History
+                            <a class="nav-link" href="{% url 'trash:claim_history' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                                <i class="fas fa-history me-3" style="width: 20px; text-align: center;"></i>Claim History
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#submitTrashModal">
-                                <i class="fas fa-plus me-2"></i>Submit Trash
+                            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#submitTrashModal" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                                <i class="fas fa-plus me-3" style="width: 20px; text-align: center;"></i>Submit Trash
                             </a>
                         </li>
                     {% elif user.user_type == 'rider' %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard:rider_dashboard' %}">
-                                <i class="fas fa-motorcycle me-2"></i>Rider Dashboard
+                            <a class="nav-link" href="{% url 'dashboard:rider_dashboard' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                                <i class="fas fa-motorcycle me-3" style="width: 20px; text-align: center;"></i>Rider Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard:rider_assigned_collections' %}">
-                                <i class="fas fa-list me-2"></i>My Collections
+                            <a class="nav-link" href="{% url 'dashboard:rider_assigned_collections' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                                <i class="fas fa-list me-3" style="width: 20px; text-align: center;"></i>My Collections
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard:rider_earnings' %}">
-                                <i class="fas fa-history me-2"></i>History
+                            <a class="nav-link" href="{% url 'dashboard:rider_earnings' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                                <i class="fas fa-history me-3" style="width: 20px; text-align: center;"></i>History
                             </a>
                         </li>
                     {% elif user.user_type == 'admin' %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard:admin_dashboard' %}">
-                                <i class="fas fa-cog me-2"></i>Admin Dashboard
+                            <a class="nav-link" href="{% url 'dashboard:admin_dashboard' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                                <i class="fas fa-cog me-3" style="width: 20px; text-align: center;"></i>Admin Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard:manage_users' %}">
-                                <i class="fas fa-users me-2"></i>Manage Users
+                            <a class="nav-link" href="{% url 'dashboard:manage_users' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                                <i class="fas fa-users me-3" style="width: 20px; text-align: center;"></i>Manage Users
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard:admin_analytics' %}">
-                                <i class="fas fa-chart-line me-2"></i>Analytics
+                            <a class="nav-link" href="{% url 'dashboard:admin_analytics' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                                <i class="fas fa-chart-line me-3" style="width: 20px; text-align: center;"></i>Analytics
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard:admin_settings' %}">
-                                <i class="fas fa-cogs me-2"></i>Settings
+                            <a class="nav-link" href="{% url 'dashboard:admin_settings' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                                <i class="fas fa-cogs me-3" style="width: 20px; text-align: center;"></i>Settings
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'trash:manage_claims' %}">
-                                <i class="fas fa-gift me-2"></i>Manage Claims
+                            <a class="nav-link" href="{% url 'trash:manage_claims' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                                <i class="fas fa-gift me-3" style="width: 20px; text-align: center;"></i>Manage Claims
                             </a>
                         </li>
                     {% endif %}
                     
-                    <hr class="my-3">
+                    <hr class="my-3" style="margin: 1rem 1.5rem;">
                     
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'accounts:profile' %}">
-                            <i class="fas fa-user-circle me-2"></i>Profile
+                        <a class="nav-link" href="{% url 'accounts:profile' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                            <i class="fas fa-user-circle me-3" style="width: 20px; text-align: center;"></i>Profile
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'accounts:edit_profile' %}">
-                            <i class="fas fa-edit me-2"></i>Edit Profile
+                        <a class="nav-link" href="{% url 'accounts:edit_profile' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                            <i class="fas fa-edit me-3" style="width: 20px; text-align: center;"></i>Edit Profile
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard:logout' %}">
-                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        <a class="nav-link" href="{% url 'dashboard:logout' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #dc3545; border-bottom: 1px solid #f0f0f0;">
+                            <i class="fas fa-sign-out-alt me-3" style="width: 20px; text-align: center;"></i>Logout
                         </a>
                     </li>
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard:about' %}">
-                            <i class="fas fa-info-circle me-2"></i>About Us
+                        <a class="nav-link" href="{% url 'dashboard:about' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                            <i class="fas fa-info-circle me-3" style="width: 20px; text-align: center;"></i>About Us
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard:contact' %}">
-                            <i class="fas fa-envelope me-2"></i>Contact Us
+                        <a class="nav-link" href="{% url 'dashboard:contact' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                            <i class="fas fa-envelope me-3" style="width: 20px; text-align: center;"></i>Contact Us
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard:login' %}">
-                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        <a class="nav-link" href="{% url 'dashboard:login' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                            <i class="fas fa-sign-in-alt me-3" style="width: 20px; text-align: center;"></i>Login
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard:register' %}">
-                            <i class="fas fa-user-plus me-2"></i>Register
+                        <a class="nav-link" href="{% url 'dashboard:register' %}" style="padding: 1rem 1.5rem; font-size: 1rem; font-weight: 500; color: #333; border-bottom: 1px solid #f0f0f0;">
+                            <i class="fas fa-user-plus me-3" style="width: 20px; text-align: center;"></i>Register
                         </a>
                     </li>
                 {% endif %}
@@ -381,6 +383,69 @@
     <main>
         {% block content %}{% endblock %}
     </main>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    {% if not settings.maintenance_mode and not settings.debug_mode %}
+    <div class="bottom-nav d-block d-xl-none">
+        <div class="bottom-nav-container">
+            {% if user.is_authenticated %}
+                {% if user.user_type == 'user' %}
+                    <a href="{% url 'dashboard:user_dashboard' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'user_dashboard' %}active{% endif %}">
+                        <i class="fas fa-home bottom-nav-icon"></i>
+                        <span class="bottom-nav-label">Home</span>
+                    </a>
+                    <a href="{% url 'dashboard:user_points' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'user_points' %}active{% endif %}">
+                        <i class="fas fa-coins bottom-nav-icon"></i>
+                        <span class="bottom-nav-label">Points</span>
+                    </a>
+                    <a href="{% url 'trash:claim_history' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'claim_history' %}active{% endif %}">
+                        <i class="fas fa-history bottom-nav-icon"></i>
+                        <span class="bottom-nav-label">History</span>
+                    </a>
+                    <a href="{% url 'accounts:profile' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                        <i class="fas fa-user bottom-nav-icon"></i>
+                        <span class="bottom-nav-label">Profile</span>
+                    </a>
+                {% elif user.user_type == 'admin' %}
+                    <a href="{% url 'dashboard:admin_dashboard' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                        <i class="fas fa-home bottom-nav-icon"></i>
+                        <span class="bottom-nav-label">Home</span>
+                    </a>
+                    <a href="{% url 'dashboard:manage_users' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'manage_users' %}active{% endif %}">
+                        <i class="fas fa-users bottom-nav-icon"></i>
+                        <span class="bottom-nav-label">Users</span>
+                    </a>
+                    <a href="{% url 'dashboard:admin_settings' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'admin_settings' %}active{% endif %}">
+                        <i class="fas fa-cogs bottom-nav-icon"></i>
+                        <span class="bottom-nav-label">Settings</span>
+                    </a>
+                    <a href="{% url 'accounts:profile' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                        <i class="fas fa-user bottom-nav-icon"></i>
+                        <span class="bottom-nav-label">Profile</span>
+                    </a>
+                {% elif user.user_type == 'rider' %}
+                    <a href="{% url 'dashboard:rider_dashboard' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'rider_dashboard' %}active{% endif %}">
+                        <i class="fas fa-home bottom-nav-icon"></i>
+                        <span class="bottom-nav-label">Home</span>
+                    </a>
+                    <a href="{% url 'dashboard:rider_assigned_collections' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'rider_assigned_collections' %}active{% endif %}">
+                        <i class="fas fa-list bottom-nav-icon"></i>
+                        <span class="bottom-nav-label">Collections</span>
+                    </a>
+                    <a href="{% url 'dashboard:rider_earnings' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'rider_earnings' %}active{% endif %}">
+                        <i class="fas fa-history bottom-nav-icon"></i>
+                        <span class="bottom-nav-label">History</span>
+                    </a>
+                    <a href="{% url 'accounts:profile' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                        <i class="fas fa-user bottom-nav-icon"></i>
+                        <span class="bottom-nav-label">Profile</span>
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
 {% if not settings.maintenance_mode and not settings.debug_mode %}
   
     <!-- Footer -->
@@ -468,28 +533,28 @@
         let touchStartX = 0;
         let touchEndX = 0;
         
-        document.addEventListener('touchstart', function(e) {
-            touchStartX = e.changedTouches[0].screenX;
-        });
+        // document.addEventListener('touchstart', function(e) {
+        //     touchStartX = e.changedTouches[0].screenX;
+        // });
         
-        document.addEventListener('touchend', function(e) {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        });
+        // document.addEventListener('touchend', function(e) {
+        //     touchEndX = e.changedTouches[0].screenX;
+        //     handleSwipe();
+        // });
         
-        function handleSwipe() {
-            const swipeThreshold = 50;
-            const swipeDistance = touchEndX - touchStartX;
+        // function handleSwipe() {
+        //     const swipeThreshold = 50;
+        //     const swipeDistance = touchEndX - touchStartX;
             
-            // Swipe right to open mobile drawer
-            if (swipeDistance > swipeThreshold && window.innerWidth < 1200) {
-                const mobileDrawer = document.getElementById('mobileNavDrawer');
-                if (mobileDrawer) {
-                    const bsOffcanvas = new bootstrap.Offcanvas(mobileDrawer);
-                    bsOffcanvas.show();
-                }
-            }
-        }
+        //     // Swipe right to open mobile drawer
+        //     if (swipeDistance > swipeThreshold && window.innerWidth < 1200) {
+        //         const mobileDrawer = document.getElementById('mobileNavDrawer');
+        //         if (mobileDrawer) {
+        //             const bsOffcanvas = new bootstrap.Offcanvas(mobileDrawer);
+        //             bsOffcanvas.show();
+        //         }
+        //     }
+        // }
 
         // Submit Trash Modal Functionality
         document.addEventListener('DOMContentLoaded', function() {

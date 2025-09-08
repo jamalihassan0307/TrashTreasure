@@ -29,6 +29,7 @@ urlpatterns = [
     path('create-rider/', views.create_rider, name='create_rider'),
     path('toggle-user-status/<int:user_id>/', views.toggle_user_status, name='toggle_user_status'),
     path('clear-user-points/<int:user_id>/', views.clear_user_points, name='clear_user_points'),
+    path('admin-award-bonus-points/', views.award_bonus_points, name='award_bonus_points'),
     
     # System Pages
     path('maintenance/', views.maintenance_page, name='maintenance'),

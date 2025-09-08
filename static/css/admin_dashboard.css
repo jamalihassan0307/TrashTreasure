@@ -382,73 +382,310 @@
     color: var(--white);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* Mobile UI Design for screens less than 850px */
+@media (max-width: 849.98px) {
     .dashboard-header {
-        padding: var(--spacing-xl) 0;
+        padding: 2rem 0;
+        text-align: center;
         border-radius: 0 0 20px 20px;
     }
     
     .dashboard-header h1 {
-        font-size: var(--font-size-2xl);
+        font-size: 2rem;
+        line-height: 1.2;
+        margin-bottom: 1rem;
     }
     
     .dashboard-header p {
-        font-size: var(--font-size-base);
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+        padding: 0 1rem;
+    }
+    
+    .admin-avatar-container {
+        margin: 0 auto 1rem;
     }
     
     .admin-avatar-container img,
     .admin-avatar-container div {
-        width: 60px !important;
-        height: 60px !important;
+        width: 80px !important;
+        height: 80px !important;
+        margin: 0 auto;
+    }
+    
+    .dashboard-stats {
+        padding: 0 1rem;
+    }
+    
+    .dashboard-stats .col-lg-3 {
+        margin-bottom: 1.5rem;
+    }
+    
+    .dashboard-card {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-radius: 12px;
+    }
+    
+    .stats-icon {
+        width: 50px;
+        height: 50px;
+        margin: 0 auto 1rem;
+    }
+    
+    .stats-icon i {
+        font-size: 1.2rem;
+    }
+    
+    .quick-actions {
+        padding: 1rem;
+        gap: 0.75rem;
+    }
+    
+    .quick-actions .btn {
+        flex: 1;
+        min-width: 120px;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        border-radius: 8px;
+        min-height: 44px;
+    }
+    
+    .quick-actions .btn i {
+        font-size: 1rem;
+        margin-right: 0.5rem;
     }
     
     .action-buttons {
         flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 1rem;
     }
     
     .btn-action {
         width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        border-radius: 8px;
+        min-height: 44px;
         text-align: center;
-        min-height: 32px;
     }
     
-    .quick-actions .btn {
-        min-height: 90px;
+    .submission-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
     }
     
-    .quick-actions .btn i {
-        font-size: 1.75rem !important;
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+    
+    .status-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .chart-container {
+        padding: 1rem;
+        min-height: 300px;
     }
     
     .chart-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: var(--spacing-sm);
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .chart-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
     }
     
     .chart-legend {
-        flex-wrap: wrap;
-        gap: var(--spacing-sm);
-    }
-}
-
-@media (max-width: 576px) {
-    .dashboard-stats .col-lg-3 {
-        margin-bottom: var(--spacing-md);
-    }
-    
-    .system-health .col-6 {
-        margin-bottom: var(--spacing-md);
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
     }
     
     .legend-item {
-        font-size: var(--font-size-xs);
+        font-size: 0.85rem;
+        padding: 0.25rem 0;
     }
     
     .legend-color {
-        width: 10px;
-        height: 10px;
+        width: 12px;
+        height: 12px;
+        margin-right: 0.5rem;
+    }
+    
+    .system-health {
+        padding: 1rem;
+    }
+    
+    .system-health .col-6 {
+        margin-bottom: 1rem;
+        padding: 1rem;
+        text-align: center;
+    }
+    
+    .system-health i {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .system-health h5 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .system-health small {
+        font-size: 0.8rem;
+    }
+    
+    .health-indicator {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+        border-radius: 20px;
+    }
+    
+    .metric-mini-card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+    }
+    
+    .metric-mini-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .header-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+    }
+    
+    .header-actions .badge {
+        font-size: 0.8rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .rider-performance-card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+    }
+    
+    .rider-avatar {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .rider-avatar img,
+    .rider-avatar .avatar-placeholder {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .rider-stats .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .empty-state {
+        padding: 2rem 1rem;
+        text-align: center;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .activity-feed {
+        max-height: 300px;
+        padding: 1rem;
+    }
+    
+    .activity-item {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+    }
+    
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .activity-content h6 {
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .activity-content p {
+        font-size: 0.8rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .activity-content small {
+        font-size: 0.75rem;
+    }
+    
+    .activity-status .badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+    }
+    
+    /* Mobile-specific button styles */
+    .btn {
+        min-height: 44px;
+        font-size: 0.95rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+    }
+    
+    .btn-sm {
+        min-height: 36px;
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .btn-lg {
+        min-height: 52px;
+        font-size: 1.1rem;
+        padding: 1rem 1.5rem;
+    }
+}
+
+@media (min-width: 850px) {
+    .dashboard-header {
+        padding: 4rem 0;
+    }
+    
+    .dashboard-header h1 {
+        font-size: 3rem;
+    }
+    
+    .dashboard-header p {
+        font-size: 1.25rem;
+    }
+    
+    .admin-avatar-container img,
+    .admin-avatar-container div {
+        width: 100px !important;
+        height: 100px !important;
+    }
+    
+    .quick-actions .btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
     }
 }
 

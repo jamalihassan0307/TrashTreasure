@@ -243,54 +243,7 @@
         </div>
     </div>
 
-    <!-- Enhanced Points History -->
-    <div class="row mb-5">
-        <div class="col-12">
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h4 class="mb-0">
-                        <i class="fas fa-chart-line me-2"></i>Points History
-                    </h4>
-                </div>
-                <div class="card-body">
-                    {% if user.point_history.all %}
-                        <div class="timeline">
-                            {% for point_record in user.point_history.all|slice:":5" %}
-                                                         <div class="timeline-item {% if point_record.points > 0 %}completed{% endif %} animate-slide-left" 
-                                  data-delay="{{ forloop.counter }}">
-                                <div class="timeline-content">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="mb-1">{{ point_record.reason }}</h6>
-                                            <small class="text-muted">
-                                                {% if point_record.submission %}
-                                                    Submission #{{ point_record.submission.track_id }}
-                                                {% endif %}
-                                            </small>
-                                        </div>
-                                        <div class="text-end">
-                                            <span class="badge {% if point_record.points > 0 %}bg-success{% else %}bg-danger{% endif %} fs-6">
-                                                {% if point_record.points > 0 %}+{% endif %}{{ point_record.points }} pts
-                                            </span>
-                                            <br>
-                                            <small class="text-muted">{{ point_record.created_at|date:"M d, Y" }}</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="text-center py-4">
-                            <i class="fas fa-star fa-3x text-muted mb-3"></i>
-                            <h6 class="text-muted">No points earned yet</h6>
-                            <p class="text-muted">Submit trash to start earning reward points!</p>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
+   
 
    
 </div>
