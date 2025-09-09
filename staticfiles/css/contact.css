@@ -107,31 +107,103 @@
     }
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .company-logo {
-        max-width: 250px;
+/* Mobile UI Design for screens less than 850px */
+@media (max-width: 849.98px) {
+    .logo-container {
+        text-align: center;
+        margin-bottom: 2rem;
     }
     
-    .info-card {
-        margin-bottom: 1rem;
-    }
-    
-    .company-info h1 {
-        font-size: 2.5rem;
-    }
-}
-
-@media (max-width: 576px) {
     .company-logo {
         max-width: 200px;
+        height: auto;
+        margin: 0 auto 1rem;
     }
     
-    .info-card {
-        padding: 1.5rem 1rem;
+    .company-info {
+        text-align: center;
+        padding: 1rem;
     }
     
     .company-info h1 {
         font-size: 2rem;
+        line-height: 1.2;
+        margin-bottom: 1rem;
+    }
+    
+    .company-info .lead {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+        padding: 0 1rem;
+    }
+    
+    .info-card {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        border-radius: 12px;
+    }
+    
+    .info-icon {
+        width: 50px;
+        height: 50px;
+        margin: 0 auto 1rem;
+    }
+    
+    .info-card h5 {
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .info-card p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+    
+    .info-card small {
+        font-size: 0.8rem;
+    }
+    
+    .company-info h4 {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .company-info .row.justify-content-center {
+        gap: 1rem;
+    }
+    
+    /* Mobile-specific button styles */
+    .btn {
+        min-height: 44px;
+        font-size: 0.95rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+    }
+    
+    .btn-sm {
+        min-height: 36px;
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .btn-lg {
+        min-height: 52px;
+        font-size: 1.1rem;
+        padding: 1rem 1.5rem;
+    }
+}
+
+@media (min-width: 850px) {
+    .company-logo {
+        max-width: 300px;
+    }
+    
+    .company-info h1 {
+        font-size: 3rem;
+    }
+    
+    .info-card {
+        padding: 2rem 1.5rem;
     }
 }
