@@ -1,7 +1,8 @@
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.conf import settings as django_settings
+from django.template.loader import render_to_string
 
 class SystemStatusMiddleware:
     """Middleware to check system status and redirect users accordingly"""
@@ -10,6 +11,10 @@ class SystemStatusMiddleware:
         self.get_response = get_response
     
     def __call__(self, request):
+        # Handle 404 redirects to accounts/login/ - redirect to correct login URL
+        if request.path.startswith('/accounts/login/'):
+            return redirect('dashboard:login')
+        
         # Skip middleware for admin users and certain paths
         if self._should_skip_middleware(request):
             return self.get_response(request)
@@ -40,7 +45,14 @@ class SystemStatusMiddleware:
             # You can log this error if needed
             pass
         
-        return self.get_response(request)
+        # Get the response
+        response = self.get_response(request)
+        
+        # Handle 404 errors with custom page
+        if response.status_code == 404:
+            return self._handle_404(request)
+        
+        return response
     
     def _should_skip_middleware(self, request):
         """Check if middleware should be skipped for this request"""
@@ -80,3 +92,49 @@ class SystemStatusMiddleware:
                 request.user.is_authenticated and 
                 hasattr(request.user, 'user_type') and 
                 request.user.user_type == 'admin')
+    
+    def _handle_404(self, request):
+        """Handle 404 errors with a custom page"""
+        try:
+            # Render custom 404 page
+            html = render_to_string('dashboard/404.html', {
+                'request_path': request.path,
+                'user': request.user,
+            })
+            return HttpResponse(html, status=404)
+        except:
+            # Fallback to simple 404 response
+            return HttpResponse(
+                f"""
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Page Not Found - Trash to Treasure</title>
+                    <style>
+                        body {{ font-family: Arial, sans-serif; text-align: center; padding: 50px; }}
+                        .error-container {{ max-width: 600px; margin: 0 auto; }}
+                        .error-code {{ font-size: 72px; color: #e74c3c; margin: 0; }}
+                        .error-message {{ font-size: 24px; color: #333; margin: 20px 0; }}
+                        .error-description {{ font-size: 16px; color: #666; margin: 20px 0; }}
+                        .btn {{ display: inline-block; padding: 12px 24px; background: #2e7d32; color: white; text-decoration: none; border-radius: 5px; margin: 20px 10px; }}
+                        .btn:hover {{ background: #1b5e20; }}
+                    </style>
+                </head>
+                <body>
+                    <div class="error-container">
+                        <h1 class="error-code">404</h1>
+                        <h2 class="error-message">Page Not Found</h2>
+                        <p class="error-description">
+                            The page you're looking for doesn't exist or has been moved.
+                        </p>
+                        <p class="error-description">
+                            Requested path: <code>{request.path}</code>
+                        </p>
+                        <a href="/" class="btn">Go Home</a>
+                        <a href="/login/" class="btn">Login</a>
+                    </div>
+                </body>
+                </html>
+                """, 
+                status=404
+            )

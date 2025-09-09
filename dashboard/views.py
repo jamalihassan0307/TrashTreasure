@@ -486,6 +486,8 @@ def admin_dashboard(request):
         collection_count=Count('collections')
     ).order_by('-collection_count')[:5]
     
+    user_submissions = TrashSubmission.objects.all().order_by('-created_at')
+    completed_submissions_weight = user_submissions.filter(status='collected').aggregate(Sum('quantity_kg'))['quantity_kg__sum'] or 0
     # Calculate efficiency metrics
     total_weight_collected = CollectionRecord.objects.aggregate(Sum('actual_quantity'))['actual_quantity__sum'] or 0
     avg_collections_per_day = round(total_collections / 30, 1) if total_collections > 0 else 0
@@ -519,6 +521,7 @@ def admin_dashboard(request):
         'new_users_24h': new_users_24h,
         'avg_response_time': avg_response_time,
         'top_riders': top_riders,
+        'completed_submissions_weight': completed_submissions_weight,
         'total_weight_collected': total_weight_collected,
         'avg_collections_per_day': avg_collections_per_day,
         'system_status': system_status,

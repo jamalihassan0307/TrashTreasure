@@ -453,7 +453,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
-                    <h5><i class="fas fa-recycle me-2"></i>Recycle Bin</h5>
+                    <h5>  <img src="{% static 'images/logo-bg.png' %}" alt="Recycle Bin Logo" style="height: 32px; width: 32px; object-fit: contain; margin-right: 8px; vertical-align: middle;">Recycle Bin</h5>
                     <p>For A Batter Tomorrow</p>
                 </div>
                 <div class="col-md-4">
@@ -595,7 +595,7 @@
                                 alert('Please log in to submit trash collection requests.');
                                 window.location.href = '/login/';
                             } else {
-                                alert('Error checking location: ' + (data && data.error ? data.error : 'Unknown error'));
+                                alert('Error checking Address: ' + (data && data.error ? data.error : 'Unknown error'));
                             }
                         }
                     })

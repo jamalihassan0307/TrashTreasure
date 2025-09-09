@@ -1063,7 +1063,7 @@ function viewCollectionDetails(collectionId) {
                         ${['picked', 'collected'].includes(collection.status) ? ' ✅' : ''}
                     </span>
                 </p>
-                <p><strong>Location:</strong> ${collection.location}</p>
+                <p><strong>Address:</strong> ${collection.location}</p>
                 <p><strong>Priority:</strong> <span class="badge priority-${collection.priority}">${collection.priority.toUpperCase()}</span></p>
                 ${collection.rider_notes ? `<p><strong>Rider Notes:</strong> ${collection.rider_notes}</p>` : ''}
             </div>
