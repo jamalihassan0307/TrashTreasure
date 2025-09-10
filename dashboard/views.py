@@ -257,16 +257,24 @@ def rider_dashboard(request):
         status__in=['assigned', 'on_the_way', 'arrived', 'picked']
     ).order_by('-assigned_at')
     
-    completed_today = CollectionRecord.objects.filter(
-        rider=request.user,
-        collected_at__date=datetime.now().date()
+    # Counts for dashboard stats
+    total_assignments = TrashSubmission.objects.filter(
+        rider=request.user
     ).count()
     
-    total_completed = CollectionRecord.objects.filter(rider=request.user).count()
+    pending_collections = assigned_submissions.count()
+    
+   
+    
+    total_completed = TrashSubmission.objects.filter(
+        rider=request.user,
+        status__in=['collected']
+    ).count()
     
     context = {
         'assigned_submissions': assigned_submissions,
-        'completed_today': completed_today,
+        'total_assignments': total_assignments,
+        'pending_collections': pending_collections,
         'total_completed': total_completed,
     }
     return render(request, 'dashboard/rider_dashboard.html', context)

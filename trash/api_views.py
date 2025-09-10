@@ -850,11 +850,31 @@ def update_submission_status(request, submission_id):
         
         submission.save()
         
-        # Award points to user when status becomes 'collected'
+        # Award points and create CollectionRecord when status becomes 'collected'
         if new_status == 'collected':
             # Use the current quantity_kg for points calculation
             weight_kg = float(submission.quantity_kg or 0)
             points_to_award = int(weight_kg * 10)  # 10 points per kg
+
+            # Create or update the CollectionRecord for this submission
+            collection_record, created = CollectionRecord.objects.get_or_create(
+                submission=submission,
+                defaults={
+                    'rider': submission.rider or request.user,
+                    'trash_type': 'Mixed Waste',
+                    'actual_quantity': weight_kg,
+                    'points_awarded': max(points_to_award, 0),
+                }
+            )
+
+            if not created:
+                # Ensure it reflects latest values
+                collection_record.rider = submission.rider or request.user
+                collection_record.trash_type = collection_record.trash_type or 'Mixed Waste'
+                collection_record.actual_quantity = weight_kg
+                collection_record.points_awarded = max(points_to_award, 0)
+                collection_record.save()
+
             if points_to_award > 0:
                 # Update user's reward points
                 submission.user.reward_points += points_to_award
