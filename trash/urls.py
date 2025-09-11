@@ -18,4 +18,5 @@ urlpatterns = [
     path('claim-history/', views.claim_history, name='claim_history'),
     path('manage-claims/', views.manage_claims, name='manage_claims'),
     path('update-claim-status/<int:claim_id>/', views.update_claim_status, name='update_claim_status'),
+    path('delete-claim/<int:claim_id>/', views.delete_claim, name='delete_claim'),
 ]

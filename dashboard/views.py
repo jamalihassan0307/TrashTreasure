@@ -543,18 +543,23 @@ def admin_dashboard(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_analytics(request):
-    # Get period filter
+    # Get filter type and parameters
+    filter_type = request.GET.get('filter_type', 'period')
     period = int(request.GET.get('period', 30))
     start_date = request.GET.get('start_date', '')
     end_date = request.GET.get('end_date', '')
     
-    # Calculate date range
-    if start_date and end_date:
+    # Calculate date range based on filter type
+    if filter_type == 'date' and start_date and end_date:
         start = datetime.strptime(start_date, '%Y-%m-%d')
         end = datetime.strptime(end_date, '%Y-%m-%d')
+        # Add time to end date to include the entire day
+        end = end.replace(hour=23, minute=59, second=59)
+        is_custom_date_range = True
     else:
         end = timezone.now()
         start = end - timedelta(days=period)
+        is_custom_date_range = False
     
     # Get current period data
     current_users = CustomUser.objects.filter(created_at__gte=start).count()
@@ -711,10 +716,55 @@ def admin_analytics(request):
     
     submission_trend = round(((recent_avg - previous_avg) / previous_avg * 100), 1) if previous_avg > 0 else 0
     
+    # Generate custom date range data if using date filter
+    custom_date_labels = []
+    custom_submission_data = []
+    custom_user_type_labels = []
+    custom_user_type_counts = []
+    custom_daily_labels = []
+    custom_daily_activity = []
+    
+    if is_custom_date_range:
+        # Generate daily data for custom date range
+        current_date = start.date()
+        end_date_obj = end.date()
+        
+        while current_date <= end_date_obj:
+            submissions_count = TrashSubmission.objects.filter(created_at__date=current_date).count()
+            collections_count = CollectionRecord.objects.filter(collected_at__date=current_date).count()
+            
+            custom_daily_activity.append({
+                'submissions': submissions_count,
+                'collections': collections_count
+            })
+            custom_daily_labels.append(current_date.strftime('%b %d'))
+            
+            current_date += timedelta(days=1)
+        
+        # Generate submission data for custom range (daily breakdown)
+        custom_submission_data = [day['submissions'] for day in custom_daily_activity]
+        custom_date_labels = custom_daily_labels
+        
+        # Get user type distribution for custom date range
+        custom_user_types = CustomUser.objects.filter(created_at__gte=start, created_at__lte=end).values('user_type').annotate(count=Count('user_type'))
+        for user_type in custom_user_types:
+            custom_user_type_labels.append(user_type['user_type'].title())
+            custom_user_type_counts.append(user_type['count'])
+    else:
+        # Use default data for period filter
+        custom_date_labels = daily_activity_labels
+        custom_submission_data = [day['submissions'] for day in daily_activity]
+        custom_user_type_labels = user_type_labels
+        custom_user_type_counts = user_type_counts
+        custom_daily_labels = daily_activity_labels
+        custom_daily_activity = daily_activity
+    
     context = {
         'period': period,
         'start_date': start_date,
         'end_date': end_date,
+        'filter_type': filter_type,
+        'is_custom_date_range': is_custom_date_range,
         'total_users': current_users,
         'total_submissions': current_submissions,
         'active_riders': current_riders,
@@ -743,6 +793,13 @@ def admin_analytics(request):
         'daily_activity': daily_activity,
         'daily_activity_labels': daily_activity_labels,
         'submission_trend': submission_trend,
+        # Custom date range data
+        'custom_date_labels': custom_date_labels,
+        'custom_submission_data': custom_submission_data,
+        'custom_user_type_labels': custom_user_type_labels,
+        'custom_user_type_counts': custom_user_type_counts,
+        'custom_daily_labels': custom_daily_labels,
+        'custom_daily_activity': custom_daily_activity,
     }
     return render(request, 'dashboard/admin_analytics.html', context)
 

@@ -290,19 +290,32 @@
 
     <!-- Global Filters -->
     <div class="filters-section">
-        <form method="GET" class="filter-group">
+        <form method="GET" class="filter-group" id="analyticsForm">
             <div class="form-group">
+                <label class="form-label fw-semibold me-2">Filter Type:</label>
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="filter_type" id="period_filter" value="period" 
+                           {% if not start_date and not end_date %}checked{% endif %}>
+                    <label class="btn btn-outline-primary" for="period_filter">Period</label>
+                    
+                    <input type="radio" class="btn-check" name="filter_type" id="date_filter" value="date" 
+                           {% if start_date or end_date %}checked{% endif %}>
+                    <label class="btn btn-outline-primary" for="date_filter">Date Range</label>
+                </div>
+            </div>
+            
+            <div id="period-section" class="form-group">
                 <label for="period" class="form-label fw-semibold me-2">Period:</label>
                 <select name="period" id="period" class="filter-select">
-                    <option value="1" {% if period == '1' %}selected{% endif %}>Today</option>
-                    <option value="7" {% if period == '7' %}selected{% endif %}>Last 7 Days</option>
-                    <option value="30" {% if period == '30' %}selected{% endif %}>Last 30 Days</option>
-                    <option value="90" {% if period == '90' %}selected{% endif %}>Last 90 Days</option>
-                    <option value="365" {% if period == '365' %}selected{% endif %}>Last Year</option>
+                    <option value="1" {% if period == 1 %}selected{% endif %}>Today</option>
+                    <option value="7" {% if period == 7 %}selected{% endif %}>Last 7 Days</option>
+                    <option value="30" {% if period == 30 %}selected{% endif %}>Last 30 Days</option>
+                    <option value="90" {% if period == 90 %}selected{% endif %}>Last 90 Days</option>
+                    <option value="365" {% if period == 365 %}selected{% endif %}>Last Year</option>
                 </select>
             </div>
             
-            <div class="date-range">
+            <div id="date-section" class="date-range" style="display: none;">
                 <div class="form-group">
                     <label for="start_date" class="form-label fw-semibold me-2">From:</label>
                     <input type="date" name="start_date" id="start_date" class="date-input" value="{{ start_date }}">
@@ -313,8 +326,6 @@
                     <input type="date" name="end_date" id="end_date" class="date-input" value="{{ end_date }}">
                 </div>
             </div>
-            
-
             
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-filter me-2"></i>
@@ -396,24 +407,15 @@
         
        
         
-        <div class="metric-card">
-            <div class="metric-icon">
-                <i class="fas fa-clock"></i>
-            </div>
-            <div class="metric-number">{{ avg_collection_time }}h</div>
-            <div class="metric-label">Avg Collection Time</div>
-            <div class="metric-change positive">
-                <i class="fas fa-tachometer-alt me-1"></i>
-                Efficiency metric
-            </div>
-        </div>
+       
         
        
      </div>
 
 
 
-    <!-- Charts Section -->
+    <!-- Charts Section - Only show when period filter is selected -->
+    {% if not start_date and not end_date %}
     <div class="chart-section">
         <div class="chart-header">
             <h3 class="chart-title">
@@ -459,6 +461,53 @@
             </div>
         </div>
     </div>
+    {% else %}
+    <!-- Custom Date Range Charts -->
+    <div class="chart-section">
+        <div class="chart-header">
+            <h3 class="chart-title">
+                <i class="fas fa-chart-line text-success me-2"></i>
+                Submission Trends ({{ start_date }} to {{ end_date }})
+            </h3>
+        </div>
+        
+        <div class="chart-container">
+            <canvas id="customSubmissionChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="chart-section">
+                <div class="chart-header">
+                    <h3 class="chart-title">
+                        <i class="fas fa-chart-pie text-success me-2"></i>
+                        User Distribution ({{ start_date }} to {{ end_date }})
+                    </h3>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="customUserDistributionChart" width="300" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="chart-section">
+                <div class="chart-header">
+                    <h3 class="chart-title">
+                        <i class="fas fa-chart-line text-info me-2"></i>
+                        Daily Activity ({{ start_date }} to {{ end_date }})
+                    </h3>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="customDailyActivityChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
 
 </div>
@@ -467,23 +516,76 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Auto-submit form when period changes
+    // Handle filter type switching
     document.addEventListener('DOMContentLoaded', function() {
-        const periodSelect = document.getElementById('period');
+        const periodFilter = document.getElementById('period_filter');
+        const dateFilter = document.getElementById('date_filter');
+        const periodSection = document.getElementById('period-section');
+        const dateSection = document.getElementById('date-section');
+        const form = document.getElementById('analyticsForm');
         
-        if (periodSelect) {
-            // Set default to today if no period is selected
-            if (!periodSelect.value) {
-                periodSelect.value = '1';
-                periodSelect.closest('form').submit();
+        // Show/hide sections based on filter type
+        function toggleSections() {
+            if (periodFilter.checked) {
+                periodSection.style.display = 'block';
+                dateSection.style.display = 'none';
+                // Clear date inputs
+                document.getElementById('start_date').value = '';
+                document.getElementById('end_date').value = '';
+            } else if (dateFilter.checked) {
+                periodSection.style.display = 'none';
+                dateSection.style.display = 'flex';
+                // Clear period selection
+                document.getElementById('period').value = '';
             }
-            
+        }
+        
+        // Initial setup
+        toggleSections();
+        
+        // Add event listeners
+        periodFilter.addEventListener('change', function() {
+            if (this.checked) {
+                toggleSections();
+                form.submit();
+            }
+        });
+        
+        dateFilter.addEventListener('change', function() {
+            if (this.checked) {
+                toggleSections();
+            }
+        });
+        
+        // Auto-submit form when period changes
+        const periodSelect = document.getElementById('period');
+        if (periodSelect) {
             periodSelect.addEventListener('change', function() {
-                this.closest('form').submit();
+                if (periodFilter.checked) {
+                    form.submit();
+                }
             });
         }
         
-        // Initialize all charts
+        // Auto-submit form when date changes
+        const startDate = document.getElementById('start_date');
+        const endDate = document.getElementById('end_date');
+        
+        if (startDate && endDate) {
+            startDate.addEventListener('change', function() {
+                if (dateFilter.checked && this.value && endDate.value) {
+                    form.submit();
+                }
+            });
+            
+            endDate.addEventListener('change', function() {
+                if (dateFilter.checked && this.value && startDate.value) {
+                    form.submit();
+                }
+            });
+        }
+        
+        // Initialize charts based on current filter
         initializeCharts();
     });
     
@@ -510,6 +612,19 @@
     });
     
     function initializeCharts() {
+        // Check if we're using period filter or date range filter
+        const isDateRange = {{ is_custom_date_range|yesno:"true,false" }};
+        
+        if (isDateRange) {
+            // Initialize custom date range charts
+            initializeCustomCharts();
+        } else {
+            // Initialize period-based charts
+            initializePeriodCharts();
+        }
+    }
+    
+    function initializePeriodCharts() {
         // Submission Trends Chart
         const submissionCtx = document.getElementById('submissionTrendsChart');
         if (submissionCtx) {
@@ -607,6 +722,136 @@
                      }, {
                          label: 'Collections',
                          data: {{ daily_activity|safe }}.map(day => day.collections),
+                         borderColor: '#4CAF50',
+                         backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                         tension: 0.4,
+                         fill: false
+                     }]
+                 },
+                 options: {
+                     responsive: true,
+                     maintainAspectRatio: false,
+                     plugins: {
+                         legend: {
+                             position: 'top'
+                         }
+                     },
+                     scales: {
+                         y: {
+                             beginAtZero: true,
+                             grid: {
+                                 color: 'rgba(0,0,0,0.1)'
+                             }
+                         },
+                         x: {
+                             grid: {
+                                 color: 'rgba(0,0,0,0.1)'
+                             }
+                         }
+                     }
+                 }
+             });
+         }
+     }
+     
+     function initializeCustomCharts() {
+         // Custom Submission Chart for date range
+         const customSubmissionCtx = document.getElementById('customSubmissionChart');
+         if (customSubmissionCtx) {
+             new Chart(customSubmissionCtx, {
+                 type: 'line',
+                 data: {
+                     labels: {{ custom_date_labels|safe }},
+                     datasets: [{
+                         label: 'Submissions',
+                         data: {{ custom_submission_data|safe }},
+                         borderColor: '#4CAF50',
+                         backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                         tension: 0.4,
+                         fill: true,
+                         pointBackgroundColor: '#4CAF50',
+                         pointBorderColor: '#fff',
+                         pointBorderWidth: 2
+                     }]
+                 },
+                 options: {
+                     responsive: true,
+                     maintainAspectRatio: false,
+                     plugins: {
+                         legend: {
+                             display: false
+                         }
+                     },
+                     scales: {
+                         y: {
+                             beginAtZero: true,
+                             grid: {
+                                 color: 'rgba(0,0,0,0.1)'
+                             }
+                         },
+                         x: {
+                             grid: {
+                                 color: 'rgba(0,0,0,0.1)'
+                             }
+                         }
+                     }
+                 }
+             });
+         }
+         
+         // Custom User Distribution Chart
+         const customUserDistCtx = document.getElementById('customUserDistributionChart');
+         if (customUserDistCtx) {
+             new Chart(customUserDistCtx, {
+                 type: 'pie',
+                 data: {
+                     labels: {{ custom_user_type_labels|safe }},
+                     datasets: [{
+                         data: {{ custom_user_type_counts|safe }},
+                         backgroundColor: [
+                             '#4CAF50',
+                             '#2196F3',
+                             '#FF9800',
+                             '#9C27B0',
+                             '#F44336'
+                         ],
+                         borderWidth: 2,
+                         borderColor: '#fff'
+                     }]
+                 },
+                 options: {
+                     responsive: true,
+                     maintainAspectRatio: false,
+                     plugins: {
+                         legend: {
+                             position: 'bottom',
+                             labels: {
+                                 padding: 20,
+                                 usePointStyle: true
+                             }
+                         }
+                     }
+                 }
+             });
+         }
+         
+         // Custom Daily Activity Chart
+         const customDailyActivityCtx = document.getElementById('customDailyActivityChart');
+         if (customDailyActivityCtx) {
+             new Chart(customDailyActivityCtx, {
+                 type: 'line',
+                 data: {
+                     labels: {{ custom_daily_labels|safe }},
+                     datasets: [{
+                         label: 'Submissions',
+                         data: {{ custom_daily_activity|safe }}.map(day => day.submissions),
+                         borderColor: '#2196F3',
+                         backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                         tension: 0.4,
+                         fill: false
+                     }, {
+                         label: 'Collections',
+                         data: {{ custom_daily_activity|safe }}.map(day => day.collections),
                          borderColor: '#4CAF50',
                          backgroundColor: 'rgba(76, 175, 80, 0.1)',
                          tension: 0.4,

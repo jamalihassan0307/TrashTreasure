@@ -81,6 +81,7 @@
                             </a>
                         </div>
                     </form>
+                    {% csrf_token %}
                 </div>
             </div>
 
@@ -102,6 +103,7 @@
                                         <th>Type</th>
                                         <th>Status</th>
                                         <th>Date</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -137,7 +139,15 @@
                                         <td>
                                             <small class="text-muted">{{ claim.created_at|date:"M d, Y H:i" }}</small>
                                         </td>
-                                        
+                                        <td>
+                                            {% if claim.status == 'pending' %}
+                                                <button class="btn btn-sm btn-danger" onclick="deleteClaim({{ claim.id }})" title="Delete Claim">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -547,4 +557,31 @@
         }
     }
 </style>
+
+<script>
+function deleteClaim(claimId) {
+    if (confirm('Are you sure you want to delete this claim? This action cannot be undone.')) {
+        fetch(`/trash/delete-claim/${claimId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the claim.');
+        });
+    }
+}
+</script>
 {% endblock %}

@@ -317,6 +317,17 @@ def claim_rewards(request):
     user = request.user
     user_claims = RewardClaim.objects.filter(user=user).order_by('-created_at')
     
+    # Check existing pending and processing claims
+    pending_processing_claims = RewardClaim.objects.filter(
+        user=user,
+        status__in=['pending', 'processing']
+    )
+    total_pending_processing_points = sum(claim.claim_amount for claim in pending_processing_claims)
+    
+    # Check if user can make new claims (remaining points after pending/processing should be >= 500)
+    remaining_points = user.reward_points - total_pending_processing_points
+    can_make_claim = remaining_points >= 500
+    
     # Monetary conversion rate: 1 point = Rs. 10
     min_claim_amount = 500
     conversion_rate = 10
@@ -328,7 +339,11 @@ def claim_rewards(request):
         'min_claim_amount': min_claim_amount,
         'monetary_amount': monetary_amount,
         'conversion_rate': conversion_rate,
-        'user_claims': user_claims
+        'user_claims': user_claims,
+        'can_make_claim': can_make_claim,
+        'total_pending_processing_points': total_pending_processing_points,
+        'remaining_points': remaining_points,
+        'pending_processing_claims': pending_processing_claims
     }
     
     return render(request, 'trash/claim_rewards.html', context)
@@ -345,6 +360,13 @@ def submit_claim(request):
         claim_amount = int(data.get('claim_amount', 0))
         claim_type = data.get('claim_type')
         
+        # Check existing pending and processing claims
+        pending_processing_claims = RewardClaim.objects.filter(
+            user=user,
+            status__in=['pending', 'processing']
+        )
+        total_pending_processing_points = sum(claim.claim_amount for claim in pending_processing_claims)
+        
         # Validate claim amount and type
         if not claim_type or claim_type not in ['payment', 'donation']:
             messages.error(request, 'Please select a valid claim type.')
@@ -356,6 +378,12 @@ def submit_claim(request):
             
         if claim_amount > user.reward_points:
             messages.error(request, 'You cannot claim more points than you have available.')
+            return redirect('trash:claim_rewards')
+            
+        # Check if user can make new claims (remaining points after pending/processing should be >= 500)
+        remaining_points = user.reward_points - total_pending_processing_points
+        if remaining_points < 500:
+            messages.error(request, f'You cannot make new claims. You have {total_pending_processing_points} points in pending/processing claims. Remaining points ({remaining_points}) must be at least 500 to make new claims.')
             return redirect('trash:claim_rewards')
             
         # Get hospital if donation type
@@ -566,4 +594,28 @@ def update_claim_status(request, claim_id):
         return JsonResponse({'success': False, 'error': 'Claim not found'})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+
+
+@login_required
+@require_http_methods(["POST"])
+def delete_claim(request, claim_id):
+    """Delete a pending claim."""
+    try:
+        claim = get_object_or_404(RewardClaim, id=claim_id, user=request.user)
         
+        # Only allow deletion of pending claims
+        if claim.status != 'pending':
+            return JsonResponse({'success': False, 'error': 'Only pending claims can be deleted'})
+        
+        # Delete the claim
+        claim.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Claim {claim.reference_id} deleted successfully'
+        })
+        
+    except RewardClaim.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Claim not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})

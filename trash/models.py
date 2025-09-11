@@ -110,7 +110,7 @@ class RewardClaim(models.Model):
             self.reference_id = self.generate_reference_id()
         
         # Calculate monetary amount (10 Rs per point)
-        self.monetary_amount = self.claim_amount * 10
+        self.monetary_amount = self.claim_amount * 1
         
         super().save(*args, **kwargs)
     
