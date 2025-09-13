@@ -65,9 +65,21 @@ def about(request):
 
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
+        username_or_phone = request.POST.get('username')
         password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
+        
+        # Try to authenticate with username first
+        user = authenticate(request, username=username_or_phone, password=password)
+        
+        # If username authentication fails, try phone number
+        if user is None:
+            try:
+                # Find user by phone number
+                user_obj = CustomUser.objects.get(phone=username_or_phone)
+                user = authenticate(request, username=user_obj.username, password=password)
+            except CustomUser.DoesNotExist:
+                user = None
+        
         if user is not None:
             if user.status == 'suspended':
                 messages.error(request, 'Your account has been suspended. Please contact support.')
@@ -81,7 +93,7 @@ def login_view(request):
             elif user.user_type == 'admin':
                 return redirect('dashboard:admin_dashboard')
         else:
-            messages.error(request, 'Invalid username or password.')
+            messages.error(request, 'Invalid username/phone number or password.')
     return render(request, 'dashboard/login.html')
 
 def logout_view(request):
@@ -91,8 +103,11 @@ def logout_view(request):
 
 def register_view(request):
     if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
         username = request.POST.get('username')
         email = request.POST.get('email')
+        phone = request.POST.get('phone')
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
         location = request.POST.get('location')
@@ -105,8 +120,24 @@ def register_view(request):
             messages.error(request, 'Username already exists.')
             return render(request, 'dashboard/register.html')
         
+        if CustomUser.objects.filter(phone=phone).exists():
+            messages.error(request, 'Phone number already exists.')
+            return render(request, 'dashboard/register.html')
+        
         if not location or location.strip() == '':
             messages.error(request, 'Location is required.')
+            return render(request, 'dashboard/register.html')
+        
+        if not phone or phone.strip() == '':
+            messages.error(request, 'Phone number is required.')
+            return render(request, 'dashboard/register.html')
+        
+        if not first_name or first_name.strip() == '':
+            messages.error(request, 'First name is required.')
+            return render(request, 'dashboard/register.html')
+        
+        if not last_name or last_name.strip() == '':
+            messages.error(request, 'Last name is required.')
             return render(request, 'dashboard/register.html')
         
         # Only allow regular users to register
@@ -115,7 +146,10 @@ def register_view(request):
             email=email,
             password=password1,
             user_type='user',  # Force user type to 'user'
-            location=location.strip()
+            location=location.strip(),
+            phone=phone.strip(),
+            first_name=first_name.strip(),
+            last_name=last_name.strip()
         )
         messages.success(request, 'Account created successfully! Please log in.')
         return redirect('dashboard:login')
@@ -564,20 +598,20 @@ def admin_analytics(request):
     # Get current period data
     current_users = CustomUser.objects.filter(created_at__gte=start).count()
     current_submissions = TrashSubmission.objects.filter(created_at__gte=start).count()
-    current_riders = CustomUser.objects.filter(user_type='rider', created_at__gte=start).count()
+    current_collected_trash_weight = TrashSubmission.objects.filter(created_at__gte=start, status='collected').aggregate(Sum('quantity_kg'))['quantity_kg__sum'] or 0
     current_points = sum([user.reward_points for user in CustomUser.objects.filter(created_at__gte=start)])
     
     # Get previous period data for comparison
     prev_start = start - timedelta(days=period)
     prev_users = CustomUser.objects.filter(created_at__gte=prev_start, created_at__lt=start).count()
     prev_submissions = TrashSubmission.objects.filter(created_at__gte=prev_start, created_at__lt=start).count()
-    prev_riders = CustomUser.objects.filter(user_type='rider', created_at__gte=prev_start, created_at__lt=start).count()
+    prev_collected_trash_weight = TrashSubmission.objects.filter(created_at__gte=prev_start, created_at__lt=start, status='collected').aggregate(Sum('quantity_kg'))['quantity_kg__sum'] or 0
     prev_points = sum([user.reward_points for user in CustomUser.objects.filter(created_at__gte=prev_start, created_at__lt=start)])
     
     # Calculate growth percentages
     user_growth = ((current_users - prev_users) / prev_users * 100) if prev_users > 0 else 0
     submission_growth = ((current_submissions - prev_submissions) / prev_submissions * 100) if prev_submissions > 0 else 0
-    rider_growth = ((current_riders - prev_riders) / prev_riders * 100) if prev_riders > 0 else 0
+    collected_trash_growth = ((current_collected_trash_weight - prev_collected_trash_weight) / prev_collected_trash_weight * 100) if prev_collected_trash_weight > 0 else 0
     points_growth = ((current_points - prev_points) / prev_points * 100) if prev_points > 0 else 0
     
     # Get real data for insights
@@ -767,11 +801,11 @@ def admin_analytics(request):
         'is_custom_date_range': is_custom_date_range,
         'total_users': current_users,
         'total_submissions': current_submissions,
-        'active_riders': current_riders,
+        'collected_trash_weight': current_collected_trash_weight,
         'total_points': current_points,
         'user_growth': user_growth,
         'submission_growth': submission_growth,
-        'rider_growth': rider_growth,
+        'collected_trash_growth': collected_trash_growth,
         'points_growth': points_growth,
         'avg_daily_registrations': avg_daily_registrations,
         'avg_response_time': avg_response_time,

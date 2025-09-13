@@ -375,17 +375,17 @@
 
         <div class="metric-card">
             <div class="metric-icon">
-                <i class="fas fa-motorcycle"></i>
+                <i class="fas fa-weight-hanging"></i>
             </div>
-            <div class="metric-number">{{ active_riders }}</div>
-            <div class="metric-label">Active Riders</div>
-            <div class="metric-change {% if rider_growth >= 0 %}positive{% else %}negative{% endif %}">
-                {% if rider_growth >= 0 %}
+            <div class="metric-number">{{ collected_trash_weight|floatformat:1 }} kg</div>
+            <div class="metric-label">Collected Trash Weight</div>
+            <div class="metric-change {% if collected_trash_growth >= 0 %}positive{% else %}negative{% endif %}">
+                {% if collected_trash_growth >= 0 %}
                     <i class="fas fa-arrow-up me-1"></i>
                 {% else %}
                     <i class="fas fa-arrow-down me-1"></i>
                 {% endif %}
-                {% if rider_growth >= 0 %}{{ rider_growth }}{% else %}{{ rider_growth|add:0|add:0 }}{% endif %}% from last period
+                {% if collected_trash_growth >= 0 %}{{ collected_trash_growth|floatformat:1 }}{% else %}{{ collected_trash_growth|add:0|add:0|floatformat:1 }}{% endif %}% from last period
             </div>
         </div>
 
